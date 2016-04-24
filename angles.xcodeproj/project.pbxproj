@@ -13,6 +13,9 @@
 		D804952A1CCD215100C1CDEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D80495291CCD215100C1CDEA /* Assets.xcassets */; };
 		D804952D1CCD215100C1CDEA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D804952B1CCD215100C1CDEA /* LaunchScreen.storyboard */; };
 		D80495381CCD215100C1CDEA /* anglesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495371CCD215100C1CDEA /* anglesTests.swift */; };
+		D80495431CCD2A2200C1CDEA /* VideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495421CCD2A2200C1CDEA /* VideoTableViewCell.swift */; };
+		D80495451CCD2E2400C1CDEA /* VideoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495441CCD2E2400C1CDEA /* VideoTableViewController.swift */; };
+		D80495471CCD2E6E00C1CDEA /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495461CCD2E6E00C1CDEA /* Video.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +39,9 @@
 		D80495331CCD215100C1CDEA /* anglesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = anglesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D80495371CCD215100C1CDEA /* anglesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = anglesTests.swift; sourceTree = "<group>"; };
 		D80495391CCD215100C1CDEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D80495421CCD2A2200C1CDEA /* VideoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTableViewCell.swift; sourceTree = "<group>"; };
+		D80495441CCD2E2400C1CDEA /* VideoTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTableViewController.swift; sourceTree = "<group>"; };
+		D80495461CCD2E6E00C1CDEA /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +86,9 @@
 				D80495221CCD215100C1CDEA /* AppDelegate.swift */,
 				D80495241CCD215100C1CDEA /* ViewController.swift */,
 				D80495261CCD215100C1CDEA /* Main.storyboard */,
+				D80495421CCD2A2200C1CDEA /* VideoTableViewCell.swift */,
+				D80495441CCD2E2400C1CDEA /* VideoTableViewController.swift */,
+				D80495461CCD2E6E00C1CDEA /* Video.swift */,
 				D80495291CCD215100C1CDEA /* Assets.xcassets */,
 				D804952B1CCD215100C1CDEA /* LaunchScreen.storyboard */,
 				D804952E1CCD215100C1CDEA /* Info.plist */,
@@ -199,6 +208,9 @@
 			files = (
 				D80495251CCD215100C1CDEA /* ViewController.swift in Sources */,
 				D80495231CCD215100C1CDEA /* AppDelegate.swift in Sources */,
+				D80495431CCD2A2200C1CDEA /* VideoTableViewCell.swift in Sources */,
+				D80495451CCD2E2400C1CDEA /* VideoTableViewController.swift in Sources */,
+				D80495471CCD2E6E00C1CDEA /* Video.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,7 +341,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = angles/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.angles;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -340,7 +354,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = angles/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.angles;
 				PRODUCT_NAME = "$(TARGET_NAME)";
