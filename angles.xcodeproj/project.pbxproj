@@ -155,6 +155,7 @@
 				TargetAttributes = {
 					D804951E1CCD215100C1CDEA = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = GX7JH73HD4;
 					};
 					D80495321CCD215100C1CDEA = {
 						CreatedOnToolsVersion = 7.3;

@@ -35,7 +35,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cellIdentifier = "VideoTableViewCell"
         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! VideoTableViewCell
-
         let video = videos[indexPath.row]
         
         cell.nameLabel.text = video.name
@@ -64,17 +63,27 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]){
         
-        // Dismiss the image picker controller:
-        dismissViewControllerAnimated(true, completion: nil)
-        
         // Add it to the list:
-        let videoURL = info[UIImagePickerControllerMediaURL] as! NSURL
-        let video = Video(name: "Untitled", dateCreated: NSDate(), videoURL: videoURL)
-        videos.append(video!)
+        let videoURL = info[UIImagePickerControllerMediaURL] as? NSURL
+        if videoURL == nil {
+            print("No video URL")
+            displayErrorAlert("No video URL")
+            return
+        }
+        let video = Video(name: "Untitled", dateCreated: NSDate(), videoURL: videoURL!)
+        if video == nil {
+            print("No video")
+            displayErrorAlert("Could not create video object")
+            return
+        }
+        self.videos.append(video!)
         
         // Make it display in the table view:
-        let newIndexPath = NSIndexPath(forRow: videos.count-1, inSection: 0)
-        tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
+        let newIndexPath = NSIndexPath(forRow: self.videos.count-1, inSection: 0)
+        self.tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
+        
+        // Dismiss the image picker controller:
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
     // MARK: Actions
@@ -83,11 +92,13 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         
         // Check whether camera is avilable:
         if !UIImagePickerController.isSourceTypeAvailable(.Camera) {
-            displayAlert("Error", message: "Camera not available")
+            print("Camera not available")
+            displayErrorAlert("Camera not available")
             return
         }
-        if UIImagePickerController.isCameraDeviceAvailable(.Rear) {
-            displayAlert("Error", message: "Rear camera not available")
+        if !UIImagePickerController.isCameraDeviceAvailable(.Rear) {
+            print("Rear camera not available")
+            displayErrorAlert("Rear camera not available")
             return
         }
         
@@ -103,8 +114,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     // MARK: Helper methods
     
-    func displayAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+    func displayErrorAlert(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))
         presentViewController(alert, animated: true, completion: nil)
     }
