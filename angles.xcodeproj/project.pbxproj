@@ -1,0 +1,405 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D80495231CCD215100C1CDEA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495221CCD215100C1CDEA /* AppDelegate.swift */; };
+		D80495251CCD215100C1CDEA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495241CCD215100C1CDEA /* ViewController.swift */; };
+		D80495281CCD215100C1CDEA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D80495261CCD215100C1CDEA /* Main.storyboard */; };
+		D804952A1CCD215100C1CDEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D80495291CCD215100C1CDEA /* Assets.xcassets */; };
+		D804952D1CCD215100C1CDEA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D804952B1CCD215100C1CDEA /* LaunchScreen.storyboard */; };
+		D80495381CCD215100C1CDEA /* anglesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495371CCD215100C1CDEA /* anglesTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D80495341CCD215100C1CDEA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D80495171CCD215100C1CDEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D804951E1CCD215100C1CDEA;
+			remoteInfo = angles;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D804951F1CCD215100C1CDEA /* angles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = angles.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D80495221CCD215100C1CDEA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D80495241CCD215100C1CDEA /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		D80495271CCD215100C1CDEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		D80495291CCD215100C1CDEA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D804952C1CCD215100C1CDEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		D804952E1CCD215100C1CDEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D80495331CCD215100C1CDEA /* anglesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = anglesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D80495371CCD215100C1CDEA /* anglesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = anglesTests.swift; sourceTree = "<group>"; };
+		D80495391CCD215100C1CDEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D804951C1CCD215100C1CDEA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D80495301CCD215100C1CDEA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D80495161CCD215100C1CDEA = {
+			isa = PBXGroup;
+			children = (
+				D80495211CCD215100C1CDEA /* angles */,
+				D80495361CCD215100C1CDEA /* anglesTests */,
+				D80495201CCD215100C1CDEA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D80495201CCD215100C1CDEA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D804951F1CCD215100C1CDEA /* angles.app */,
+				D80495331CCD215100C1CDEA /* anglesTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D80495211CCD215100C1CDEA /* angles */ = {
+			isa = PBXGroup;
+			children = (
+				D80495221CCD215100C1CDEA /* AppDelegate.swift */,
+				D80495241CCD215100C1CDEA /* ViewController.swift */,
+				D80495261CCD215100C1CDEA /* Main.storyboard */,
+				D80495291CCD215100C1CDEA /* Assets.xcassets */,
+				D804952B1CCD215100C1CDEA /* LaunchScreen.storyboard */,
+				D804952E1CCD215100C1CDEA /* Info.plist */,
+			);
+			path = angles;
+			sourceTree = "<group>";
+		};
+		D80495361CCD215100C1CDEA /* anglesTests */ = {
+			isa = PBXGroup;
+			children = (
+				D80495371CCD215100C1CDEA /* anglesTests.swift */,
+				D80495391CCD215100C1CDEA /* Info.plist */,
+			);
+			path = anglesTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D804951E1CCD215100C1CDEA /* angles */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D804953C1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "angles" */;
+			buildPhases = (
+				D804951B1CCD215100C1CDEA /* Sources */,
+				D804951C1CCD215100C1CDEA /* Frameworks */,
+				D804951D1CCD215100C1CDEA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = angles;
+			productName = angles;
+			productReference = D804951F1CCD215100C1CDEA /* angles.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D80495321CCD215100C1CDEA /* anglesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D804953F1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "anglesTests" */;
+			buildPhases = (
+				D804952F1CCD215100C1CDEA /* Sources */,
+				D80495301CCD215100C1CDEA /* Frameworks */,
+				D80495311CCD215100C1CDEA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D80495351CCD215100C1CDEA /* PBXTargetDependency */,
+			);
+			name = anglesTests;
+			productName = anglesTests;
+			productReference = D80495331CCD215100C1CDEA /* anglesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D80495171CCD215100C1CDEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = Nathan;
+				TargetAttributes = {
+					D804951E1CCD215100C1CDEA = {
+						CreatedOnToolsVersion = 7.3;
+					};
+					D80495321CCD215100C1CDEA = {
+						CreatedOnToolsVersion = 7.3;
+						TestTargetID = D804951E1CCD215100C1CDEA;
+					};
+				};
+			};
+			buildConfigurationList = D804951A1CCD215100C1CDEA /* Build configuration list for PBXProject "angles" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D80495161CCD215100C1CDEA;
+			productRefGroup = D80495201CCD215100C1CDEA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D804951E1CCD215100C1CDEA /* angles */,
+				D80495321CCD215100C1CDEA /* anglesTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D804951D1CCD215100C1CDEA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D804952D1CCD215100C1CDEA /* LaunchScreen.storyboard in Resources */,
+				D804952A1CCD215100C1CDEA /* Assets.xcassets in Resources */,
+				D80495281CCD215100C1CDEA /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D80495311CCD215100C1CDEA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D804951B1CCD215100C1CDEA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D80495251CCD215100C1CDEA /* ViewController.swift in Sources */,
+				D80495231CCD215100C1CDEA /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D804952F1CCD215100C1CDEA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D80495381CCD215100C1CDEA /* anglesTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D80495351CCD215100C1CDEA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D804951E1CCD215100C1CDEA /* angles */;
+			targetProxy = D80495341CCD215100C1CDEA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		D80495261CCD215100C1CDEA /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D80495271CCD215100C1CDEA /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		D804952B1CCD215100C1CDEA /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D804952C1CCD215100C1CDEA /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		D804953A1CCD215100C1CDEA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D804953B1CCD215100C1CDEA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D804953D1CCD215100C1CDEA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = angles/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.angles;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D804953E1CCD215100C1CDEA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = angles/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.angles;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		D80495401CCD215100C1CDEA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = anglesTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.anglesTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/angles.app/angles";
+			};
+			name = Debug;
+		};
+		D80495411CCD215100C1CDEA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = anglesTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.anglesTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/angles.app/angles";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D804951A1CCD215100C1CDEA /* Build configuration list for PBXProject "angles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D804953A1CCD215100C1CDEA /* Debug */,
+				D804953B1CCD215100C1CDEA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D804953C1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "angles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D804953D1CCD215100C1CDEA /* Debug */,
+				D804953E1CCD215100C1CDEA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		D804953F1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "anglesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D80495401CCD215100C1CDEA /* Debug */,
+				D80495411CCD215100C1CDEA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D80495171CCD215100C1CDEA /* Project object */;
+}
