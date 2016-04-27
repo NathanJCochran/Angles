@@ -5,7 +5,6 @@
 //  Created by Nathan on 4/24/16.
 //  Copyright © 2016 Nathan. All rights reserved.
 //
-
 import UIKit
 import MobileCoreServices
 
@@ -36,7 +35,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         let cellIdentifier = "VideoTableViewCell"
         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! VideoTableViewCell
         let video = videos[indexPath.row]
-        
         cell.nameLabel.text = video.name
         cell.dateLabel.text = video.dateCreated.description
         return cell
@@ -63,27 +61,55 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]){
         
-        // Add it to the list:
+        // Dismiss the image picker controller:
+        dismissViewControllerAnimated(true, completion: nil)
+        
+        // Get the URL of the vide in the tmp directory:
         let videoURL = info[UIImagePickerControllerMediaURL] as? NSURL
         if videoURL == nil {
-            print("No video URL")
-            displayErrorAlert("No video URL")
+            displayErrorAlert("Could not get video URL")
             return
         }
-        let video = Video(name: "Untitled", dateCreated: NSDate(), videoURL: videoURL!)
+        
+        print(videoURL?.absoluteString)
+        
+        // Get the URL of the user's Documents directory:
+        let fileManager = NSFileManager.defaultManager()
+        let documentsDirectory = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
+        if documentsDirectory == nil {
+            displayErrorAlert("Could not find user's Documents directory")
+            return
+        }
+        
+        // Move the file from the tmp directory to the Documents directory:
+        let formatter = NSDateFormatter()
+        formatter.dateStyle = .NoStyle
+        formatter.dateFormat = "yyyyMMddHHmmss"
+        let fileName = formatter.stringFromDate(NSDate())
+        let newVideoURL = documentsDirectory!.URLByAppendingPathComponent(fileName)
+        do {
+            try fileManager.moveItemAtURL(videoURL!, toURL: newVideoURL)
+        } catch let error as NSError {
+            displayErrorAlert("Could not move video file from tmp directory")
+            print(error)
+            return
+        }
+        
+        print(newVideoURL.absoluteString)
+        
+        // Create new video domain object:
+        let video = Video(name: "Untitled", dateCreated: NSDate(), videoURL: newVideoURL)
         if video == nil {
-            print("No video")
             displayErrorAlert("Could not create video object")
             return
         }
+        
+        // Add new video to the list:
         self.videos.append(video!)
         
         // Make it display in the table view:
         let newIndexPath = NSIndexPath(forRow: self.videos.count-1, inSection: 0)
         self.tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
-        
-        // Dismiss the image picker controller:
-        dismissViewControllerAnimated(true, completion: nil)
     }
     
     // MARK: Actions
@@ -115,6 +141,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     // MARK: Helper methods
     
     func displayErrorAlert(message: String) {
+        print(message)
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))
         presentViewController(alert, animated: true, completion: nil)
