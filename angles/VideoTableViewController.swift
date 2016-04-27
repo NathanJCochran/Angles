@@ -46,7 +46,20 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
+            // Delete video from user's Documents directory:
+            let video = videos[indexPath.row]
+            do {
+                let fileManager = NSFileManager.defaultManager()
+                try fileManager.removeItemAtURL(video.videoURL)
+            } catch let error as NSError {
+                displayErrorAlert("Could not delete file from Documents directory")
+                print(error)
+            }
+            
+            // Remove video object from list:
             videos.removeAtIndex(indexPath.row)
+            
+            // Remove video from table view:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
@@ -71,13 +84,11 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             return
         }
         
-        print(videoURL?.absoluteString)
-        
         // Get the URL of the user's Documents directory:
         let fileManager = NSFileManager.defaultManager()
         let documentsDirectory = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
         if documentsDirectory == nil {
-            displayErrorAlert("Could not find user's Documents directory")
+            displayErrorAlert("Could not find Documents directory")
             return
         }
         
@@ -94,8 +105,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             print(error)
             return
         }
-        
-        print(newVideoURL.absoluteString)
         
         // Create new video domain object:
         let video = Video(name: "Untitled", dateCreated: NSDate(), videoURL: newVideoURL)
@@ -147,7 +156,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         presentViewController(alert, animated: true, completion: nil)
     }
     
-
     
     // MARK: - Navigation
 
