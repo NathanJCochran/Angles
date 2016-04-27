@@ -9,12 +9,14 @@ import UIKit
 import MobileCoreServices
 
 class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    let videoFileDirectory = "/videoFiles"
+    let fileNameDateFormat = "yyyyMMddHHmmss"
     var videos = [Video]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        loadVideos()
     }
 
     override func didReceiveMemoryWarning() {
@@ -34,9 +36,15 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cellIdentifier = "VideoTableViewCell"
         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! VideoTableViewCell
+        
         let video = videos[indexPath.row]
         cell.nameLabel.text = video.name
-        cell.dateLabel.text = video.dateCreated.description
+        
+        let formatter = NSDateFormatter()
+        formatter.dateStyle = .LongStyle
+        formatter.timeStyle = .ShortStyle
+        cell.dateLabel.text = formatter.stringFromDate(video.dateCreated)
+        
         return cell
     }
 
@@ -58,6 +66,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             
             // Remove video object from list:
             videos.removeAtIndex(indexPath.row)
+            saveVideos()
             
             // Remove video from table view:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
@@ -77,7 +86,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         // Dismiss the image picker controller:
         dismissViewControllerAnimated(true, completion: nil)
         
-        // Get the URL of the vide in the tmp directory:
+        // Get the URL of the video in the tmp directory:
         let videoURL = info[UIImagePickerControllerMediaURL] as? NSURL
         if videoURL == nil {
             displayErrorAlert("Could not get video URL")
@@ -86,18 +95,29 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         
         // Get the URL of the user's Documents directory:
         let fileManager = NSFileManager.defaultManager()
-        let documentsDirectory = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
-        if documentsDirectory == nil {
+        let documentsDirectoryURL = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
+        if documentsDirectoryURL == nil {
             displayErrorAlert("Could not find Documents directory")
             return
         }
         
-        // Move the file from the tmp directory to the Documents directory:
+        // Get the URL of the video files directory, and make sure it exists:
+        let videoFilesDirectoryURL = documentsDirectoryURL!.URLByAppendingPathComponent(videoFileDirectory)
+        do {
+            try fileManager.createDirectoryAtURL(videoFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            displayErrorAlert("Could not create video files directory")
+            print(error)
+            return
+        }
+        
         let formatter = NSDateFormatter()
         formatter.dateStyle = .NoStyle
-        formatter.dateFormat = "yyyyMMddHHmmss"
+        formatter.dateFormat = fileNameDateFormat
         let fileName = formatter.stringFromDate(NSDate())
-        let newVideoURL = documentsDirectory!.URLByAppendingPathComponent(fileName)
+        let newVideoURL = videoFilesDirectoryURL.URLByAppendingPathComponent(fileName)
+        
+        // Move the file from the tmp directory to the video files directory:
         do {
             try fileManager.moveItemAtURL(videoURL!, toURL: newVideoURL)
         } catch let error as NSError {
@@ -115,6 +135,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         
         // Add new video to the list:
         self.videos.append(video!)
+        saveVideos()
         
         // Make it display in the table view:
         let newIndexPath = NSIndexPath(forRow: self.videos.count-1, inSection: 0)
@@ -166,5 +187,21 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         // Pass the selected object to the new view controller.
     }
     */
-
+    
+    // MARK: Persistence
+    
+    
+    func saveVideos() {
+        let success = NSKeyedArchiver.archiveRootObject(videos, toFile: Video.ArchiveURL.path!)
+        if !success {
+            displayErrorAlert("Could not archive video objects")
+        }
+    }
+    
+    func loadVideos() {
+        if let videos = NSKeyedUnarchiver.unarchiveObjectWithFile(Video.ArchiveURL.path!) as? [Video] {
+            self.videos += videos
+        }
+        
+    }
 }
