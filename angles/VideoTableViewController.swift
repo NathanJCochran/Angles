@@ -9,13 +9,16 @@ import UIKit
 import MobileCoreServices
 
 class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    let videoFileDirectory = "/videoFiles"
+    let videoFileDirectory = "videoFiles"
     let fileNameDateFormat = "yyyyMMddHHmmss"
     var videos = [Video]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        
+        // clearDocumentsDirectory()
+        
         loadVideos()
     }
 
@@ -54,7 +57,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
-            // Delete video from user's Documents directory:
+            // Delete video file from user's Documents directory:
             let video = videos[indexPath.row]
             do {
                 let fileManager = NSFileManager.defaultManager()
@@ -62,6 +65,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             } catch let error as NSError {
                 displayErrorAlert("Could not delete file from Documents directory")
                 print(error)
+                return
             }
             
             // Remove video object from list:
@@ -203,5 +207,25 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             self.videos += videos
         }
         
+    }
+    
+    func clearDocumentsDirectory() {
+        let fileManager = NSFileManager.defaultManager()
+        let documentsDirectoryURL = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
+        if documentsDirectoryURL == nil {
+            displayErrorAlert("Could not find documents directory")
+            return
+        }
+        do {
+            let directoryContents = try fileManager.contentsOfDirectoryAtURL(documentsDirectoryURL!, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            for content in directoryContents {
+                print("Removing: " + content.absoluteString)
+                try fileManager.removeItemAtURL(content)
+            }
+        } catch let error as NSError {
+            displayErrorAlert("Could not remove files in documents directory")
+            print(error)
+            return
+        }
     }
 }
