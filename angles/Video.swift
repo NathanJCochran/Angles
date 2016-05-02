@@ -14,8 +14,9 @@ class Video : NSObject, NSCoding{
     var dateCreated: NSDate
     var videoURL: NSURL
     
-    static let DocumentsDirectory = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-    static let ArchiveURL = DocumentsDirectory.URLByAppendingPathComponent("videos")
+    static let DocumentsDirectoryURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+    static let VideoFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videoFiles")
+    static let ArchiveURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videos")
     
     // MARK: Types
     struct PropertyKey {
@@ -36,15 +37,15 @@ class Video : NSObject, NSCoding{
     required convenience init?(coder aDecoder: NSCoder) {
         let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
         let dateCreated = aDecoder.decodeObjectForKey(PropertyKey.dateCreatedKey) as! NSDate
-        let videoURL = aDecoder.decodeObjectForKey(PropertyKey.videoURLKey) as! NSURL
+        let videoPathComponent = aDecoder.decodeObjectForKey(PropertyKey.videoURLKey) as! String
+        let videoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(videoPathComponent)
         self.init(name: name, dateCreated: dateCreated, videoURL: videoURL)
     }
-
     
     func encodeWithCoder(aCoder: NSCoder) {
         aCoder.encodeObject(name, forKey: PropertyKey.nameKey)
         aCoder.encodeObject(dateCreated, forKey: PropertyKey.dateCreatedKey)
-        aCoder.encodeObject(videoURL, forKey: PropertyKey.videoURLKey)
+        aCoder.encodeObject(videoURL.lastPathComponent!, forKey: PropertyKey.videoURLKey)
     }
    
 }

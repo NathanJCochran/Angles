@@ -9,7 +9,6 @@ import UIKit
 import MobileCoreServices
 
 class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    let videoFileDirectory = "videoFiles"
     let fileNameDateFormat = "yyyyMMddHHmmss"
     var videos = [Video]()
 
@@ -106,20 +105,25 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         }
         
         // Get the URL of the video files directory, and make sure it exists:
-        let videoFilesDirectoryURL = documentsDirectoryURL!.URLByAppendingPathComponent(videoFileDirectory)
         do {
-            try fileManager.createDirectoryAtURL(videoFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+            try fileManager.createDirectoryAtURL(Video.VideoFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
         } catch let error as NSError {
             displayErrorAlert("Could not create video files directory")
             print(error)
             return
         }
         
+        // Create new video URL:
+        let fileExtension = videoURL!.pathExtension
+        if fileExtension == nil {
+            displayErrorAlert("No file extension for video: " + videoURL!.absoluteString)
+            return
+        }
         let formatter = NSDateFormatter()
         formatter.dateStyle = .NoStyle
         formatter.dateFormat = fileNameDateFormat
-        let fileName = formatter.stringFromDate(NSDate())
-        let newVideoURL = videoFilesDirectoryURL.URLByAppendingPathComponent(fileName)
+        let fileName = formatter.stringFromDate(NSDate()) + "." + fileExtension!
+        let newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName)
         
         // Move the file from the tmp directory to the video files directory:
         do {
@@ -183,14 +187,17 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     
     // MARK: - Navigation
-
-    /*
+    
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if segue.identifier == "ShowFrames" {
+            let framesViewController = segue.destinationViewController as! FramesViewController
+            let selectedVideoCell = sender as! VideoTableViewCell
+            let indexPath = tableView.indexPathForCell(selectedVideoCell)!
+            let selectedVideo = videos[indexPath.row]
+            framesViewController.video = selectedVideo
+        }
     }
-    */
     
     // MARK: Persistence
     
@@ -211,13 +218,16 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     func clearDocumentsDirectory() {
         let fileManager = NSFileManager.defaultManager()
-        let documentsDirectoryURL = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
-        if documentsDirectoryURL == nil {
-            displayErrorAlert("Could not find documents directory")
-            return
-        }
+
         do {
-            let directoryContents = try fileManager.contentsOfDirectoryAtURL(documentsDirectoryURL!, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            let videoDirectoryContents = try fileManager.contentsOfDirectoryAtURL(Video.VideoFilesDirectoryURL, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            for content in videoDirectoryContents {
+                print("Removing: " + content.absoluteString)
+                try fileManager.removeItemAtURL(content)
+            }
+
+            
+            let directoryContents = try fileManager.contentsOfDirectoryAtURL(Video.DocumentsDirectoryURL, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
             for content in directoryContents {
                 print("Removing: " + content.absoluteString)
                 try fileManager.removeItemAtURL(content)

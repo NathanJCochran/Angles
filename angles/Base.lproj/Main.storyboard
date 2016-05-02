@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Your Videos-->
@@ -38,6 +39,7 @@
                                 <connections>
                                     <outlet property="dateLabel" destination="DZV-r5-R8A" id="9Zp-hU-xKu"/>
                                     <outlet property="nameLabel" destination="5Us-FU-7Mp" id="4dH-px-XTj"/>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="ShowFrames" id="c2K-Xe-5li"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -58,10 +60,10 @@
             </objects>
             <point key="canvasLocation" x="557" y="475"/>
         </scene>
-        <!--View Controller-->
+        <!--Frames-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="angles" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Frames" id="BYZ-38-t0r" customClass="FramesViewController" customModule="angles" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -69,8 +71,31 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Rgc-hj-ZZX">
+                                <rect key="frame" x="20" y="72" width="560" height="470"/>
+                            </imageView>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="CGn-Z4-NeA">
+                                <rect key="frame" x="18" y="550" width="564" height="31"/>
+                            </slider>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Rgc-hj-ZZX" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="0ES-60-18L"/>
+                            <constraint firstItem="CGn-Z4-NeA" firstAttribute="top" secondItem="Rgc-hj-ZZX" secondAttribute="bottom" constant="8" id="2vN-ei-zJl"/>
+                            <constraint firstItem="Rgc-hj-ZZX" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="KyX-5A-P1X"/>
+                            <constraint firstItem="CGn-Z4-NeA" firstAttribute="top" secondItem="Rgc-hj-ZZX" secondAttribute="bottom" constant="8" id="Pyl-nZ-15V"/>
+                            <constraint firstItem="CGn-Z4-NeA" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="SrL-nF-ruI"/>
+                            <constraint firstItem="Rgc-hj-ZZX" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="WsE-kd-veY"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="CGn-Z4-NeA" secondAttribute="bottom" constant="20" id="Z4J-IU-ukp"/>
+                            <constraint firstItem="CGn-Z4-NeA" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="aMK-No-mpt"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Frames" id="xqL-qH-xrh"/>
+                    <connections>
+                        <outlet property="frameImageView" destination="Rgc-hj-ZZX" id="E25-ym-TOB"/>
+                        <outlet property="frameSlider" destination="CGn-Z4-NeA" id="lYE-xh-GRg"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
