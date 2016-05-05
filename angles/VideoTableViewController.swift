@@ -156,12 +156,10 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         
         // Check whether camera is avilable:
         if !UIImagePickerController.isSourceTypeAvailable(.Camera) {
-            print("Camera not available")
             displayErrorAlert("Camera not available")
             return
         }
         if !UIImagePickerController.isCameraDeviceAvailable(.Rear) {
-            print("Rear camera not available")
             displayErrorAlert("Rear camera not available")
             return
         }
@@ -199,8 +197,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         }
     }
     
-    // MARK: Persistence
     
+    // MARK: Persistence
     
     func saveVideos() {
         let success = NSKeyedArchiver.archiveRootObject(videos, toFile: Video.ArchiveURL.path!)

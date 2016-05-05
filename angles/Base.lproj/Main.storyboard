@@ -72,23 +72,24 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Rgc-hj-ZZX">
-                                <rect key="frame" x="20" y="72" width="560" height="470"/>
-                            </imageView>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="CGn-Z4-NeA">
-                                <rect key="frame" x="18" y="550" width="564" height="31"/>
-                            </slider>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="HjT-4Y-GXy">
+                                <rect key="frame" x="20" y="79" width="560" height="506"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" verticalHuggingPriority="249" verticalCompressionResistancePriority="749" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rgc-hj-ZZX">
+                                        <rect key="frame" x="0.0" y="0.0" width="560" height="461"/>
+                                    </imageView>
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="CGn-Z4-NeA">
+                                        <rect key="frame" x="-2" y="476" width="564" height="31"/>
+                                    </slider>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="Rgc-hj-ZZX" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="0ES-60-18L"/>
-                            <constraint firstItem="CGn-Z4-NeA" firstAttribute="top" secondItem="Rgc-hj-ZZX" secondAttribute="bottom" constant="8" id="2vN-ei-zJl"/>
-                            <constraint firstItem="Rgc-hj-ZZX" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="KyX-5A-P1X"/>
-                            <constraint firstItem="CGn-Z4-NeA" firstAttribute="top" secondItem="Rgc-hj-ZZX" secondAttribute="bottom" constant="8" id="Pyl-nZ-15V"/>
-                            <constraint firstItem="CGn-Z4-NeA" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="SrL-nF-ruI"/>
-                            <constraint firstItem="Rgc-hj-ZZX" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="WsE-kd-veY"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="CGn-Z4-NeA" secondAttribute="bottom" constant="20" id="Z4J-IU-ukp"/>
-                            <constraint firstItem="CGn-Z4-NeA" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="aMK-No-mpt"/>
+                            <constraint firstItem="HjT-4Y-GXy" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="As1-Ut-j15"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="HjT-4Y-GXy" secondAttribute="bottom" constant="15" id="YY8-6b-06O"/>
+                            <constraint firstItem="HjT-4Y-GXy" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="15" id="nDx-83-az3"/>
+                            <constraint firstItem="HjT-4Y-GXy" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="wgY-CZ-RzT"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Frames" id="xqL-qH-xrh"/>
