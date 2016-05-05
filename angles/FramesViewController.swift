@@ -32,23 +32,16 @@ class FramesViewController: UIViewController {
         videoAsset = AVURLAsset(URL: video!.videoURL, options: nil)
         videoImageGenerator = AVAssetImageGenerator(asset: videoAsset)
         videoImageGenerator.appliesPreferredTrackTransform = true
+        videoImageGenerator.requestedTimeToleranceBefore = kCMTimeZero
+        videoImageGenerator.requestedTimeToleranceAfter = kCMTimeZero
         
         // Set slider min and max:
         frameSlider.minimumValue = 0
         frameSlider.maximumValue = Float(videoAsset.duration.seconds)
         frameSlider.value = 0
         
-        print(video!.videoURL.absoluteString)
-        
         // Set initial thumbnail:
-        do {
-            let thumbnailImage = try videoImageGenerator.copyCGImageAtTime(CMTime(seconds:0, preferredTimescale: 1), actualTime: nil)
-            frameImageView.image = UIImage(CGImage: thumbnailImage)
-            
-        } catch let error as NSError {
-            displayErrorAlert("Could not generate thumbail image from video")
-            print(error)
-        }
+        setFrameImageAtSeconds(0)
     }
 
     override func didReceiveMemoryWarning() {
@@ -56,17 +49,28 @@ class FramesViewController: UIViewController {
         print("Received memory warning")
     }
     
+    @IBAction func sliderMoved(sender: UISlider) {
+        setFrameImageAtSeconds(Double(sender.value))
+    }
     // MARK: Helper methods
+    
+    func setFrameImageAtSeconds(seconds: Double) {
+        do {
+            let time = CMTime(seconds:seconds, preferredTimescale: videoAsset.duration.timescale)
+            let thumbnailImage = try videoImageGenerator.copyCGImageAtTime(time, actualTime: nil)
+            frameImageView.image = UIImage(CGImage: thumbnailImage)
+            
+        } catch let error as NSError {
+            displayErrorAlert("Could not generate thumbail image from video at " + String(seconds) + " seconds")
+            print(error)
+        }
+    }
     
     func displayErrorAlert(message: String) {
         print(message)
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))
         presentViewController(alert, animated: true, completion: nil)
-    }
-    
-    func setThumbnail() {
-        
     }
 }
 
