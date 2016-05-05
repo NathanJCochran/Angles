@@ -13,11 +13,16 @@ import AVFoundation
 class FramesViewController: UIViewController {
     
     // MARK: Properties
+    
     var video: Video?
     var videoAsset: AVURLAsset!
     var videoImageGenerator: AVAssetImageGenerator!
+    
+    // MARK: Outlets
+    
     @IBOutlet weak var frameImageView: UIImageView!
     @IBOutlet weak var frameSlider: UISlider!
+    @IBOutlet weak var videoDurationLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,10 +43,11 @@ class FramesViewController: UIViewController {
         // Set slider min and max:
         frameSlider.minimumValue = 0
         frameSlider.maximumValue = Float(videoAsset.duration.seconds)
-        frameSlider.value = 0
         
         // Set initial thumbnail:
+        frameSlider.value = 0
         setFrameImageAtSeconds(0)
+        setVideoTimeLabel(0)
     }
 
     override func didReceiveMemoryWarning() {
@@ -50,8 +56,12 @@ class FramesViewController: UIViewController {
     }
     
     @IBAction func sliderMoved(sender: UISlider) {
-        setFrameImageAtSeconds(Double(sender.value))
+        let seconds = Double(sender.value)
+        setFrameImageAtSeconds(seconds)
+        setVideoTimeLabel(seconds)
     }
+    
+    
     // MARK: Helper methods
     
     func setFrameImageAtSeconds(seconds: Double) {
@@ -64,6 +74,13 @@ class FramesViewController: UIViewController {
             displayErrorAlert("Could not generate thumbail image from video at " + String(seconds) + " seconds")
             print(error)
         }
+    }
+    
+    func setVideoTimeLabel(totalSeconds:Double) {
+        let hours = Int(floor(totalSeconds / 3600))
+        let minutes = Int(floor(totalSeconds % 3600 / 60))
+        let seconds = Int(floor(totalSeconds % 3600 % 60))
+        videoDurationLabel.text = String(format:"%d:%02d:%02d", hours, minutes, seconds)
     }
     
     func displayErrorAlert(message: String) {
