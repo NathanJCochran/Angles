@@ -55,12 +55,18 @@ class FramesViewController: UIViewController {
         print("Received memory warning")
     }
     
+    // MARK: Actions
+    
     @IBAction func sliderMoved(sender: UISlider) {
         let seconds = Double(sender.value)
         setFrameImageAtSeconds(seconds)
         setVideoTimeLabel(seconds)
     }
     
+    @IBAction func selectPoint(sender: UITapGestureRecognizer) {
+        let location = sender.locationInView(frameImageView)
+        print(location)
+    }
     
     // MARK: Helper methods
     
