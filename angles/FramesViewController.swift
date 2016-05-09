@@ -17,6 +17,7 @@ class FramesViewController: UIViewController {
     var video: Video?
     var videoAsset: AVURLAsset!
     var videoImageGenerator: AVAssetImageGenerator!
+    var currentFrame: Frame!
     
     // MARK: Outlets
     
@@ -43,11 +44,10 @@ class FramesViewController: UIViewController {
         // Set slider min and max:
         frameSlider.minimumValue = 0
         frameSlider.maximumValue = Float(videoAsset.duration.seconds)
+        frameSlider.value = 0
         
         // Set initial thumbnail:
-        frameSlider.value = 0
-        setFrameImageAtSeconds(0)
-        setVideoTimeLabel(0)
+        setFrameAtSeconds(0)
     }
 
     override func didReceiveMemoryWarning() {
@@ -59,27 +59,52 @@ class FramesViewController: UIViewController {
     
     @IBAction func sliderMoved(sender: UISlider) {
         let seconds = Double(sender.value)
-        setFrameImageAtSeconds(seconds)
-        setVideoTimeLabel(seconds)
+        setFrameAtSeconds(seconds)
     }
     
     @IBAction func selectPoint(sender: UITapGestureRecognizer) {
         let location = sender.locationInView(frameImageView)
-        print(location)
+        let frameImageRect = getFrameImageRect()
+        if frameImageRect.contains(location) {
+            print(location)
+            currentFrame.points.append(location)
+            drawCircleAt(location)
+        } else {
+            print("not in rect")
+        }
     }
     
     // MARK: Helper methods
     
-    func setFrameImageAtSeconds(seconds: Double) {
+    func setFrameAtSeconds(seconds: Double) {
         do {
+            setVideoTimeLabel(0)
             let time = CMTime(seconds:seconds, preferredTimescale: videoAsset.duration.timescale)
             let thumbnailImage = try videoImageGenerator.copyCGImageAtTime(time, actualTime: nil)
-            frameImageView.image = UIImage(CGImage: thumbnailImage)
-            
+            currentFrame = Frame(seconds: seconds, image: UIImage(CGImage: thumbnailImage))
+            frameImageView.image = currentFrame.image
         } catch let error as NSError {
             displayErrorAlert("Could not generate thumbail image from video at " + String(seconds) + " seconds")
             print(error)
         }
+    }
+    
+    func getFrameImageRect() -> CGRect {
+       let widthRatio = frameImageView.bounds.size.width / frameImageView.image!.size.width
+        let heightRatio = frameImageView.bounds.size.height / frameImageView.image!.size.height
+        let scale = min(widthRatio, heightRatio)
+        let imageWidth = scale * frameImageView.image!.size.width
+        let imageHeight = scale * frameImageView.image!.size.height
+        let x = (frameImageView.bounds.size.width - imageWidth) / 2
+        let y = (frameImageView.bounds.size.height - imageHeight) / 2
+        return CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
+    }
+    
+    func drawCircleAt(point: CGPoint) {
+        let circle = UIView(frame: CGRect(x: point.x - 25, y: point.y - 25, width: 50, height: 50))
+        circle.layer.cornerRadius = 25
+        circle.backgroundColor = UIColor.blueColor()
+        self.frameImageView.addSubview(circle)
     }
     
     func setVideoTimeLabel(totalSeconds:Double) {

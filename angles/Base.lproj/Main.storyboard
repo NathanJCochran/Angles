@@ -75,8 +75,9 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="HjT-4Y-GXy">
                                 <rect key="frame" x="20" y="79" width="560" height="506"/>
                                 <subviews>
-                                    <imageView contentMode="scaleAspectFit" verticalHuggingPriority="249" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="Rgc-hj-ZZX">
+                                    <imageView contentMode="scaleAspectFit" verticalHuggingPriority="249" verticalCompressionResistancePriority="749" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="500" translatesAutoresizingMaskIntoConstraints="NO" id="Rgc-hj-ZZX">
                                         <rect key="frame" x="0.0" y="0.0" width="560" height="461"/>
+                                        <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <gestureRecognizers/>
                                         <connections>
                                             <outletCollection property="gestureRecognizers" destination="e3z-Jm-hMM" appends="YES" id="mEo-gg-rFV"/>

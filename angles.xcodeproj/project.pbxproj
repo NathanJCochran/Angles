@@ -16,6 +16,7 @@
 		D80495451CCD2E2400C1CDEA /* VideoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495441CCD2E2400C1CDEA /* VideoTableViewController.swift */; };
 		D80495471CCD2E6E00C1CDEA /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495461CCD2E6E00C1CDEA /* Video.swift */; };
 		D80495491CD7F1CA00C1CDEA /* FramesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495481CD7F1CA00C1CDEA /* FramesViewController.swift */; };
+		D804954B1CE007E800C1CDEA /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = D804954A1CE007E800C1CDEA /* Frame.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +43,7 @@
 		D80495441CCD2E2400C1CDEA /* VideoTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTableViewController.swift; sourceTree = "<group>"; };
 		D80495461CCD2E6E00C1CDEA /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
 		D80495481CD7F1CA00C1CDEA /* FramesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramesViewController.swift; sourceTree = "<group>"; };
+		D804954A1CE007E800C1CDEA /* Frame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				D80495481CD7F1CA00C1CDEA /* FramesViewController.swift */,
+				D804954A1CE007E800C1CDEA /* Frame.swift */,
 				D80495221CCD215100C1CDEA /* AppDelegate.swift */,
 				D80495261CCD215100C1CDEA /* Main.storyboard */,
 				D80495421CCD2A2200C1CDEA /* VideoTableViewCell.swift */,
@@ -210,6 +213,7 @@
 				D80495231CCD215100C1CDEA /* AppDelegate.swift in Sources */,
 				D80495431CCD2A2200C1CDEA /* VideoTableViewCell.swift in Sources */,
 				D80495451CCD2E2400C1CDEA /* VideoTableViewController.swift in Sources */,
+				D804954B1CE007E800C1CDEA /* Frame.swift in Sources */,
 				D80495471CCD2E6E00C1CDEA /* Video.swift in Sources */,
 				D80495491CD7F1CA00C1CDEA /* FramesViewController.swift in Sources */,
 			);
