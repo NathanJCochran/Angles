@@ -12,12 +12,17 @@ import AVFoundation
 
 class FramesViewController: UIViewController {
     
+    // MARL: Constants
+    
+    let pointDiameter = CGFloat(25)
+    
     // MARK: Properties
     
     var video: Video?
     var videoAsset: AVURLAsset!
     var videoImageGenerator: AVAssetImageGenerator!
     var currentFrame: Frame!
+    var pointUIViews = [UIView]()
     
     // MARK: Outlets
     
@@ -55,9 +60,20 @@ class FramesViewController: UIViewController {
         print("Received memory warning")
     }
     
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        coordinator.animateAlongsideTransition(nil, completion: {
+            _ in
+            self.clearPointsFromScreen()
+            for point in self.currentFrame.points {
+                self.drawPointAtNormalized(point)
+            }
+        })
+    }
+    
     // MARK: Actions
     
     @IBAction func sliderMoved(sender: UISlider) {
+        clearPointsFromScreen()
         let seconds = Double(sender.value)
         setFrameAtSeconds(seconds)
     }
@@ -65,10 +81,11 @@ class FramesViewController: UIViewController {
     @IBAction func selectPoint(sender: UITapGestureRecognizer) {
         let location = sender.locationInView(frameImageView)
         let frameImageRect = getFrameImageRect()
+        
         if frameImageRect.contains(location) {
             print(location)
-            currentFrame.points.append(location)
-            drawCircleAt(location)
+            drawPointAt(location)
+            currentFrame.points.append(normalizePoint(location))
         } else {
             print("not in rect")
         }
@@ -78,7 +95,7 @@ class FramesViewController: UIViewController {
     
     func setFrameAtSeconds(seconds: Double) {
         do {
-            setVideoTimeLabel(0)
+            setVideoTimeLabel(seconds)
             let time = CMTime(seconds:seconds, preferredTimescale: videoAsset.duration.timescale)
             let thumbnailImage = try videoImageGenerator.copyCGImageAtTime(time, actualTime: nil)
             currentFrame = Frame(seconds: seconds, image: UIImage(CGImage: thumbnailImage))
@@ -89,8 +106,60 @@ class FramesViewController: UIViewController {
         }
     }
     
+    func setVideoTimeLabel(totalSeconds:Double) {
+        let hours = Int(floor(totalSeconds / 3600))
+        let minutes = Int(floor(totalSeconds % 3600 / 60))
+        let seconds = Int(floor(totalSeconds % 3600 % 60))
+        videoDurationLabel.text = String(format:"%d:%02d:%02d", hours, minutes, seconds)
+    }
+
+    func drawPointAtNormalized(point: CGPoint) {
+        drawPointAt(denormalizePoint(point))
+    }
+    
+    func drawPointAt(point: CGPoint) {
+        let circle = UIView(frame: CGRect(
+            x: point.x - (pointDiameter / 2),
+            y: point.y - (pointDiameter / 2),
+            width: pointDiameter,
+            height: pointDiameter
+            )
+        )
+        circle.layer.cornerRadius = pointDiameter / 2
+        circle.backgroundColor = UIColor.orangeColor()
+        self.frameImageView.addSubview(circle)
+        self.pointUIViews.append(circle)
+    }
+    
+    func clearPointsFromScreen() {
+        for pointUIView in self.pointUIViews {
+            pointUIView.removeFromSuperview()
+        }
+        self.pointUIViews.removeAll()
+    }
+    
+    func normalizePoint(point: CGPoint) -> CGPoint {
+        let frameImageRect = getFrameImageRect()
+        let adjustedPoint = CGPoint(x: point.x - frameImageRect.minX, y: point.y - frameImageRect.minY)
+        let scaledPoint = CGPoint(
+            x: (adjustedPoint.x / frameImageRect.width) * frameImageView.image!.size.width,
+            y: (adjustedPoint.y / frameImageRect.height) * frameImageView.image!.size.height
+        )
+        return scaledPoint
+    }
+    
+    func denormalizePoint(point:CGPoint) -> CGPoint{
+        let frameImageRect = getFrameImageRect()
+        let adjustedPoint = CGPoint(
+            x: (point.x / frameImageView.image!.size.width) * frameImageRect.width,
+            y: (point.y / frameImageView.image!.size.height) * frameImageRect.height
+        )
+        let realPoint = CGPoint(x: adjustedPoint.x + frameImageRect.minX, y: adjustedPoint.y + frameImageRect.minY)
+        return realPoint
+    }
+    
     func getFrameImageRect() -> CGRect {
-       let widthRatio = frameImageView.bounds.size.width / frameImageView.image!.size.width
+        let widthRatio = frameImageView.bounds.size.width / frameImageView.image!.size.width
         let heightRatio = frameImageView.bounds.size.height / frameImageView.image!.size.height
         let scale = min(widthRatio, heightRatio)
         let imageWidth = scale * frameImageView.image!.size.width
@@ -98,20 +167,6 @@ class FramesViewController: UIViewController {
         let x = (frameImageView.bounds.size.width - imageWidth) / 2
         let y = (frameImageView.bounds.size.height - imageHeight) / 2
         return CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
-    }
-    
-    func drawCircleAt(point: CGPoint) {
-        let circle = UIView(frame: CGRect(x: point.x - 25, y: point.y - 25, width: 50, height: 50))
-        circle.layer.cornerRadius = 25
-        circle.backgroundColor = UIColor.blueColor()
-        self.frameImageView.addSubview(circle)
-    }
-    
-    func setVideoTimeLabel(totalSeconds:Double) {
-        let hours = Int(floor(totalSeconds / 3600))
-        let minutes = Int(floor(totalSeconds % 3600 / 60))
-        let seconds = Int(floor(totalSeconds % 3600 % 60))
-        videoDurationLabel.text = String(format:"%d:%02d:%02d", hours, minutes, seconds)
     }
     
     func displayErrorAlert(message: String) {
