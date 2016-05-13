@@ -83,11 +83,8 @@ class FramesViewController: UIViewController {
         let frameImageRect = getFrameImageRect()
         
         if frameImageRect.contains(location) {
-            print(location)
             drawPointAt(location)
             currentFrame.points.append(normalizePoint(location))
-        } else {
-            print("not in rect")
         }
     }
     
