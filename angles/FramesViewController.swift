@@ -65,7 +65,7 @@ class FramesViewController: UIViewController {
             _ in
             self.clearPointsFromScreen()
             for point in self.currentFrame.points {
-                self.drawPointAtNormalized(point)
+                self.drawNormalizedPointAt(point)
             }
         })
     }
@@ -110,7 +110,7 @@ class FramesViewController: UIViewController {
         videoDurationLabel.text = String(format:"%d:%02d:%02d", hours, minutes, seconds)
     }
 
-    func drawPointAtNormalized(point: CGPoint) {
+    func drawNormalizedPointAt(point: CGPoint) {
         drawPointAt(denormalizePoint(point))
     }
     
