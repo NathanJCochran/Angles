@@ -12,10 +12,6 @@ import AVFoundation
 
 class FramesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
-    // MARL: Constants
-    
-    let pointDiameter = CGFloat(25)
-    
     // MARK: Properties
     
     var video: Video!
@@ -52,8 +48,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         frameSlider.maximumValue = Float(videoAsset.duration.seconds)
         frameSlider.value = 0
         
-        // Set initial thumbnail:
-        setFrameAtSeconds(0)
+        // Set initial thumbnail: // TODO: OR SET FIRST SAVED FRAME
+        setFrameImage(0)
     }
 
     override func didReceiveMemoryWarning() {
@@ -62,12 +58,10 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        clearPointsFromScreen()
         coordinator.animateAlongsideTransition(nil, completion: {
             _ in
-            self.clearPointsFromScreen()
-            for point in self.currentFrame.points {
-                self.drawNormalizedPointAt(point)
-            }
+            self.drawCurrentPoints()
         })
     }
     
@@ -76,7 +70,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     @IBAction func sliderMoved(sender: UISlider) {
         clearPointsFromScreen()
         let seconds = Double(sender.value)
-        setFrameAtSeconds(seconds)
+        setFrameImage(seconds)
     }
     
     @IBAction func selectPoint(sender: UITapGestureRecognizer) {
@@ -110,11 +104,23 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: UICollectionViewDelegate
     
-    // TODO
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        // TODO: HIGHLIGHTING
+        let frame = video.frames[indexPath.item]
+        setCurrentFrameTo(frame)
+    }
     
     // MARK: Helper methods
     
-    func setFrameAtSeconds(seconds: Double) {
+    func setCurrentFrameTo(frame: Frame) {
+        clearPointsFromScreen()
+        setFrameImage(frame.seconds)
+        setSlider(frame.seconds)
+        currentFrame = frame
+        drawCurrentPoints()
+    }
+    
+    func setFrameImage(seconds: Double) {
         do {
             setVideoTimeLabel(seconds)
             let time = CMTime(seconds:seconds, preferredTimescale: videoAsset.duration.timescale)
@@ -133,12 +139,23 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let seconds = Int(floor(totalSeconds % 3600 % 60))
         videoDurationLabel.text = String(format:"%d:%02d:%02d", hours, minutes, seconds)
     }
+    
+    func setSlider(seconds: Double) {
+        frameSlider.setValue(Float(seconds), animated: true)
+    }
+    
+    func drawCurrentPoints() {
+        for point in currentFrame.points {
+            self.drawNormalizedPointAt(point)
+        }
+    }
 
     func drawNormalizedPointAt(point: CGPoint) {
         drawPointAt(denormalizePoint(point))
     }
     
     func drawPointAt(point: CGPoint) {
+        let pointDiameter = getFrameImageRect().size.width / 20
         let circle = UIView(frame: CGRect(
             x: point.x - (pointDiameter / 2),
             y: point.y - (pointDiameter / 2),
@@ -147,7 +164,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             )
         )
         circle.layer.cornerRadius = pointDiameter / 2
-        circle.backgroundColor = UIColor.orangeColor()
+        circle.backgroundColor = UIColor.blueColor()
+        circle.alpha = 0.5
         self.frameImageView.addSubview(circle)
         self.pointUIViews.append(circle)
     }
