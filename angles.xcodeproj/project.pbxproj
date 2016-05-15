@@ -17,6 +17,7 @@
 		D80495471CCD2E6E00C1CDEA /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495461CCD2E6E00C1CDEA /* Video.swift */; };
 		D80495491CD7F1CA00C1CDEA /* FramesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495481CD7F1CA00C1CDEA /* FramesViewController.swift */; };
 		D804954B1CE007E800C1CDEA /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = D804954A1CE007E800C1CDEA /* Frame.swift */; };
+		D804954D1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D804954C1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		D80495461CCD2E6E00C1CDEA /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
 		D80495481CD7F1CA00C1CDEA /* FramesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramesViewController.swift; sourceTree = "<group>"; };
 		D804954A1CE007E800C1CDEA /* Frame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
+		D804954C1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrameCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +97,7 @@
 				D80495291CCD215100C1CDEA /* Assets.xcassets */,
 				D804952B1CCD215100C1CDEA /* LaunchScreen.storyboard */,
 				D804952E1CCD215100C1CDEA /* Info.plist */,
+				D804954C1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift */,
 			);
 			path = angles;
 			sourceTree = "<group>";
@@ -211,6 +214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D80495231CCD215100C1CDEA /* AppDelegate.swift in Sources */,
+				D804954D1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift in Sources */,
 				D80495431CCD2A2200C1CDEA /* VideoTableViewCell.swift in Sources */,
 				D80495451CCD2E2400C1CDEA /* VideoTableViewController.swift in Sources */,
 				D804954B1CE007E800C1CDEA /* Frame.swift in Sources */,

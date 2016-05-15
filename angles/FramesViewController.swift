@@ -10,7 +10,7 @@ import UIKit
 import CoreMedia
 import AVFoundation
 
-class FramesViewController: UIViewController {
+class FramesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     // MARL: Constants
     
@@ -18,7 +18,7 @@ class FramesViewController: UIViewController {
     
     // MARK: Properties
     
-    var video: Video?
+    var video: Video!
     var videoAsset: AVURLAsset!
     var videoImageGenerator: AVAssetImageGenerator!
     var currentFrame: Frame!
@@ -29,6 +29,7 @@ class FramesViewController: UIViewController {
     @IBOutlet weak var frameImageView: UIImageView!
     @IBOutlet weak var frameSlider: UISlider!
     @IBOutlet weak var videoDurationLabel: UILabel!
+    @IBOutlet weak var frameCollectionView: UICollectionView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +41,7 @@ class FramesViewController: UIViewController {
         }
         
         // Load video and image generator:
-        videoAsset = AVURLAsset(URL: video!.videoURL, options: nil)
+        videoAsset = AVURLAsset(URL: video.videoURL, options: nil)
         videoImageGenerator = AVAssetImageGenerator(asset: videoAsset)
         videoImageGenerator.appliesPreferredTrackTransform = true
         videoImageGenerator.requestedTimeToleranceBefore = kCMTimeZero
@@ -87,6 +88,29 @@ class FramesViewController: UIViewController {
             currentFrame.points.append(normalizePoint(location))
         }
     }
+    
+    @IBAction func saveFrame(sender: UIBarButtonItem) {
+        video.frames.append(currentFrame)
+        let newIndexPath = NSIndexPath(forRow: video.frames.count-1, inSection: 0)
+        frameCollectionView.insertItemsAtIndexPaths([newIndexPath])
+    }
+    
+    // MARK: UICollectionViewDataSource
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return video.frames.count
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cellIdentifier = "FrameCollectionViewCell"
+        let cell = frameCollectionView.dequeueReusableCellWithReuseIdentifier(cellIdentifier, forIndexPath: indexPath) as! FrameCollectionViewCell
+        cell.frameImageView.image = video.frames[indexPath.item].image
+        return cell
+    }
+    
+    // MARK: UICollectionViewDelegate
+    
+    // TODO
     
     // MARK: Helper methods
     
