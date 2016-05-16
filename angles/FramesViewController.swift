@@ -46,10 +46,14 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         // Set slider min and max:
         frameSlider.minimumValue = 0
         frameSlider.maximumValue = Float(videoAsset.duration.seconds)
-        frameSlider.value = 0
         
-        // Set initial thumbnail: // TODO: OR SET FIRST SAVED FRAME
-        setFrameImage(0)
+        if video.frames.count > 0 {
+            setCurrentFrameTo(video.frames.first!)
+        } else {
+            // Default
+            setFrameImage(0)
+            frameSlider.value = 0
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -71,6 +75,12 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearPointsFromScreen()
         let seconds = Double(sender.value)
         setFrameImage(seconds)
+        for frame in video.frames {
+            if frame.seconds == seconds {
+                setCurrentFrameTo(frame)
+                break
+            }
+        }
     }
     
     @IBAction func selectPoint(sender: UITapGestureRecognizer) {
