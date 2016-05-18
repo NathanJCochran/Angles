@@ -49,9 +49,10 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         if video.frames.count > 0 {
             setCurrentFrameTo(video.frames.first!)
+            frameCollectionView.selectItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0), animated: true, scrollPosition: .None)
         } else {
             // Default
-            setFrameImage(0)
+            setCurrentFrameTo(0)
             frameSlider.value = 0
         }
     }
@@ -65,22 +66,15 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearPointsFromScreen()
         coordinator.animateAlongsideTransition(nil, completion: {
             _ in
-            self.drawCurrentPoints()
+            self.drawNormalizedPoints(self.currentFrame.points)
         })
     }
     
     // MARK: Actions
     
     @IBAction func sliderMoved(sender: UISlider) {
-        clearPointsFromScreen()
         let seconds = Double(sender.value)
-        setFrameImage(seconds)
-        for frame in video.frames {
-            if frame.seconds == seconds {
-                setCurrentFrameTo(frame)
-                break
-            }
-        }
+        setCurrentFrameTo(seconds)
     }
     
     @IBAction func selectPoint(sender: UITapGestureRecognizer) {
@@ -88,15 +82,23 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let frameImageRect = getFrameImageRect()
         
         if frameImageRect.contains(location) {
-            drawPointAt(location)
+            drawPoint(location)
             currentFrame.points.append(normalizePoint(location))
         }
     }
     
     @IBAction func saveFrame(sender: UIBarButtonItem) {
-        video.frames.append(currentFrame)
-        let newIndexPath = NSIndexPath(forRow: video.frames.count-1, inSection: 0)
+        var idx = video.frames.count
+        for (i, frame) in video.frames.enumerate() {
+            if frame.seconds > currentFrame.seconds {
+                idx = i
+                break
+            }
+        }
+        video.frames.insert(currentFrame, atIndex: idx)
+        let newIndexPath = NSIndexPath(forItem: idx, inSection: 0)
         frameCollectionView.insertItemsAtIndexPaths([newIndexPath])
+        frameCollectionView.selectItemAtIndexPath(newIndexPath, animated: true, scrollPosition: .CenteredHorizontally)
     }
     
     // MARK: UICollectionViewDataSource
@@ -115,56 +117,67 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: UICollectionViewDelegate
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        // TODO: HIGHLIGHTING
         let frame = video.frames[indexPath.item]
         setCurrentFrameTo(frame)
     }
     
     // MARK: Helper methods
     
-    func setCurrentFrameTo(frame: Frame) {
+    private func setCurrentFrameTo(frame: Frame) {
         clearPointsFromScreen()
-        setFrameImage(frame.seconds)
+        setVideoTimeLabel(frame.seconds)
         setSlider(frame.seconds)
+        frameImageView.image = frame.image
+        drawNormalizedPoints(frame.points)
         currentFrame = frame
-        drawCurrentPoints()
     }
     
-    func setFrameImage(seconds: Double) {
+    private func setCurrentFrameTo(seconds: Double) {
         do {
-            setVideoTimeLabel(seconds)
+            // Generate new frame image from video asset:
             let time = CMTime(seconds:seconds, preferredTimescale: videoAsset.duration.timescale)
-            let thumbnailImage = try videoImageGenerator.copyCGImageAtTime(time, actualTime: nil)
-            currentFrame = Frame(seconds: seconds, image: UIImage(CGImage: thumbnailImage))
-            frameImageView.image = currentFrame.image
+            let cgImage = try videoImageGenerator.copyCGImageAtTime(time, actualTime: nil)
+            let image = UIImage(CGImage: cgImage)
+            
+            clearPointsFromScreen()
+            clearFrameSelection()
+            setVideoTimeLabel(seconds)
+            frameImageView.image = image
+            currentFrame = Frame(seconds: seconds, image: image)
         } catch let error as NSError {
             displayErrorAlert("Could not generate thumbail image from video at " + String(seconds) + " seconds")
             print(error)
         }
     }
     
-    func setVideoTimeLabel(totalSeconds:Double) {
+    private func setVideoTimeLabel(totalSeconds:Double) {
         let hours = Int(floor(totalSeconds / 3600))
         let minutes = Int(floor(totalSeconds % 3600 / 60))
         let seconds = Int(floor(totalSeconds % 3600 % 60))
         videoDurationLabel.text = String(format:"%d:%02d:%02d", hours, minutes, seconds)
     }
     
-    func setSlider(seconds: Double) {
+    private func setSlider(seconds: Double) {
         frameSlider.setValue(Float(seconds), animated: true)
     }
     
-    func drawCurrentPoints() {
-        for point in currentFrame.points {
-            self.drawNormalizedPointAt(point)
+    private func clearFrameSelection() {
+        for indexPath in frameCollectionView.indexPathsForSelectedItems()! {
+            frameCollectionView.deselectItemAtIndexPath(indexPath, animated: true)
+        }
+    }
+    
+    private func drawNormalizedPoints(points: [CGPoint]) {
+        for point in points {
+            drawNormalizedPoint(point)
         }
     }
 
-    func drawNormalizedPointAt(point: CGPoint) {
-        drawPointAt(denormalizePoint(point))
+    private func drawNormalizedPoint(point: CGPoint) {
+        drawPoint(denormalizePoint(point))
     }
     
-    func drawPointAt(point: CGPoint) {
+    private func drawPoint(point: CGPoint) {
         let pointDiameter = getFrameImageRect().size.width / 20
         let circle = UIView(frame: CGRect(
             x: point.x - (pointDiameter / 2),
@@ -176,18 +189,18 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         circle.layer.cornerRadius = pointDiameter / 2
         circle.backgroundColor = UIColor.blueColor()
         circle.alpha = 0.5
-        self.frameImageView.addSubview(circle)
-        self.pointUIViews.append(circle)
+        frameImageView.addSubview(circle)
+        pointUIViews.append(circle)
     }
     
-    func clearPointsFromScreen() {
-        for pointUIView in self.pointUIViews {
+    private func clearPointsFromScreen() {
+        for pointUIView in pointUIViews {
             pointUIView.removeFromSuperview()
         }
-        self.pointUIViews.removeAll()
+        pointUIViews.removeAll()
     }
     
-    func normalizePoint(point: CGPoint) -> CGPoint {
+    private func normalizePoint(point: CGPoint) -> CGPoint {
         let frameImageRect = getFrameImageRect()
         let adjustedPoint = CGPoint(x: point.x - frameImageRect.minX, y: point.y - frameImageRect.minY)
         let scaledPoint = CGPoint(
@@ -197,7 +210,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         return scaledPoint
     }
     
-    func denormalizePoint(point:CGPoint) -> CGPoint{
+    private func denormalizePoint(point:CGPoint) -> CGPoint{
         let frameImageRect = getFrameImageRect()
         let adjustedPoint = CGPoint(
             x: (point.x / frameImageView.image!.size.width) * frameImageRect.width,
@@ -207,7 +220,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         return realPoint
     }
     
-    func getFrameImageRect() -> CGRect {
+    private func getFrameImageRect() -> CGRect {
         let widthRatio = frameImageView.bounds.size.width / frameImageView.image!.size.width
         let heightRatio = frameImageView.bounds.size.height / frameImageView.image!.size.height
         let scale = min(widthRatio, heightRatio)
@@ -218,7 +231,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         return CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
     }
     
-    func displayErrorAlert(message: String) {
+    private func displayErrorAlert(message: String) {
         print(message)
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))

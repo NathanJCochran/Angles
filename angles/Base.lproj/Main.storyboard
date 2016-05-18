@@ -122,7 +122,7 @@
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nL8-mU-hIY">
-                                                            <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
+                                                            <rect key="frame" x="8" y="8" width="59" height="59"/>
                                                             <color key="backgroundColor" red="1" green="0.075082831190000004" blue="0.033635667649999999" alpha="1" colorSpace="calibratedRGB"/>
                                                             <edgeInsets key="layoutMargins" top="0.0" left="0.0" bottom="0.0" right="0.0"/>
                                                         </imageView>
@@ -135,7 +135,6 @@
                                                     <constraint firstItem="nL8-mU-hIY" firstAttribute="top" secondItem="2yZ-og-efA" secondAttribute="topMargin" id="fQL-NG-tYo"/>
                                                     <constraint firstAttribute="trailingMargin" secondItem="nL8-mU-hIY" secondAttribute="trailing" id="rqK-85-JsN"/>
                                                 </constraints>
-                                                <edgeInsets key="layoutMargins" top="0.0" left="0.0" bottom="0.0" right="0.0"/>
                                                 <connections>
                                                     <outlet property="frameImageView" destination="nL8-mU-hIY" id="WUC-sq-GIa"/>
                                                 </connections>
