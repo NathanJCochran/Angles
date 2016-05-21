@@ -10,6 +10,10 @@ import UIKit
 import CoreMedia
 import AVFoundation
 
+protocol SaveVideoDelegate {
+    func saveVideos()
+}
+
 class FramesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     // MARK: Properties
@@ -20,8 +24,15 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     var currentFrame: Frame!
     var pointUIViews = [UIView]()
     
-    // MARK: Outlets
+    var saveFrameButtonRef: UIBarButtonItem!
+    var deleteFrameButtonRef: UIBarButtonItem!
     
+    // MARK: Save videos delegate
+    var saveDelegate: SaveVideoDelegate!
+    
+    // MARK: Outlets
+    @IBOutlet weak var saveFrameButton: UIBarButtonItem!
+    @IBOutlet weak var deleteFrameButton: UIBarButtonItem!
     @IBOutlet weak var frameImageView: UIImageView!
     @IBOutlet weak var frameSlider: UISlider!
     @IBOutlet weak var videoDurationLabel: UILabel!
@@ -35,6 +46,14 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             displayErrorAlert("Video field not properly set")
             return
         }
+        
+        if saveDelegate == nil {
+            displayErrorAlert("Save delegate field not properly set")
+        }
+        
+        // Save references to bar button items so we can toggle their existence:
+        saveFrameButtonRef = saveFrameButton
+        deleteFrameButtonRef = deleteFrameButton
         
         // Load video and image generator:
         videoAsset = AVURLAsset(URL: video.videoURL, options: nil)
@@ -84,6 +103,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         if frameImageRect.contains(location) {
             drawPoint(location)
             currentFrame.points.append(normalizePoint(location))
+            saveDelegate.saveVideos()
         }
     }
     
@@ -99,6 +119,22 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let newIndexPath = NSIndexPath(forItem: idx, inSection: 0)
         frameCollectionView.insertItemsAtIndexPaths([newIndexPath])
         frameCollectionView.selectItemAtIndexPath(newIndexPath, animated: true, scrollPosition: .CenteredHorizontally)
+        showDeleteFrameButton()
+        saveDelegate.saveVideos()
+    }
+    
+    @IBAction func deleteFrame(sender: UIBarButtonItem) {
+        let selectedItemPath = frameCollectionView.indexPathsForSelectedItems()!.first
+        if selectedItemPath == nil {
+            displayErrorAlert("Could not get index path of currently selected frame")
+            return
+        }
+        video.frames.removeAtIndex(selectedItemPath!.item)
+        frameCollectionView.deleteItemsAtIndexPaths([selectedItemPath!])
+        currentFrame.points.removeAll()
+        clearPointsFromScreen()
+        showSaveFrameButton()
+        saveDelegate.saveVideos()
     }
     
     // MARK: UICollectionViewDataSource
@@ -124,6 +160,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Helper methods
     
     private func setCurrentFrameTo(frame: Frame) {
+        showDeleteFrameButton()
         clearPointsFromScreen()
         setVideoTimeLabel(frame.seconds)
         setSlider(frame.seconds)
@@ -139,6 +176,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             let cgImage = try videoImageGenerator.copyCGImageAtTime(time, actualTime: nil)
             let image = UIImage(CGImage: cgImage)
             
+            showSaveFrameButton()
             clearPointsFromScreen()
             clearFrameSelection()
             setVideoTimeLabel(seconds)
@@ -229,6 +267,22 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let x = (frameImageView.bounds.size.width - imageWidth) / 2
         let y = (frameImageView.bounds.size.height - imageHeight) / 2
         return CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
+    }
+    
+    private func showSaveFrameButton() {
+        if saveFrameButtonRef == nil {
+            print("saveframebutton is nil")
+        } else {
+            navigationItem.setRightBarButtonItems([saveFrameButtonRef], animated: true)
+        }
+    }
+    
+    private func showDeleteFrameButton() {
+        if saveFrameButtonRef == nil {
+            print("deleteframebutton is nil")
+        } else {
+            navigationItem.setRightBarButtonItems([deleteFrameButtonRef], animated: true)
+        }
     }
     
     private func displayErrorAlert(message: String) {

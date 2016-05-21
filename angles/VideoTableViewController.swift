@@ -8,24 +8,23 @@
 import UIKit
 import MobileCoreServices
 
-class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    let fileNameDateFormat = "yyyyMMddHHmmss"
+class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, SaveVideoDelegate {
     var videos = [Video]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         
-        // clearDocumentsDirectory()
-        
-        loadVideos()
+        // Video.ClearSavedVideos()
+        videos = Video.LoadVideos()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
 
-    // MARK: Table View Data Source
+    
+    // MARK: UITableViewDataSource
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
@@ -73,10 +72,9 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             
             // Remove video from table view:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
     }
+    
     
     // MARK: UIImagePickerControllerDelegate
     
@@ -96,59 +94,30 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             return
         }
         
-        // Get the URL of the user's Documents directory:
-        let fileManager = NSFileManager.defaultManager()
-        let documentsDirectoryURL = fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first
-        if documentsDirectoryURL == nil {
-            displayErrorAlert("Could not find Documents directory")
-            return
-        }
-        
-        // Get the URL of the video files directory, and make sure it exists:
         do {
-            try fileManager.createDirectoryAtURL(Video.VideoFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+            // Create a new video object. This initializer will move the video from the
+            // temp directory to our application's video files directory:
+            let video = try Video(tempVideoURL: videoURL!)
+            
+            // Add new video to the list:
+            self.videos.append(video!)
+            saveVideos()
+            
+            // Make it display in the table view:
+            let newIndexPath = NSIndexPath(forRow: self.videos.count-1, inSection: 0)
+            self.tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
+            
+        } catch Video.VideoError.SaveError(let message, let error) {
+            displayErrorAlert(message)
+            if error != nil {
+                print(error)
+            }
         } catch let error as NSError {
-            displayErrorAlert("Could not create video files directory")
+            displayErrorAlert("Something went wrong while attempting to save new video")
             print(error)
-            return
         }
-        
-        // Create new video URL:
-        let fileExtension = videoURL!.pathExtension
-        if fileExtension == nil {
-            displayErrorAlert("No file extension for video: " + videoURL!.absoluteString)
-            return
-        }
-        let formatter = NSDateFormatter()
-        formatter.dateStyle = .NoStyle
-        formatter.dateFormat = fileNameDateFormat
-        let fileName = formatter.stringFromDate(NSDate()) + "." + fileExtension!
-        let newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName)
-        
-        // Move the file from the tmp directory to the video files directory:
-        do {
-            try fileManager.moveItemAtURL(videoURL!, toURL: newVideoURL)
-        } catch let error as NSError {
-            displayErrorAlert("Could not move video file from tmp directory")
-            print(error)
-            return
-        }
-        
-        // Create new video domain object:
-        let video = Video(name: "Untitled", dateCreated: NSDate(), videoURL: newVideoURL)
-        if video == nil {
-            displayErrorAlert("Could not create video object")
-            return
-        }
-        
-        // Add new video to the list:
-        self.videos.append(video!)
-        saveVideos()
-        
-        // Make it display in the table view:
-        let newIndexPath = NSIndexPath(forRow: self.videos.count-1, inSection: 0)
-        self.tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
     }
+    
     
     // MARK: Actions
     
@@ -174,6 +143,19 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         presentViewController(imagePickerController, animated: true, completion: nil)
     }
     
+    
+    // MARK: - Navigation
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "ShowFrames" {
+            let framesViewController = segue.destinationViewController as! FramesViewController
+            let selectedVideoCell = sender as! VideoTableViewCell
+            let indexPath = tableView.indexPathForCell(selectedVideoCell)!
+            framesViewController.video = videos[indexPath.row]
+            framesViewController.saveDelegate = self
+        }
+    }
+    
     // MARK: Helper methods
     
     func displayErrorAlert(message: String) {
@@ -184,56 +166,26 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     }
     
     
-    // MARK: - Navigation
-    
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "ShowFrames" {
-            let framesViewController = segue.destinationViewController as! FramesViewController
-            let selectedVideoCell = sender as! VideoTableViewCell
-            let indexPath = tableView.indexPathForCell(selectedVideoCell)!
-            let selectedVideo = videos[indexPath.row]
-            framesViewController.video = selectedVideo
-        }
-    }
-    
-    
     // MARK: Persistence
     
     func saveVideos() {
-        let success = NSKeyedArchiver.archiveRootObject(videos, toFile: Video.ArchiveURL.path!)
-        if !success {
-            displayErrorAlert("Could not archive video objects")
-        }
-    }
-    
-    func loadVideos() {
-        if let videos = NSKeyedUnarchiver.unarchiveObjectWithFile(Video.ArchiveURL.path!) as? [Video] {
-            self.videos += videos
-        }
-        
-    }
-    
-    func clearDocumentsDirectory() {
-        let fileManager = NSFileManager.defaultManager()
-
-        do {
-            let videoDirectoryContents = try fileManager.contentsOfDirectoryAtURL(Video.VideoFilesDirectoryURL, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
-            for content in videoDirectoryContents {
-                print("Removing: " + content.absoluteString)
-                try fileManager.removeItemAtURL(content)
+        let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)
+        dispatch_async(backgroundQueue, {
+            do {
+                try Video.SaveVideos(self.videos)
+            } catch Video.VideoError.SaveError(let message, let error) {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.displayErrorAlert(message)
+                    if error != nil {
+                        print(error)
+                    }
+                })
+            } catch let error as NSError {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.displayErrorAlert("Somethine went wrong while attempting to save videos")
+                    print(error)
+                })
             }
-
-            
-            let directoryContents = try fileManager.contentsOfDirectoryAtURL(Video.DocumentsDirectoryURL, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
-            for content in directoryContents {
-                print("Removing: " + content.absoluteString)
-                try fileManager.removeItemAtURL(content)
-            }
-        } catch let error as NSError {
-            displayErrorAlert("Could not remove files in documents directory")
-            print(error)
-            return
-        }
+        })
     }
 }

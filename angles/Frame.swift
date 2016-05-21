@@ -13,7 +13,7 @@ class Frame : NSObject, NSCoding{
     // MARK: Properties
     var seconds: Double
     var image: UIImage
-    var points = [CGPoint]()
+    var points: [CGPoint]
     
     // MARK: Types
     struct PropertyKey {
@@ -23,12 +23,7 @@ class Frame : NSObject, NSCoding{
         static let pointsCountKey = "pointsCount"
     }
     
-    init(seconds: Double, image:UIImage) {
-        self.seconds = seconds
-        self.image = image
-    }
-    
-    init(seconds: Double, image:UIImage, points:[CGPoint]) {
+    init(seconds: Double, image:UIImage, points:[CGPoint] = []) {
         self.seconds = seconds
         self.image = image
         self.points = points
