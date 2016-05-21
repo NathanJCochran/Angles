@@ -22,7 +22,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     var videoAsset: AVURLAsset!
     var videoImageGenerator: AVAssetImageGenerator!
     var currentFrame: Frame!
-    var pointUIViews = [UIView]()
+    var pointShapeLayers = [CAShapeLayer]()
     
     var saveFrameButtonRef: UIBarButtonItem!
     var deleteFrameButtonRef: UIBarButtonItem!
@@ -216,26 +216,28 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     private func drawPoint(point: CGPoint) {
-        let pointDiameter = getFrameImageRect().size.width / 20
-        let circle = UIView(frame: CGRect(
+        
+        let pointDiameter = getFrameImageRect().size.width / 25
+        let rect = CGRect(
             x: point.x - (pointDiameter / 2),
             y: point.y - (pointDiameter / 2),
             width: pointDiameter,
             height: pointDiameter
-            )
         )
-        circle.layer.cornerRadius = pointDiameter / 2
-        circle.backgroundColor = UIColor.blueColor()
-        circle.alpha = 0.5
-        frameImageView.addSubview(circle)
-        pointUIViews.append(circle)
+        let circlePath = UIBezierPath(ovalInRect: rect)
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = circlePath.CGPath
+        shapeLayer.fillColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.5).CGColor
+        shapeLayer.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 1.0).CGColor
+        frameImageView.layer.addSublayer(shapeLayer)
+        pointShapeLayers.append(shapeLayer)
     }
     
     private func clearPointsFromScreen() {
-        for pointUIView in pointUIViews {
-            pointUIView.removeFromSuperview()
+        for pointShapeLayer in pointShapeLayers {
+            pointShapeLayer.removeFromSuperlayer()
         }
-        pointUIViews.removeAll()
+        pointShapeLayers.removeAll()
     }
     
     private func normalizePoint(point: CGPoint) -> CGPoint {
