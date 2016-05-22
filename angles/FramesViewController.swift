@@ -23,6 +23,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     var videoImageGenerator: AVAssetImageGenerator!
     var currentFrame: Frame!
     var pointShapeLayers = [CAShapeLayer]()
+    var lineShapeLayers = [CAShapeLayer]()
     
     var saveFrameButtonRef: UIBarButtonItem!
     var deleteFrameButtonRef: UIBarButtonItem!
@@ -67,13 +68,20 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         frameSlider.maximumValue = Float(videoAsset.duration.seconds)
         
         if video.frames.count > 0 {
-            setCurrentFrameTo(video.frames.first!)
+            setCurrentFrameTo(video.frames.first!, drawPoints: false)
             frameCollectionView.selectItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0), animated: true, scrollPosition: .None)
         } else {
             // Default
             setCurrentFrameTo(0)
             frameSlider.value = 0
         }
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        clearPointsFromScreen()
+        clearLinesFromScreen()
+        drawNormalizedPoints(currentFrame.points)
+        drawLinesForNormalizedPoints(currentFrame.points)
     }
 
     override func didReceiveMemoryWarning() {
@@ -83,9 +91,11 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         clearPointsFromScreen()
+        clearLinesFromScreen()
         coordinator.animateAlongsideTransition(nil, completion: {
             _ in
             self.drawNormalizedPoints(self.currentFrame.points)
+            self.drawLinesForNormalizedPoints(self.currentFrame.points)
         })
     }
     
@@ -102,6 +112,9 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         if frameImageRect.contains(location) {
             drawPoint(location)
+            if currentFrame.points.count > 0 {
+                drawLine(denormalizePoint(currentFrame.points.last!), point2: location)
+            }
             currentFrame.points.append(normalizePoint(location))
             saveDelegate.saveVideos()
         }
@@ -133,6 +146,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         frameCollectionView.deleteItemsAtIndexPaths([selectedItemPath!])
         currentFrame.points.removeAll()
         clearPointsFromScreen()
+        clearLinesFromScreen()
         showSaveFrameButton()
         saveDelegate.saveVideos()
     }
@@ -159,13 +173,17 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: Helper methods
     
-    private func setCurrentFrameTo(frame: Frame) {
+    private func setCurrentFrameTo(frame: Frame, drawPoints: Bool = true) {
         showDeleteFrameButton()
         clearPointsFromScreen()
+        clearLinesFromScreen()
         setVideoTimeLabel(frame.seconds)
         setSlider(frame.seconds)
         frameImageView.image = frame.image
-        drawNormalizedPoints(frame.points)
+        if drawPoints {
+            drawNormalizedPoints(frame.points)
+            drawLinesForNormalizedPoints(frame.points)
+        }
         currentFrame = frame
     }
     
@@ -178,6 +196,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             
             showSaveFrameButton()
             clearPointsFromScreen()
+            clearLinesFromScreen()
             clearFrameSelection()
             setVideoTimeLabel(seconds)
             frameImageView.image = image
@@ -216,7 +235,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     private func drawPoint(point: CGPoint) {
-        
         let pointDiameter = getFrameImageRect().size.width / 25
         let rect = CGRect(
             x: point.x - (pointDiameter / 2),
@@ -233,11 +251,42 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         pointShapeLayers.append(shapeLayer)
     }
     
+    private func drawLinesForNormalizedPoints(points: [CGPoint]) {
+        if points.count > 1 {
+            for i in 1..<points.count {
+                drawNormalizedLine(points[i-1], point2: points[i])
+            }
+        }
+    }
+    
+    private func drawNormalizedLine(point1: CGPoint, point2: CGPoint) {
+        drawLine(denormalizePoint(point1), point2: denormalizePoint(point2))
+    }
+
+    
+    private func drawLine(point1: CGPoint, point2: CGPoint) {
+        let path = UIBezierPath()
+        path.moveToPoint(point1)
+        path.addLineToPoint(point2)
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = path.CGPath
+        shapeLayer.strokeColor = UIColor.blueColor().CGColor
+        frameImageView.layer.addSublayer(shapeLayer)
+        lineShapeLayers.append(shapeLayer)
+    }
+    
     private func clearPointsFromScreen() {
         for pointShapeLayer in pointShapeLayers {
             pointShapeLayer.removeFromSuperlayer()
         }
         pointShapeLayers.removeAll()
+    }
+    
+    private func clearLinesFromScreen() {
+        for lineShapeLayer in lineShapeLayers {
+            lineShapeLayer.removeFromSuperlayer()
+        }
+        lineShapeLayers.removeAll()
     }
     
     private func normalizePoint(point: CGPoint) -> CGPoint {
