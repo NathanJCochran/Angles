@@ -115,6 +115,12 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             if currentFrame.points.count > 0 {
                 drawLine(denormalizePoint(currentFrame.points.last!), point2: location)
             }
+            if currentFrame.points.count > 1 {
+                let point1 = currentFrame.points[currentFrame.points.count - 2]
+                let point2 = currentFrame.points[currentFrame.points.count - 1]
+                let angle = getAngleOfMidPoint(point1, point2: point2, point3: normalizePoint(location))
+                print(radiansToDegrees(angle))
+            }
             currentFrame.points.append(normalizePoint(location))
             saveDelegate.saveVideos()
         }
@@ -318,6 +324,23 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let x = (frameImageView.bounds.size.width - imageWidth) / 2
         let y = (frameImageView.bounds.size.height - imageHeight) / 2
         return CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
+    }
+    
+    private func radiansToDegrees(radians: CGFloat) -> CGFloat {
+        return (radians * 180) / CGFloat(M_PI)
+    }
+    
+    private func getAngleOfMidPoint(point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CGFloat {
+        let len12 = getDistanceBetweenPoints(point1, b: point2)
+        let len23 = getDistanceBetweenPoints(point2, b: point3)
+        let len31 = getDistanceBetweenPoints(point3, b: point1)
+        let angle = acos((pow(len12, 2) + pow(len23, 2) - pow(len31, 2)) / (2 * len12 * len23)) // By the Law of Cosines
+        
+        return angle
+    }
+    
+    private func getDistanceBetweenPoints(a:CGPoint, b:CGPoint) -> CGFloat {
+        return hypot(a.x - b.x, a.y - b.y)
     }
     
     private func showSaveFrameButton() {
