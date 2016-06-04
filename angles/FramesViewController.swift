@@ -16,14 +16,22 @@ protocol SaveVideoDelegate {
 
 class FramesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
+    let font = "Helvetica"
+    let fontSize = CGFloat(14.0)
+    
     // MARK: Properties
     
     var video: Video!
     var videoAsset: AVURLAsset!
     var videoImageGenerator: AVAssetImageGenerator!
     var currentFrame: Frame!
+    var pointColors = [UIColor.blueColor(), UIColor.orangeColor(), UIColor.greenColor(),
+                       UIColor.yellowColor(), UIColor.redColor(), UIColor.cyanColor(),
+                       UIColor.magentaColor(), UIColor.whiteColor()]
+    
     var pointShapeLayers = [CAShapeLayer]()
     var lineShapeLayers = [CAShapeLayer]()
+    var angleLabelTextLayers = [CATextLayer]()
     
     var saveFrameButtonRef: UIBarButtonItem!
     var deleteFrameButtonRef: UIBarButtonItem!
@@ -80,8 +88,10 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     override func viewDidAppear(animated: Bool) {
         clearPointsFromScreen()
         clearLinesFromScreen()
+        clearAngleLabelsFromScreen()
         drawNormalizedPoints(currentFrame.points)
         drawLinesForNormalizedPoints(currentFrame.points)
+        drawAnglesLabelsForNormalizedPoints(currentFrame.points)
     }
 
     override func didReceiveMemoryWarning() {
@@ -92,10 +102,12 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         clearPointsFromScreen()
         clearLinesFromScreen()
+        clearAngleLabelsFromScreen()
         coordinator.animateAlongsideTransition(nil, completion: {
             _ in
             self.drawNormalizedPoints(self.currentFrame.points)
             self.drawLinesForNormalizedPoints(self.currentFrame.points)
+            self.drawAnglesLabelsForNormalizedPoints(self.currentFrame.points)
         })
     }
     
@@ -118,8 +130,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             if currentFrame.points.count > 1 {
                 let point1 = currentFrame.points[currentFrame.points.count - 2]
                 let point2 = currentFrame.points[currentFrame.points.count - 1]
-                let angle = getAngleOfMidPoint(point1, point2: point2, point3: normalizePoint(location))
-                print(radiansToDegrees(angle))
+                drawAngleLabel(denormalizePoint(point1), point2: denormalizePoint(point2), point3: location)
             }
             currentFrame.points.append(normalizePoint(location))
             saveDelegate.saveVideos()
@@ -153,6 +164,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         currentFrame.points.removeAll()
         clearPointsFromScreen()
         clearLinesFromScreen()
+        clearAngleLabelsFromScreen()
         showSaveFrameButton()
         saveDelegate.saveVideos()
     }
@@ -177,18 +189,20 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         setCurrentFrameTo(frame)
     }
     
-    // MARK: Helper methods
+    // MARK: Set UI Elements:
     
     private func setCurrentFrameTo(frame: Frame, drawPoints: Bool = true) {
         showDeleteFrameButton()
         clearPointsFromScreen()
         clearLinesFromScreen()
+        clearAngleLabelsFromScreen()
         setVideoTimeLabel(frame.seconds)
         setSlider(frame.seconds)
         frameImageView.image = frame.image
         if drawPoints {
             drawNormalizedPoints(frame.points)
             drawLinesForNormalizedPoints(frame.points)
+            drawAnglesLabelsForNormalizedPoints(frame.points)
         }
         currentFrame = frame
     }
@@ -203,6 +217,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             showSaveFrameButton()
             clearPointsFromScreen()
             clearLinesFromScreen()
+            clearAngleLabelsFromScreen()
             clearFrameSelection()
             setVideoTimeLabel(seconds)
             frameImageView.image = image
@@ -230,6 +245,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
+    // MARK: Draw Points
+    
     private func drawNormalizedPoints(points: [CGPoint]) {
         for point in points {
             drawNormalizedPoint(point)
@@ -249,23 +266,35 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             height: pointDiameter
         )
         let circlePath = UIBezierPath(ovalInRect: rect)
+        
+        let color = pointColors[pointShapeLayers.count%pointColors.count]
+        
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = circlePath.CGPath
-        shapeLayer.fillColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.5).CGColor
-        shapeLayer.strokeColor = UIColor(red: 0, green: 0, blue: 1, alpha: 1.0).CGColor
+        shapeLayer.strokeColor = color.CGColor
+        shapeLayer.fillColor = color.colorWithAlphaComponent(0.5).CGColor
         frameImageView.layer.addSublayer(shapeLayer)
         pointShapeLayers.append(shapeLayer)
     }
     
+    private func clearPointsFromScreen() {
+        for pointShapeLayer in pointShapeLayers {
+            pointShapeLayer.removeFromSuperlayer()
+        }
+        pointShapeLayers.removeAll()
+    }
+    
+    // MARK: Draw Lines
+    
     private func drawLinesForNormalizedPoints(points: [CGPoint]) {
         if points.count > 1 {
             for i in 1..<points.count {
-                drawNormalizedLine(points[i-1], point2: points[i])
+                drawLineForNormalizedPoints(points[i-1], point2: points[i])
             }
         }
     }
     
-    private func drawNormalizedLine(point1: CGPoint, point2: CGPoint) {
+    private func drawLineForNormalizedPoints(point1: CGPoint, point2: CGPoint) {
         drawLine(denormalizePoint(point1), point2: denormalizePoint(point2))
     }
 
@@ -281,19 +310,58 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         lineShapeLayers.append(shapeLayer)
     }
     
-    private func clearPointsFromScreen() {
-        for pointShapeLayer in pointShapeLayers {
-            pointShapeLayer.removeFromSuperlayer()
-        }
-        pointShapeLayers.removeAll()
-    }
-    
     private func clearLinesFromScreen() {
         for lineShapeLayer in lineShapeLayers {
             lineShapeLayer.removeFromSuperlayer()
         }
         lineShapeLayers.removeAll()
     }
+    
+    // MARK: Draw Angle Labels:
+    
+    private func drawAnglesLabelsForNormalizedPoints(points:[CGPoint]) {
+        if points.count > 2 {
+            for i in 0..<points.count-2 {
+                drawAngleLabelForNormalizedPoints(points[i], point2: points[i+1], point3: points[i+2])
+            }
+        }
+    }
+    
+    private func drawAngleLabelForNormalizedPoints(point1:CGPoint, point2:CGPoint, point3:CGPoint) {
+        drawAngleLabel(denormalizePoint(point1), point2: denormalizePoint(point2), point3: denormalizePoint(point3))
+    }
+    
+    private func drawAngleLabel(point1:CGPoint, point2:CGPoint, point3:CGPoint) {
+        let midPoint = CGPoint(x: (point1.x + point3.x) / 2, y: (point1.y + point3.y) / 2)
+        let distanceToMidPoint = getDistanceBetweenPoints(point2, b: midPoint)
+        let ratio = 30.0 / distanceToMidPoint
+        let labelCenterPoint = CGPoint(x: ((1.0-ratio) * point2.x) + (ratio * midPoint.x), y: ((1.0-ratio) * point2.y) + (ratio * midPoint.y))
+
+        
+        let labelWidth = CGFloat(100)
+        let labelHeight = fontSize
+        let textLayer = CATextLayer()
+        textLayer.font = UIFont(name: font, size: fontSize)
+        textLayer.fontSize = fontSize
+        textLayer.frame = CGRect(x: labelCenterPoint.x - (labelWidth/2), y: labelCenterPoint.y - (labelHeight/2), width: labelWidth, height: labelHeight)
+        textLayer.foregroundColor = pointColors[(angleLabelTextLayers.count + 1) % pointColors.count].CGColor
+        textLayer.alignmentMode = kCAAlignmentCenter
+        
+        let angle = radiansToDegrees(getAngleOfMidPoint(point1, point2: point2, point3: point3))
+        let roundedAngle = round(angle * 100) / 100
+        textLayer.string = String(roundedAngle) + "\u{00B0}"
+        frameImageView.layer.addSublayer(textLayer)
+        angleLabelTextLayers.append(textLayer)
+    }
+    
+    private func clearAngleLabelsFromScreen() {
+        for angleLabelTextLayer in angleLabelTextLayers {
+            angleLabelTextLayer.removeFromSuperlayer()
+        }
+        angleLabelTextLayers.removeAll()
+    }
+    
+    // MARK: Normalization of Points
     
     private func normalizePoint(point: CGPoint) -> CGPoint {
         let frameImageRect = getFrameImageRect()
@@ -314,6 +382,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let realPoint = CGPoint(x: adjustedPoint.x + frameImageRect.minX, y: adjustedPoint.y + frameImageRect.minY)
         return realPoint
     }
+    
+    // MARK: Other Utils
     
     private func getFrameImageRect() -> CGRect {
         let widthRatio = frameImageView.bounds.size.width / frameImageView.image!.size.width
