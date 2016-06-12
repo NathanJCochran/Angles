@@ -7,6 +7,7 @@
 //
 import UIKit
 import MobileCoreServices
+import Photos
 
 class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, SaveVideoDelegate {
     var videos = [Video]()
@@ -94,10 +95,18 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             return
         }
         
+        // Get the creation date of the video, or the default (now):
+        var dateCreated = NSDate()
+        if let referenceURL = info[UIImagePickerControllerReferenceURL] as? NSURL {
+            if let libraryVideoAsset = PHAsset.fetchAssetsWithALAssetURLs([referenceURL], options: nil).firstObject as? PHAsset {
+                dateCreated = libraryVideoAsset.creationDate ?? NSDate()
+            }
+        }
+        
         do {
             // Create a new video object. This initializer will move the video from the
             // temp directory to our application's video files directory:
-            let video = try Video(tempVideoURL: videoURL!)
+            let video = try Video(tempVideoURL: videoURL!, dateCreated: dateCreated)
             
             // Add new video to the list:
             self.videos.append(video!)
@@ -123,26 +132,29 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     @IBAction func addVideo(sender: UIBarButtonItem) {
         
-        // Check whether camera is avilable:
-        if !UIImagePickerController.isSourceTypeAvailable(.Camera) {
-            displayErrorAlert("Camera not available")
-            return
+        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .Alert)
+        if UIImagePickerController.isSourceTypeAvailable(.Camera) && UIImagePickerController.isCameraDeviceAvailable(.Rear) {
+            menu.addAction(UIAlertAction(title: "Camera", style: .Default, handler: {_ in self.presentImagePickerController(.Camera)}))
         }
-        if !UIImagePickerController.isCameraDeviceAvailable(.Rear) {
-            displayErrorAlert("Rear camera not available")
-            return
+        if UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary) {
+            menu.addAction(UIAlertAction(title: "Photo Library", style: .Default, handler: {_ in self.presentImagePickerController(.PhotoLibrary)}))
         }
-        
+        menu.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+        presentViewController(menu, animated: true, completion: nil)
+    }
+    
+    private func presentImagePickerController(sourceType: UIImagePickerControllerSourceType) {
         let imagePickerController = UIImagePickerController()
-        imagePickerController.sourceType = .Camera
+        imagePickerController.sourceType = sourceType
         imagePickerController.mediaTypes = [kUTTypeMovie as String]
-        imagePickerController.cameraCaptureMode = .Video
-        imagePickerController.cameraDevice = .Rear
+        if sourceType == .Camera {
+            imagePickerController.cameraCaptureMode = .Video
+            imagePickerController.cameraDevice = .Rear
+        }
         imagePickerController.allowsEditing = false
         imagePickerController.delegate = self
         presentViewController(imagePickerController, animated: true, completion: nil)
     }
-    
     
     // MARK: - Navigation
     

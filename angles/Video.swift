@@ -78,7 +78,7 @@ class Video : NSObject, NSCoding{
         self.frames = frames
     }
     
-    convenience init?(tempVideoURL: NSURL) throws {
+    convenience init?(tempVideoURL: NSURL, dateCreated: NSDate = NSDate()) throws {
         
         // Get the URL of the video files directory, and make sure it exists:
         let fileManager = NSFileManager.defaultManager()
@@ -96,8 +96,10 @@ class Video : NSObject, NSCoding{
         let formatter = NSDateFormatter()
         formatter.dateStyle = .NoStyle
         formatter.dateFormat = Video.FileNameDateFormat
-        let fileName = formatter.stringFromDate(NSDate()) + "." + fileExtension!
+        let fileName = formatter.stringFromDate(dateCreated) + "." + fileExtension!
         let newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName)
+        
+        // TODO: CHECK IF VIDEO FILE ALREADY EXISTS WITH THIS URL
         
         // Move the file from the tmp directory to the video files directory:
         do {
@@ -107,7 +109,7 @@ class Video : NSObject, NSCoding{
         }
         
         // Create new video domain object:
-        self.init(name: "Untitled", dateCreated: NSDate(), videoURL: newVideoURL)
+        self.init(name: "Untitled", dateCreated: dateCreated, videoURL: newVideoURL)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
