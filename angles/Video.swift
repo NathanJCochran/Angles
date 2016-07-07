@@ -96,10 +96,14 @@ class Video : NSObject, NSCoding{
         let formatter = NSDateFormatter()
         formatter.dateStyle = .NoStyle
         formatter.dateFormat = Video.FileNameDateFormat
-        let fileName = formatter.stringFromDate(dateCreated) + "." + fileExtension!
-        let newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName)
+        let fileName = formatter.stringFromDate(dateCreated)
+        var newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension!)
         
-        // TODO: CHECK IF VIDEO FILE ALREADY EXISTS WITH THIS URL
+        // Check if video already exists at this URL, and update URL if so:
+        let count = 1
+        while fileManager.fileExistsAtPath(newVideoURL.path!) {
+            newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName + "_" + String(count)).URLByAppendingPathExtension(fileExtension!)
+        }
         
         // Move the file from the tmp directory to the video files directory:
         do {
