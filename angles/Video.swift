@@ -17,6 +17,7 @@ class Video : NSObject, NSCoding{
     
     private static let DocumentsDirectoryURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     private static let VideoFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videoFiles")
+    private static let CSVFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("csv")
     private static let ArchiveURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videos")
     private static let FileNameDateFormat = "yyyyMMddHHmmss"
     
@@ -38,6 +39,10 @@ class Video : NSObject, NSCoding{
         if !success {
             throw VideoError.SaveError(message: "Could not archive video objects", error: nil)
         }
+        
+        // for video in videos {
+        //     try video.saveCSV()
+        // }
     }
     
     static func LoadVideos() -> [Video] {
@@ -80,7 +85,7 @@ class Video : NSObject, NSCoding{
     
     convenience init?(tempVideoURL: NSURL, dateCreated: NSDate = NSDate()) throws {
         
-        // Get the URL of the video files directory, and make sure it exists:
+        // Make sure the video files directory exists:
         let fileManager = NSFileManager.defaultManager()
         do {
             try fileManager.createDirectoryAtURL(Video.VideoFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
@@ -100,9 +105,10 @@ class Video : NSObject, NSCoding{
         var newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension!)
         
         // Check if video already exists at this URL, and update URL if so:
-        let count = 1
+        var count = 1
         while fileManager.fileExistsAtPath(newVideoURL.path!) {
             newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName + "_" + String(count)).URLByAppendingPathExtension(fileExtension!)
+            count += 1
         }
         
         // Move the file from the tmp directory to the video files directory:
@@ -130,5 +136,48 @@ class Video : NSObject, NSCoding{
         aCoder.encodeObject(dateCreated, forKey: PropertyKey.dateCreatedKey)
         aCoder.encodeObject(videoURL.lastPathComponent!, forKey: PropertyKey.videoURLKey)
         aCoder.encodeObject(frames, forKey: PropertyKey.framesKey)
+    }
+    
+    func getCSVURL() -> NSURL {
+        let fileExtension = "csv"
+        let fileName = videoURL.URLByDeletingPathExtension!.lastPathComponent!
+        return Video.CSVFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension)
+    }
+    
+    func getCSV() -> String {
+        let angleCount = getAngleCount()
+        var fileData = "Time,"
+        for i in 0..<angleCount {
+            fileData += String(format: "Angle %d,", i)
+        }
+        fileData += "\n"
+        
+        // TODO: All the calculations, build CSV
+        
+        return fileData
+    }
+    
+    func saveCSV() throws  {
+        
+        // Make sure the CSV files directory exists:
+        let fileManager = NSFileManager.defaultManager()
+        do {
+            try fileManager.createDirectoryAtURL(Video.CSVFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            throw VideoError.SaveError(message: "Could not create CSV files directory", error: error)
+        }
+
+        // Save the CSV data to the specified location:
+        let fileData = getCSV()
+        do {
+            
+            try fileData.writeToURL(getCSVURL(), atomically: true, encoding: NSUTF8StringEncoding)
+        } catch let error as NSError {
+            throw VideoError.SaveError(message: "Could not write CSV data to temp file", error: error)
+        }
+    }
+    
+    func getAngleCount() -> Int {
+        return max(0, frames.first?.points.count ?? 0 - 2)
     }
 }

@@ -160,6 +160,11 @@
                     </view>
                     <navigationItem key="navigationItem" title="Frames" id="xqL-qH-xrh">
                         <rightBarButtonItems>
+                            <barButtonItem systemItem="action" id="M50-Xv-dEH">
+                                <connections>
+                                    <action selector="export:" destination="BYZ-38-t0r" id="MSW-Cl-ea0"/>
+                                </connections>
+                            </barButtonItem>
                             <barButtonItem title="Delete Frame" id="CBj-zq-7bk">
                                 <connections>
                                     <action selector="deleteFrame:" destination="BYZ-38-t0r" id="2UQ-lA-hI7"/>
@@ -174,6 +179,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="deleteFrameButton" destination="CBj-zq-7bk" id="lZ9-b2-pbH"/>
+                        <outlet property="exportButton" destination="M50-Xv-dEH" id="LvA-5E-btw"/>
                         <outlet property="frameCollectionView" destination="3di-tf-QCO" id="wdN-1j-LAu"/>
                         <outlet property="frameImageView" destination="Rgc-hj-ZZX" id="E25-ym-TOB"/>
                         <outlet property="frameSlider" destination="CGn-Z4-NeA" id="lYE-xh-GRg"/>

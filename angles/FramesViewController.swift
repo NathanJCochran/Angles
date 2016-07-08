@@ -22,17 +22,22 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Properties
     
     var video: Video!
+    var currentFrame: Frame!
     var videoAsset: AVURLAsset!
     var videoImageGenerator: AVAssetImageGenerator!
-    var currentFrame: Frame!
-    var pointColors = [UIColor.blueColor(), UIColor.orangeColor(), UIColor.greenColor(),
-                       UIColor.yellowColor(), UIColor.redColor(), UIColor.cyanColor(),
-                       UIColor.magentaColor(), UIColor.whiteColor()]
+    var documentController: UIDocumentInteractionController!
     
+    // MARK: References to drawn images:
     var pointShapeLayers = [CAShapeLayer]()
     var lineShapeLayers = [CAShapeLayer]()
     var angleLabelTextLayers = [CATextLayer]()
     
+    // MARK: Point colors:
+    var pointColors = [UIColor.blueColor(), UIColor.orangeColor(), UIColor.greenColor(),
+                       UIColor.yellowColor(), UIColor.redColor(), UIColor.cyanColor(),
+                       UIColor.magentaColor(), UIColor.whiteColor()]
+    
+    // MARK: Frame button references for sake of toggle:
     var saveFrameButtonRef: UIBarButtonItem!
     var deleteFrameButtonRef: UIBarButtonItem!
     
@@ -42,6 +47,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Outlets
     @IBOutlet weak var saveFrameButton: UIBarButtonItem!
     @IBOutlet weak var deleteFrameButton: UIBarButtonItem!
+    @IBOutlet weak var exportButton: UIBarButtonItem!
     @IBOutlet weak var frameImageView: UIImageView!
     @IBOutlet weak var frameSlider: UISlider!
     @IBOutlet weak var videoDurationLabel: UILabel!
@@ -56,6 +62,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             return
         }
         
+        // Make sure save delegate was property set:
         if saveDelegate == nil {
             displayErrorAlert("Save delegate field not properly set")
         }
@@ -71,10 +78,14 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         videoImageGenerator.requestedTimeToleranceBefore = kCMTimeZero
         videoImageGenerator.requestedTimeToleranceAfter = kCMTimeZero
         
+        // Load document controller:
+        documentController = UIDocumentInteractionController(URL: video.getCSVURL())
+        
         // Set slider min and max:
         frameSlider.minimumValue = 0
         frameSlider.maximumValue = Float(videoAsset.duration.seconds)
         
+        // Set current frame to first saved frame or default:
         if video.frames.count > 0 {
             setCurrentFrameTo(video.frames.first!, drawPoints: false)
             frameCollectionView.selectItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0), animated: true, scrollPosition: .None)
@@ -169,6 +180,21 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         saveDelegate.saveVideos()
     }
     
+    @IBAction func export(sender: UIBarButtonItem) {
+        do {
+            try video.saveCSV()
+            documentController.presentOptionsMenuFromBarButtonItem(exportButton, animated: true)
+        } catch Video.VideoError.SaveError(let message, let error) {
+            displayErrorAlert(message)
+            if error != nil {
+                print(error)
+            }
+        } catch let error as NSError {
+            displayErrorAlert("Something went wrong while attempting to export the data to CSV format")
+            print(error)
+        }
+    }
+    
     // MARK: UICollectionViewDataSource
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -242,6 +268,22 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     private func clearFrameSelection() {
         for indexPath in frameCollectionView.indexPathsForSelectedItems()! {
             frameCollectionView.deselectItemAtIndexPath(indexPath, animated: true)
+        }
+    }
+    
+    private func showSaveFrameButton() {
+        if saveFrameButtonRef == nil {
+            print("saveframebutton is nil")
+        } else {
+            navigationItem.setRightBarButtonItems([exportButton, saveFrameButtonRef], animated: true)
+        }
+    }
+    
+    private func showDeleteFrameButton() {
+        if saveFrameButtonRef == nil {
+            print("deleteframebutton is nil")
+        } else {
+            navigationItem.setRightBarButtonItems([exportButton, deleteFrameButtonRef], animated: true)
         }
     }
     
@@ -412,24 +454,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     private func getDistanceBetweenPoints(a:CGPoint, b:CGPoint) -> CGFloat {
         return hypot(a.x - b.x, a.y - b.y)
     }
-    
-    private func showSaveFrameButton() {
-        if saveFrameButtonRef == nil {
-            print("saveframebutton is nil")
-        } else {
-            navigationItem.setRightBarButtonItems([saveFrameButtonRef], animated: true)
-        }
-    }
-    
-    private func showDeleteFrameButton() {
-        if saveFrameButtonRef == nil {
-            print("deleteframebutton is nil")
-        } else {
-            navigationItem.setRightBarButtonItems([deleteFrameButtonRef], animated: true)
-        }
-    }
-    
-    private func displayErrorAlert(message: String) {
+        private func displayErrorAlert(message: String) {
         print(message)
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))
