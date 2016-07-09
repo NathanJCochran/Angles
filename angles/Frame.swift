@@ -49,4 +49,19 @@ class Frame : NSObject, NSCoding{
             aCoder.encodeCGPoint(points[i], forKey: PropertyKey.pointsKey + String(i))
         }
     }
+    
+    func getAngleCount() -> Int {
+        return points.count - 2
+    }
+    
+    func getAnglesInDegrees() -> [CGFloat] {
+        var angles = [CGFloat]()
+        if points.count > 2 {
+            for i in 0..<points.count-2 {
+                let angle = Math.getAcuteAngleInDegrees(points[i], point2: points[i+1], point3: points[i+2])
+                angles.append(angle)
+            }
+        }
+        return angles
+    }
 }

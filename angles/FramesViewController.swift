@@ -102,7 +102,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearAngleLabelsFromScreen()
         drawNormalizedPoints(currentFrame.points)
         drawLinesForNormalizedPoints(currentFrame.points)
-        drawAnglesLabelsForNormalizedPoints(currentFrame.points)
+        drawAngleLabelsForNormalizedPoints(currentFrame.points)
     }
 
     override func didReceiveMemoryWarning() {
@@ -118,7 +118,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             _ in
             self.drawNormalizedPoints(self.currentFrame.points)
             self.drawLinesForNormalizedPoints(self.currentFrame.points)
-            self.drawAnglesLabelsForNormalizedPoints(self.currentFrame.points)
+            self.drawAngleLabelsForNormalizedPoints(self.currentFrame.points)
         })
     }
     
@@ -228,7 +228,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         if drawPoints {
             drawNormalizedPoints(frame.points)
             drawLinesForNormalizedPoints(frame.points)
-            drawAnglesLabelsForNormalizedPoints(frame.points)
+            drawAngleLabelsForNormalizedPoints(frame.points)
         }
         currentFrame = frame
     }
@@ -361,7 +361,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: Draw Angle Labels:
     
-    private func drawAnglesLabelsForNormalizedPoints(points:[CGPoint]) {
+    private func drawAngleLabelsForNormalizedPoints(points:[CGPoint]) {
         if points.count > 2 {
             for i in 0..<points.count-2 {
                 drawAngleLabelForNormalizedPoints(points[i], point2: points[i+1], point3: points[i+2])
@@ -375,7 +375,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     private func drawAngleLabel(point1:CGPoint, point2:CGPoint, point3:CGPoint) {
         let midPoint = CGPoint(x: (point1.x + point3.x) / 2, y: (point1.y + point3.y) / 2)
-        let distanceToMidPoint = getDistanceBetweenPoints(point2, b: midPoint)
+        let distanceToMidPoint = Math.getDistanceBetweenPoints(point2, b: midPoint)
         let ratio = 30.0 / distanceToMidPoint
         let labelCenterPoint = CGPoint(x: ((1.0-ratio) * point2.x) + (ratio * midPoint.x), y: ((1.0-ratio) * point2.y) + (ratio * midPoint.y))
 
@@ -389,7 +389,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         textLayer.foregroundColor = pointColors[(angleLabelTextLayers.count + 1) % pointColors.count].CGColor
         textLayer.alignmentMode = kCAAlignmentCenter
         
-        let angle = radiansToDegrees(getAngleOfMidPoint(point1, point2: point2, point3: point3))
+        let angle = Math.getAcuteAngleInDegrees(point1, point2: point2, point3: point3)
         let roundedAngle = round(angle * 100) / 100
         textLayer.string = String(roundedAngle) + "\u{00B0}"
         frameImageView.layer.addSublayer(textLayer)
@@ -438,23 +438,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         return CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
     }
     
-    private func radiansToDegrees(radians: CGFloat) -> CGFloat {
-        return (radians * 180) / CGFloat(M_PI)
-    }
-    
-    private func getAngleOfMidPoint(point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CGFloat {
-        let len12 = getDistanceBetweenPoints(point1, b: point2)
-        let len23 = getDistanceBetweenPoints(point2, b: point3)
-        let len31 = getDistanceBetweenPoints(point3, b: point1)
-        let angle = acos((pow(len12, 2) + pow(len23, 2) - pow(len31, 2)) / (2 * len12 * len23)) // By the Law of Cosines
-        
-        return angle
-    }
-    
-    private func getDistanceBetweenPoints(a:CGPoint, b:CGPoint) -> CGFloat {
-        return hypot(a.x - b.x, a.y - b.y)
-    }
-        private func displayErrorAlert(message: String) {
+    private func displayErrorAlert(message: String) {
         print(message)
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))

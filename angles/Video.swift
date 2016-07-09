@@ -145,14 +145,24 @@ class Video : NSObject, NSCoding{
     }
     
     func getCSV() -> String {
-        let angleCount = getAngleCount()
-        var fileData = "Time,"
+        let angleCount = getMaxAngleCount()
+        
+        // Create header row:
+        var fileData = "Time (seconds),"
         for i in 0..<angleCount {
             fileData += String(format: "Angle %d,", i)
         }
         fileData += "\n"
         
-        // TODO: All the calculations, build CSV
+        // Create row for each frame:
+        for frame in frames {
+            fileData += String(format: "%f,", frame.seconds)
+            let angles = frame.getAnglesInDegrees()
+            for angle in angles {
+                fileData += String(format: "%f,", angle)
+            }
+            fileData += "\n"
+        }
         
         return fileData
     }
@@ -177,7 +187,14 @@ class Video : NSObject, NSCoding{
         }
     }
     
-    func getAngleCount() -> Int {
-        return max(0, frames.first?.points.count ?? 0 - 2)
+    func getMaxAngleCount() -> Int {
+        var max = 0
+        for frame in frames {
+            let count = frame.getAngleCount()
+            if count > max {
+                max = count
+            }
+        }
+        return max
     }
 }
