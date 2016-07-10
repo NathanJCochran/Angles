@@ -149,9 +149,10 @@ class Video : NSObject, NSCoding{
         
         // Create header row:
         var fileData = "Time (seconds),"
-        for i in 0..<angleCount {
+        for i in 1...angleCount {
             fileData += String(format: "Angle %d,", i)
         }
+        fileData.removeAtIndex(fileData.endIndex.predecessor())
         fileData += "\n"
         
         // Create row for each frame:
@@ -161,6 +162,7 @@ class Video : NSObject, NSCoding{
             for angle in angles {
                 fileData += String(format: "%f,", angle)
             }
+            fileData.removeAtIndex(fileData.endIndex.predecessor())
             fileData += "\n"
         }
         
