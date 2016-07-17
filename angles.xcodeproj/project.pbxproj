@@ -21,6 +21,7 @@
 		D85730351D31B1B1004CF17B /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85730341D31B1B1004CF17B /* Math.swift */; };
 		D8DD69D31D3C0402002A24BA /* libXlsxReaderWriter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8DD69CC1D3C01B8002A24BA /* libXlsxReaderWriter.a */; };
 		D8DD69D51D3C0417002A24BA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D8DD69D41D3C0417002A24BA /* libz.tbd */; };
+		D8DD69DA1D3C236F002A24BA /* WorkbookTemplate.xlsx in Resources */ = {isa = PBXBuildFile; fileRef = D8DD69D91D3C236F002A24BA /* WorkbookTemplate.xlsx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +82,7 @@
 		D8DD69C41D3C01B8002A24BA /* XlsxReaderWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XlsxReaderWriter.xcodeproj; path = submodules/XlsxReaderWriter/XlsxReaderWriter.xcodeproj; sourceTree = "<group>"; };
 		D8DD69D41D3C0417002A24BA /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		D8DD69D61D3C0612002A24BA /* angles-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "angles-Bridging-Header.h"; sourceTree = "<group>"; };
+		D8DD69D91D3C236F002A24BA /* WorkbookTemplate.xlsx */ = {isa = PBXFileReference; lastKnownFileType = file; path = WorkbookTemplate.xlsx; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +129,7 @@
 		D80495211CCD215100C1CDEA /* angles */ = {
 			isa = PBXGroup;
 			children = (
+				D8DD69D91D3C236F002A24BA /* WorkbookTemplate.xlsx */,
 				D80495481CD7F1CA00C1CDEA /* FramesViewController.swift */,
 				D85730341D31B1B1004CF17B /* Math.swift */,
 				D804954A1CE007E800C1CDEA /* Frame.swift */,
@@ -275,6 +278,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8DD69DA1D3C236F002A24BA /* WorkbookTemplate.xlsx in Resources */,
 				D804952D1CCD215100C1CDEA /* LaunchScreen.storyboard in Resources */,
 				D804952A1CCD215100C1CDEA /* Assets.xcassets in Resources */,
 				D80495281CCD215100C1CDEA /* Main.storyboard in Resources */,
