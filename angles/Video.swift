@@ -18,10 +18,8 @@ class Video : NSObject, NSCoding{
     private static let DocumentsDirectoryURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     private static let VideoFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videoFiles")
     private static let CSVFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("csv")
-    private static let XLSXFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("xlsx")
     private static let ArchiveURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videos")
     private static let FileNameDateFormat = "yyyyMMddHHmmss"
-    private static let AlphabetChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     
     enum VideoError: ErrorType {
         case SaveError(message: String, error: NSError?)
@@ -146,19 +144,13 @@ class Video : NSObject, NSCoding{
         return Video.CSVFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension)
     }
     
-    func getXLSXURL() -> NSURL {
-        let fileExtension = "xlsx"
-        let fileName = videoURL.URLByDeletingPathExtension!.lastPathComponent!
-        return Video.XLSXFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension)
-    }
-    
     func getCSV() -> String {
         let angleCount = getMaxAngleCount()
         
         // Create header row:
         var fileData = "Time (seconds),"
-        for i in 0..<angleCount {
-            fileData += String(format: "Angle %d,", i+1)
+        for i in 1...angleCount {
+            fileData += String(format: "Angle %d,", i)
         }
         fileData.removeAtIndex(fileData.endIndex.predecessor())
         fileData += "\n"
@@ -197,48 +189,10 @@ class Video : NSObject, NSCoding{
         }
     }
     
-    func saveXLSX() throws {
-        
-        // Make sure the XLSX files directory exists:
-        let fileManager = NSFileManager.defaultManager()
-        do {
-            try fileManager.createDirectoryAtURL(Video.XLSXFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            throw VideoError.SaveError(message: "Could not create XLSX files directory", error: error)
-        }
-        
-        // Load workbook from template workbook resource included in bundle:
-        let documentPath = NSBundle.mainBundle().pathForResource("WorkbookTemplate", ofType: "xlsx")
-        if documentPath == nil {
-            throw VideoError.SaveError(message: "Could not get path for WorkbookTemplate.xlsx resource", error: nil)
-        }
-        let spreadsheet = BRAOfficeDocumentPackage.open(documentPath)
-        
-        // Create angles worksheet:
-        let worksheet = spreadsheet.workbook.worksheets[0]
-        
-        // Create header row:
-        let angleCount = getMaxAngleCount()
-        let cellRef = BRACell.cellReferenceForColumnIndex(1, andRowIndex: 1)
-        worksheet.cellForCellReference(cellRef, shouldCreate: true).setStringValue("Time (seconds)")
-        for i in 0..<angleCount {
-            let cellRef = BRACell.cellReferenceForColumnIndex(i+2, andRowIndex: 1)
-            worksheet.cellForCellReference(cellRef, shouldCreate: true).setStringValue(String(format: "Angle %d", i+1))
-        }
-        
-        // Create row for each frame:
-        for (i, frame) in frames.enumerate() {
-            let cellRef = BRACell.cellReferenceForColumnIndex(1, andRowIndex: i+2)
-            worksheet.cellForCellReference(cellRef, shouldCreate: true).setFloatValue(Float(frame.seconds))
-            let angles = frame.getAnglesInDegrees()
-            for (j, angle) in angles.enumerate() {
-                let cellRef = BRACell.cellReferenceForColumnIndex(j+2, andRowIndex: i+2)
-                worksheet.cellForCellReference(cellRef, shouldCreate: true).setFloatValue(Float(angle))
-            }
-        }
-        
-        // Save spreadsheet:
-        spreadsheet.saveAs(getXLSXURL().path!)
+    func getXLSX() -> String {
+        let documentPath = NSBundle.mainBundle().pathForResource("testWorkbook", ofType: "xlsx")
+        var spreadsheet = BRAOfficeDocumentPackage.open(documentPath)
+        return ""
     }
     
     func getMaxAngleCount() -> Int {
