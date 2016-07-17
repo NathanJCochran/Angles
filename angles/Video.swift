@@ -189,6 +189,12 @@ class Video : NSObject, NSCoding{
         }
     }
     
+    func getXLSX() -> String {
+        let documentPath = NSBundle.mainBundle().pathForResource("testWorkbook", ofType: "xlsx")
+        var spreadsheet = BRAOfficeDocumentPackage.open(documentPath)
+        return ""
+    }
+    
     func getMaxAngleCount() -> Int {
         var max = 0
         for frame in frames {

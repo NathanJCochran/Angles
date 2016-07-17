@@ -1,0 +1,3 @@
+[submodule "submodules/XlsxReaderWriter"]
+	path = submodules/XlsxReaderWriter
+	url = https://github.com/renebigot/XlsxReaderWriter.git
