@@ -22,7 +22,7 @@ class Video : NSObject, NSCoding{
     private static let XLSXFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("xlsx")
     private static let ArchiveURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videos")
     private static let FileNameDateFormat = "yyyyMMddHHmmss"
-    private static let XLSXColumnWidth = 18.0
+    private static let XLSXColumnWidth = 20.0
     
     enum VideoError: ErrorType {
         case SaveError(message: String, error: NSError?)
@@ -223,7 +223,7 @@ class Video : NSObject, NSCoding{
             
             // Add all of the frame's points to the row:
             for (j, point) in frame.points.enumerate() {
-                worksheet_write_string(pointsWorksheet, UInt32(i+1), UInt16(j+1), String(format: "(%f, %f)", point.x, point.y) , nil)
+                worksheet_write_string(pointsWorksheet, UInt32(i+1), UInt16(j+1), String(format: "(%f, %f)", point.x, point.y) , rightAlignedFormat)
             }
         }
         
