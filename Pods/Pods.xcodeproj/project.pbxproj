@@ -1,0 +1,926 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03D39DEC6CD97AD2BF50C9884F506B98 /* format.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F8F5F9480D4AC8B292FD9CAE1D50836 /* format.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		04A4F1FD9BD76C98B12FCCB23249A78C /* tmpfileplus.c in Sources */ = {isa = PBXBuildFile; fileRef = 1217836A76EF2FB554D6B7F91C122A16 /* tmpfileplus.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		06FEB06EA901DC7AB70F1B15207270B2 /* worksheet.c in Sources */ = {isa = PBXBuildFile; fileRef = 9438CDC471170060DFD4B464F764B1EF /* worksheet.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		07C7A6B0CFF2434542915329B3732C63 /* utility.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 1A4B059943DEF750CAC9F1D306067CA9 /* utility.h */; };
+		08EDEB8B6A76C374BDC7453173B1687C /* libxlsxwriter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 754AD1C795C2F7B38E7D61F8357B5318 /* libxlsxwriter-dummy.m */; };
+		0BF00B9DA6736F235C9752C45265A997 /* ioapi.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BC7CD9C0E831DE549D07CE9B7576551 /* ioapi.h */; };
+		1291A06B2013D4132F369B3D26588904 /* Pods-anglesTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 81BC0A3F4D028086426068D31E599E21 /* Pods-anglesTests-dummy.m */; };
+		1405A469F0081598D925F47A43B9F636 /* chart.c in Sources */ = {isa = PBXBuildFile; fileRef = F7A1BD09D0CCB915DDF3AE6E0741CCAE /* chart.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		14AAE3AB8F01B111A24FA397D81DCCD4 /* utility.c in Sources */ = {isa = PBXBuildFile; fileRef = DD97119C46629D999AF97277A8B95DDF /* utility.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		1743F4DDE5DA6DDE88B924AC1F359984 /* chart.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 96F5800520AB4C7BF58D86F80365C451 /* chart.h */; };
+		224C58E543EC1429099E7716FF7A01FF /* xlsxwriter.h in Copy .. Public Headers */ = {isa = PBXBuildFile; fileRef = 25CEB59336FD0A550AB6698A41414EA8 /* xlsxwriter.h */; };
+		23DC45B4EB44E537B593DCAF59249B39 /* content_types.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 08968D0F5F3D4A67CC355C69A21BA0A2 /* content_types.h */; };
+		2F6052EE90903F89DCB5BC5B6C68618A /* chart.h in Headers */ = {isa = PBXBuildFile; fileRef = 96F5800520AB4C7BF58D86F80365C451 /* chart.h */; };
+		313D9DDD7CFB0BB740902110825788B5 /* common.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 1DDBD2224EE95A74B97CB0A243ACDE74 /* common.h */; };
+		31C9D6B9FF2E252F255D92C080C35D91 /* tmpfileplus.h in Copy third_party Public Headers */ = {isa = PBXBuildFile; fileRef = 5DE383BB7FA9D2FF01F203595EFCD801 /* tmpfileplus.h */; };
+		3257AAEA010837D1D3A35E0FD749F461 /* styles.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C15FCAA18EF3F74C6E02F35477DBA4C /* styles.h */; };
+		347DF04D3F0A4646324AFA3B41B7A496 /* custom.h in Headers */ = {isa = PBXBuildFile; fileRef = 4178916E65A516231528B4FF9932E5CA /* custom.h */; };
+		34CF13380FB886975B984C47FEC96C2B /* libxlsxwriter-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 5ECC16AEEBD27A80EC452644B2674647 /* libxlsxwriter-umbrella.h */; };
+		381AE35548CB7D93FC58C4605D85F5DB /* hash_table.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 447E39D20159A8A05ACA7671B87B5203 /* hash_table.h */; };
+		385D3AB2E7E484B6598888BF6A6808C8 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 15544E89987467405EEA9EA0074B0AD6 /* zip.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		3CD89101E4CF251BCDCA0D71B53125DE /* content_types.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A57191FD85B1DFA26E772B26AD25EE1 /* content_types.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		3D2CB2E898871C1B8441C91EE47F10BF /* tree.h in Copy third_party Public Headers */ = {isa = PBXBuildFile; fileRef = EA49E231C20DD01B1239B92AAE238E6F /* tree.h */; };
+		4137F2B016F5AB0E4EDAECC6232641DC /* theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 26D75DDC8434E072DB6662EAD5E827F5 /* theme.h */; };
+		444495BE17F47F835BA78975ED905099 /* drawing.h in Headers */ = {isa = PBXBuildFile; fileRef = EA31ADEBF60878A9B58CF4EF0A8C61D2 /* drawing.h */; };
+		4593CCB626AE834765469871CEC33087 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
+		4687EBF2F4382659D3372ABB6F59D6E3 /* tree.h in Headers */ = {isa = PBXBuildFile; fileRef = EA49E231C20DD01B1239B92AAE238E6F /* tree.h */; };
+		46C459120062E1A70617DA85AFC3DA63 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 221852BED20CA00F63F49E62D4344EE0 /* ioapi.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		48F0B34D70770F56D8293C4291B34307 /* xmlwriter.c in Sources */ = {isa = PBXBuildFile; fileRef = EF01B347539249BD1E78AF8033D87C80 /* xmlwriter.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		4C9B48643A1A07F9B845123DA47A213B /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DDBD2224EE95A74B97CB0A243ACDE74 /* common.h */; };
+		517A4EF3F7E240D547889C3FAB9E85FF /* packager.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 30F9A75D98F9809ECA33BC25DB4F567D /* packager.h */; };
+		55B9ED9E7C4353AD791529979550FA44 /* tmpfileplus.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DE383BB7FA9D2FF01F203595EFCD801 /* tmpfileplus.h */; };
+		58790A1DDB0A4E85AAF8C10A11684B50 /* drawing.c in Sources */ = {isa = PBXBuildFile; fileRef = 664A8D4340021128673BCBD9DF397F4F /* drawing.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		60AD10C83C623DD43B717EE422BFCE18 /* queue.h in Copy third_party Public Headers */ = {isa = PBXBuildFile; fileRef = 22DB319A0DED209EC0A62B2B12D338D7 /* queue.h */; };
+		640939727732558EBFA4CECBACFC8D83 /* hash_table.h in Headers */ = {isa = PBXBuildFile; fileRef = 447E39D20159A8A05ACA7671B87B5203 /* hash_table.h */; };
+		6999D6B25F0FAA1D55EEEFCB5A0E490A /* custom.c in Sources */ = {isa = PBXBuildFile; fileRef = 39336717E64C7198225331484179B2F2 /* custom.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		743D36E89B76431E6473F15822843714 /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E2AF47E80E3D403EDC7164CA15EBCC9 /* zip.h */; };
+		7DCF59AC27BE8AAF82D17DF11BFE0A7A /* styles.c in Sources */ = {isa = PBXBuildFile; fileRef = D35A50EAC2BB3C853F9F2524C06C7614 /* styles.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		83BC5D1C66BD42A3DFB8F97CD1FE0BFF /* xlsxwriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 25CEB59336FD0A550AB6698A41414EA8 /* xlsxwriter.h */; };
+		8546C4028E1217CB3AD089B9AED1EAD1 /* worksheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F04B6ACC2D5B8FDC21031DBC79689FF /* worksheet.h */; };
+		860AC8C05A79E760F370AF7F50FBEC8C /* utility.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A4B059943DEF750CAC9F1D306067CA9 /* utility.h */; };
+		89606B96887409CD81E765C5B51080F8 /* styles.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 4C15FCAA18EF3F74C6E02F35477DBA4C /* styles.h */; };
+		8E082E8187EAF2DD1DB18479CC3F840F /* theme.c in Sources */ = {isa = PBXBuildFile; fileRef = 415C5E26C86FD7676687BBFA6E8C0FD8 /* theme.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		8FB821D95B936B7F54C48EDD993C5B40 /* hash_table.c in Sources */ = {isa = PBXBuildFile; fileRef = 7CFA51208ABB83B4419459E6CF91659C /* hash_table.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		94514A388FE22B57ED4E4E64F12824A9 /* xmlwriter.h in Headers */ = {isa = PBXBuildFile; fileRef = A46E6DD53E41EDAD7EF448BFEDBFBA95 /* xmlwriter.h */; };
+		9EB9DBB71686CF57E0BCD5940CB58807 /* app.h in Headers */ = {isa = PBXBuildFile; fileRef = EC2420049AB8DB2D94CAB94BDD8AFF4E /* app.h */; };
+		A12703A704731113B7C64DCA3BFF8319 /* packager.h in Headers */ = {isa = PBXBuildFile; fileRef = 30F9A75D98F9809ECA33BC25DB4F567D /* packager.h */; };
+		A7B20DF63D2AADDEC921A4C9D8BB6912 /* core.c in Sources */ = {isa = PBXBuildFile; fileRef = AD88CC4DC948919338D472BCEE350B30 /* core.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		A7D508B030DF56413816D7C16E895D29 /* zip.h in Copy third_party Public Headers */ = {isa = PBXBuildFile; fileRef = 5E2AF47E80E3D403EDC7164CA15EBCC9 /* zip.h */; };
+		A9EB5734CCEA0FBCCBB2C84E61110318 /* theme.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 26D75DDC8434E072DB6662EAD5E827F5 /* theme.h */; };
+		ADEA40E3A11AE1358454A37EB540E59A /* relationships.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 42BF5659BB088053E3053286D84D59B5 /* relationships.h */; };
+		AE1C052DF6AA263F51491434D0AE36A0 /* libxlsxwriter-umbrella.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 5ECC16AEEBD27A80EC452644B2674647 /* libxlsxwriter-umbrella.h */; };
+		B19A4CCDD88137CB3BBC94C3A398CE9C /* format.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 49A6383B637A88C6F47C54CBA1D2EE4A /* format.h */; };
+		B35649D1416B380B12F166252AF6D811 /* shared_strings.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = DEC0647146CDB51BE79B9921E5B74727 /* shared_strings.h */; };
+		B6D632809786E9411217B2FCC3C138DE /* workbook.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 0BAAC08848F58AE593C30B77C2983AB5 /* workbook.h */; };
+		B7DD0D6FDA701CD35826D83A665A3C37 /* queue.h in Headers */ = {isa = PBXBuildFile; fileRef = 22DB319A0DED209EC0A62B2B12D338D7 /* queue.h */; };
+		B8A3827FECE04891879ADC2C7B59074B /* worksheet.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 7F04B6ACC2D5B8FDC21031DBC79689FF /* worksheet.h */; };
+		B9D6C62D26F77893CF4BCBD77FFE8155 /* relationships.c in Sources */ = {isa = PBXBuildFile; fileRef = 9CCDF6CAE2BD4241ECB5C26F6EC9D823 /* relationships.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		BBF3F14F3B176B528ECCAF762A8AE696 /* xmlwriter.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = A46E6DD53E41EDAD7EF448BFEDBFBA95 /* xmlwriter.h */; };
+		BF3D81BE501BD4F92B2627487F95A2AD /* workbook.c in Sources */ = {isa = PBXBuildFile; fileRef = 18562408C8151FA8CCD218A90EFFA41C /* workbook.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		BF9AC4C4688BFED6E4AEC2F6FDD57027 /* shared_strings.c in Sources */ = {isa = PBXBuildFile; fileRef = AA7119A704F86635FBAC984A3A345410 /* shared_strings.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		C3256CF28996A477BDC5A0C2F23A986E /* format.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A6383B637A88C6F47C54CBA1D2EE4A /* format.h */; };
+		C82CE1800C8A86EA8234F116771318E6 /* content_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 08968D0F5F3D4A67CC355C69A21BA0A2 /* content_types.h */; };
+		C84BE5DDD7BC034D45864245F650DE9C /* app.c in Sources */ = {isa = PBXBuildFile; fileRef = B6BD7DE0A33215686F29ED3BA4C62CE9 /* app.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		C8E2109C8239BED8385094150B87A59B /* Pods-angles-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B0A45815A9974CDDBCDEE8AEB6AA77C /* Pods-angles-dummy.m */; };
+		D19C96C203B1374F0DDF607476982E63 /* packager.c in Sources */ = {isa = PBXBuildFile; fileRef = 873D098EF47B426E70DDFCD5D83F99CC /* packager.c */; settings = {COMPILER_FLAGS = "-DNOCRYPT=1 -DNOUNCRYPT=1"; }; };
+		D4D82447F5AD611B73F296025343668B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
+		D5E527C6539BE9754C22D6FD413F21E7 /* ioapi.h in Copy third_party Public Headers */ = {isa = PBXBuildFile; fileRef = 5BC7CD9C0E831DE549D07CE9B7576551 /* ioapi.h */; };
+		D80B53F523B2803BABF178360E56C9B4 /* drawing.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = EA31ADEBF60878A9B58CF4EF0A8C61D2 /* drawing.h */; };
+		E0E1941CE04D53349849621554344642 /* custom.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 4178916E65A516231528B4FF9932E5CA /* custom.h */; };
+		E70F46B6CA62DBA86DDC583A8EDC16E8 /* workbook.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BAAC08848F58AE593C30B77C2983AB5 /* workbook.h */; };
+		E96F8CA10E66D3F0F681953CB76994EC /* relationships.h in Headers */ = {isa = PBXBuildFile; fileRef = 42BF5659BB088053E3053286D84D59B5 /* relationships.h */; };
+		EA935486E376FA2A23DEC145495EC74B /* app.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = EC2420049AB8DB2D94CAB94BDD8AFF4E /* app.h */; };
+		F42FC6090D9086A0241BEA6F889D0A08 /* Pods-anglesTests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A4CB3100945D4233EF18D95CED21281 /* Pods-anglesTests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F51843BE234217255C7B26826366A199 /* core.h in Copy . Public Headers */ = {isa = PBXBuildFile; fileRef = 7B41E6109F83525E4CDE8C8C5E0AEEA8 /* core.h */; };
+		F839B658D54B2D08AF60B36F44602891 /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B41E6109F83525E4CDE8C8C5E0AEEA8 /* core.h */; };
+		F8DD5ECD5A88D7D3FD30959ED1D921C1 /* Pods-angles-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F276312FB09C7588B9DEBA173BD7DB80 /* Pods-angles-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FE31C018B7CF3768125ECAF0BADF1DBB /* shared_strings.h in Headers */ = {isa = PBXBuildFile; fileRef = DEC0647146CDB51BE79B9921E5B74727 /* shared_strings.h */; };
+		FF4B2D7A354F816A193E6A78A5339A18 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3E1993CA3C3C80347BD4CB282FC79CB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9D95C8517CCAF639F6C56A8CBDC61B1A;
+			remoteInfo = libxlsxwriter;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		59868777172D5EB5584F94452600336D /* Copy .. Public Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(PUBLIC_HEADERS_FOLDER_PATH)/..";
+			dstSubfolderSpec = 16;
+			files = (
+				224C58E543EC1429099E7716FF7A01FF /* xlsxwriter.h in Copy .. Public Headers */,
+			);
+			name = "Copy .. Public Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		89C9155B74678D68C162DBC387EBCA57 /* Copy third_party Public Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(PUBLIC_HEADERS_FOLDER_PATH)/third_party";
+			dstSubfolderSpec = 16;
+			files = (
+				D5E527C6539BE9754C22D6FD413F21E7 /* ioapi.h in Copy third_party Public Headers */,
+				60AD10C83C623DD43B717EE422BFCE18 /* queue.h in Copy third_party Public Headers */,
+				31C9D6B9FF2E252F255D92C080C35D91 /* tmpfileplus.h in Copy third_party Public Headers */,
+				3D2CB2E898871C1B8441C91EE47F10BF /* tree.h in Copy third_party Public Headers */,
+				A7D508B030DF56413816D7C16E895D29 /* zip.h in Copy third_party Public Headers */,
+			);
+			name = "Copy third_party Public Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F41EE500533D052094FBFE64F81E8903 /* Copy . Public Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(PUBLIC_HEADERS_FOLDER_PATH)/.";
+			dstSubfolderSpec = 16;
+			files = (
+				EA935486E376FA2A23DEC145495EC74B /* app.h in Copy . Public Headers */,
+				1743F4DDE5DA6DDE88B924AC1F359984 /* chart.h in Copy . Public Headers */,
+				313D9DDD7CFB0BB740902110825788B5 /* common.h in Copy . Public Headers */,
+				23DC45B4EB44E537B593DCAF59249B39 /* content_types.h in Copy . Public Headers */,
+				F51843BE234217255C7B26826366A199 /* core.h in Copy . Public Headers */,
+				E0E1941CE04D53349849621554344642 /* custom.h in Copy . Public Headers */,
+				D80B53F523B2803BABF178360E56C9B4 /* drawing.h in Copy . Public Headers */,
+				B19A4CCDD88137CB3BBC94C3A398CE9C /* format.h in Copy . Public Headers */,
+				381AE35548CB7D93FC58C4605D85F5DB /* hash_table.h in Copy . Public Headers */,
+				AE1C052DF6AA263F51491434D0AE36A0 /* libxlsxwriter-umbrella.h in Copy . Public Headers */,
+				517A4EF3F7E240D547889C3FAB9E85FF /* packager.h in Copy . Public Headers */,
+				ADEA40E3A11AE1358454A37EB540E59A /* relationships.h in Copy . Public Headers */,
+				B35649D1416B380B12F166252AF6D811 /* shared_strings.h in Copy . Public Headers */,
+				89606B96887409CD81E765C5B51080F8 /* styles.h in Copy . Public Headers */,
+				A9EB5734CCEA0FBCCBB2C84E61110318 /* theme.h in Copy . Public Headers */,
+				07C7A6B0CFF2434542915329B3732C63 /* utility.h in Copy . Public Headers */,
+				B6D632809786E9411217B2FCC3C138DE /* workbook.h in Copy . Public Headers */,
+				B8A3827FECE04891879ADC2C7B59074B /* worksheet.h in Copy . Public Headers */,
+				BBF3F14F3B176B528ECCAF762A8AE696 /* xmlwriter.h in Copy . Public Headers */,
+			);
+			name = "Copy . Public Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		03819A8E011CC7F6427A3D6174210C8A /* Pods-anglesTests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-anglesTests-resources.sh"; sourceTree = "<group>"; };
+		08968D0F5F3D4A67CC355C69A21BA0A2 /* content_types.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = content_types.h; path = include/xlsxwriter/content_types.h; sourceTree = "<group>"; };
+		0BAAC08848F58AE593C30B77C2983AB5 /* workbook.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = workbook.h; path = include/xlsxwriter/workbook.h; sourceTree = "<group>"; };
+		1217836A76EF2FB554D6B7F91C122A16 /* tmpfileplus.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = tmpfileplus.c; path = third_party/tmpfileplus/tmpfileplus.c; sourceTree = "<group>"; };
+		15544E89987467405EEA9EA0074B0AD6 /* zip.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = zip.c; path = third_party/minizip/zip.c; sourceTree = "<group>"; };
+		18562408C8151FA8CCD218A90EFFA41C /* workbook.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = workbook.c; path = src/workbook.c; sourceTree = "<group>"; };
+		1A4B059943DEF750CAC9F1D306067CA9 /* utility.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = utility.h; path = include/xlsxwriter/utility.h; sourceTree = "<group>"; };
+		1B0A45815A9974CDDBCDEE8AEB6AA77C /* Pods-angles-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-angles-dummy.m"; sourceTree = "<group>"; };
+		1D5874B99548D5870A5D396BB1BF735A /* Pods-angles-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-angles-frameworks.sh"; sourceTree = "<group>"; };
+		1DDBD2224EE95A74B97CB0A243ACDE74 /* common.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = common.h; path = include/xlsxwriter/common.h; sourceTree = "<group>"; };
+		2123FD14FC808F5E77FBEDF6B3E8883D /* Pods-angles-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-angles-resources.sh"; sourceTree = "<group>"; };
+		221852BED20CA00F63F49E62D4344EE0 /* ioapi.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = ioapi.c; path = third_party/minizip/ioapi.c; sourceTree = "<group>"; };
+		22DB319A0DED209EC0A62B2B12D338D7 /* queue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = queue.h; path = include/xlsxwriter/third_party/queue.h; sourceTree = "<group>"; };
+		25CEB59336FD0A550AB6698A41414EA8 /* xlsxwriter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = xlsxwriter.h; path = include/xlsxwriter.h; sourceTree = "<group>"; };
+		26D75DDC8434E072DB6662EAD5E827F5 /* theme.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = theme.h; path = include/xlsxwriter/theme.h; sourceTree = "<group>"; };
+		30F9A75D98F9809ECA33BC25DB4F567D /* packager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = packager.h; path = include/xlsxwriter/packager.h; sourceTree = "<group>"; };
+		39336717E64C7198225331484179B2F2 /* custom.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = custom.c; path = src/custom.c; sourceTree = "<group>"; };
+		3C17AB785C4DFCC6E366207F2E8E79F6 /* Pods-anglesTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-anglesTests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		415C5E26C86FD7676687BBFA6E8C0FD8 /* theme.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = theme.c; path = src/theme.c; sourceTree = "<group>"; };
+		4178916E65A516231528B4FF9932E5CA /* custom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = custom.h; path = include/xlsxwriter/custom.h; sourceTree = "<group>"; };
+		42BF1B3E7E02B75AC6FB0F83C64B7CA3 /* libxlsxwriter.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = libxlsxwriter.modulemap; sourceTree = "<group>"; };
+		42BF5659BB088053E3053286D84D59B5 /* relationships.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = relationships.h; path = include/xlsxwriter/relationships.h; sourceTree = "<group>"; };
+		437F4A6DFADE2A95BBDFF5881DB8844B /* Pods_angles.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_angles.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		447E39D20159A8A05ACA7671B87B5203 /* hash_table.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = hash_table.h; path = include/xlsxwriter/hash_table.h; sourceTree = "<group>"; };
+		49A6383B637A88C6F47C54CBA1D2EE4A /* format.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = format.h; path = include/xlsxwriter/format.h; sourceTree = "<group>"; };
+		4ADAA864D8188B518D6ACB7D14FF021C /* xlsxwriter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = xlsxwriter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C15FCAA18EF3F74C6E02F35477DBA4C /* styles.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = styles.h; path = include/xlsxwriter/styles.h; sourceTree = "<group>"; };
+		591155A3F501B81FB7C457FE9C790714 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5BC7CD9C0E831DE549D07CE9B7576551 /* ioapi.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ioapi.h; path = include/xlsxwriter/third_party/ioapi.h; sourceTree = "<group>"; };
+		5DE383BB7FA9D2FF01F203595EFCD801 /* tmpfileplus.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = tmpfileplus.h; path = include/xlsxwriter/third_party/tmpfileplus.h; sourceTree = "<group>"; };
+		5E2AF47E80E3D403EDC7164CA15EBCC9 /* zip.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = zip.h; path = include/xlsxwriter/third_party/zip.h; sourceTree = "<group>"; };
+		5ECC16AEEBD27A80EC452644B2674647 /* libxlsxwriter-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "libxlsxwriter-umbrella.h"; path = "include/xlsxwriter/libxlsxwriter-umbrella.h"; sourceTree = "<group>"; };
+		6536D0FD7E04DA68667411594CDB266E /* libxlsxwriter-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "libxlsxwriter-prefix.pch"; sourceTree = "<group>"; };
+		653E757951FD3C15CE5A0B80BEA4AC47 /* Pods-anglesTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-anglesTests.release.xcconfig"; sourceTree = "<group>"; };
+		664A8D4340021128673BCBD9DF397F4F /* drawing.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = drawing.c; path = src/drawing.c; sourceTree = "<group>"; };
+		6669B3F11DA325005EB304D059FD3A66 /* Pods-anglesTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-anglesTests.modulemap"; sourceTree = "<group>"; };
+		754AD1C795C2F7B38E7D61F8357B5318 /* libxlsxwriter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "libxlsxwriter-dummy.m"; sourceTree = "<group>"; };
+		7B41E6109F83525E4CDE8C8C5E0AEEA8 /* core.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = core.h; path = include/xlsxwriter/core.h; sourceTree = "<group>"; };
+		7CFA51208ABB83B4419459E6CF91659C /* hash_table.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = hash_table.c; path = src/hash_table.c; sourceTree = "<group>"; };
+		7F04B6ACC2D5B8FDC21031DBC79689FF /* worksheet.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = worksheet.h; path = include/xlsxwriter/worksheet.h; sourceTree = "<group>"; };
+		80B348A88ABEE40BF5A93CDCB6044860 /* Pods-anglesTests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-anglesTests-frameworks.sh"; sourceTree = "<group>"; };
+		81BC0A3F4D028086426068D31E599E21 /* Pods-anglesTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-anglesTests-dummy.m"; sourceTree = "<group>"; };
+		873D098EF47B426E70DDFCD5D83F99CC /* packager.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = packager.c; path = src/packager.c; sourceTree = "<group>"; };
+		8A4CB3100945D4233EF18D95CED21281 /* Pods-anglesTests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-anglesTests-umbrella.h"; sourceTree = "<group>"; };
+		8A57191FD85B1DFA26E772B26AD25EE1 /* content_types.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = content_types.c; path = src/content_types.c; sourceTree = "<group>"; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9438CDC471170060DFD4B464F764B1EF /* worksheet.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = worksheet.c; path = src/worksheet.c; sourceTree = "<group>"; };
+		96F5800520AB4C7BF58D86F80365C451 /* chart.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = chart.h; path = include/xlsxwriter/chart.h; sourceTree = "<group>"; };
+		9CCDF6CAE2BD4241ECB5C26F6EC9D823 /* relationships.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = relationships.c; path = src/relationships.c; sourceTree = "<group>"; };
+		9F8F5F9480D4AC8B292FD9CAE1D50836 /* format.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = format.c; path = src/format.c; sourceTree = "<group>"; };
+		A46E6DD53E41EDAD7EF448BFEDBFBA95 /* xmlwriter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = xmlwriter.h; path = include/xlsxwriter/xmlwriter.h; sourceTree = "<group>"; };
+		AA7119A704F86635FBAC984A3A345410 /* shared_strings.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = shared_strings.c; path = src/shared_strings.c; sourceTree = "<group>"; };
+		ABE4AFB3E83FEEECF058B477322EC04F /* Pods-angles.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-angles.release.xcconfig"; sourceTree = "<group>"; };
+		AD88CC4DC948919338D472BCEE350B30 /* core.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = core.c; path = src/core.c; sourceTree = "<group>"; };
+		AEF44285E8F81E08F05DADC069D69157 /* Pods-anglesTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-anglesTests.debug.xcconfig"; sourceTree = "<group>"; };
+		B6BD7DE0A33215686F29ED3BA4C62CE9 /* app.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = app.c; path = src/app.c; sourceTree = "<group>"; };
+		C206C5E4265E39C66E4C0F2B83D56525 /* libxlsxwriter.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = libxlsxwriter.xcconfig; sourceTree = "<group>"; };
+		C57F6417AC1D1CE868DAB69C718AA231 /* Pods-angles-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-angles-acknowledgements.plist"; sourceTree = "<group>"; };
+		CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		D35A50EAC2BB3C853F9F2524C06C7614 /* styles.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = styles.c; path = src/styles.c; sourceTree = "<group>"; };
+		D68BC151607311A45F890394BBB72BFB /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DD97119C46629D999AF97277A8B95DDF /* utility.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = utility.c; path = src/utility.c; sourceTree = "<group>"; };
+		DEC0647146CDB51BE79B9921E5B74727 /* shared_strings.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = shared_strings.h; path = include/xlsxwriter/shared_strings.h; sourceTree = "<group>"; };
+		EA31ADEBF60878A9B58CF4EF0A8C61D2 /* drawing.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = drawing.h; path = include/xlsxwriter/drawing.h; sourceTree = "<group>"; };
+		EA49E231C20DD01B1239B92AAE238E6F /* tree.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = tree.h; path = include/xlsxwriter/third_party/tree.h; sourceTree = "<group>"; };
+		EC2420049AB8DB2D94CAB94BDD8AFF4E /* app.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = app.h; path = include/xlsxwriter/app.h; sourceTree = "<group>"; };
+		EC89ECDF6EFE5ED2AF1A90CBFEDAFA3E /* Pods_anglesTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_anglesTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE4CF7AF45C7BC1CB8D863A226A3EF7E /* Pods-angles.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-angles.debug.xcconfig"; sourceTree = "<group>"; };
+		EF01B347539249BD1E78AF8033D87C80 /* xmlwriter.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = xmlwriter.c; path = src/xmlwriter.c; sourceTree = "<group>"; };
+		F276312FB09C7588B9DEBA173BD7DB80 /* Pods-angles-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-angles-umbrella.h"; sourceTree = "<group>"; };
+		F3514B64AC96791A1C6D81D9DC5B46A9 /* Pods-angles-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-angles-acknowledgements.markdown"; sourceTree = "<group>"; };
+		F549A11B2BCCFBC0FAAA8FF980272E85 /* Pods-angles.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = "Pods-angles.modulemap"; sourceTree = "<group>"; };
+		F7A1BD09D0CCB915DDF3AE6E0741CCAE /* chart.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = chart.c; path = src/chart.c; sourceTree = "<group>"; };
+		F91E2885E2E77F7B12DA9EA76E56DE14 /* Pods-anglesTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-anglesTests-acknowledgements.plist"; sourceTree = "<group>"; };
+		FAA4AF118D78208419D437FBB8CA3558 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7AC78EC2B19317CE49C07C3FC7D75A61 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4D82447F5AD611B73F296025343668B /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B80FE62E746E639795A25D63771A71D6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF4B2D7A354F816A193E6A78A5339A18 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E22CC8055675BDB0813C03DB73385962 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4593CCB626AE834765469871CEC33087 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1C07F71AAC43E0732C9C419AF6735962 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				591155A3F501B81FB7C457FE9C790714 /* Info.plist */,
+				42BF1B3E7E02B75AC6FB0F83C64B7CA3 /* libxlsxwriter.modulemap */,
+				C206C5E4265E39C66E4C0F2B83D56525 /* libxlsxwriter.xcconfig */,
+				754AD1C795C2F7B38E7D61F8357B5318 /* libxlsxwriter-dummy.m */,
+				6536D0FD7E04DA68667411594CDB266E /* libxlsxwriter-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/libxlsxwriter";
+			sourceTree = "<group>";
+		};
+		3DA27F4D78B11E1C77525FC526854BE6 /* libxlsxwriter */ = {
+			isa = PBXGroup;
+			children = (
+				B6BD7DE0A33215686F29ED3BA4C62CE9 /* app.c */,
+				EC2420049AB8DB2D94CAB94BDD8AFF4E /* app.h */,
+				F7A1BD09D0CCB915DDF3AE6E0741CCAE /* chart.c */,
+				96F5800520AB4C7BF58D86F80365C451 /* chart.h */,
+				1DDBD2224EE95A74B97CB0A243ACDE74 /* common.h */,
+				8A57191FD85B1DFA26E772B26AD25EE1 /* content_types.c */,
+				08968D0F5F3D4A67CC355C69A21BA0A2 /* content_types.h */,
+				AD88CC4DC948919338D472BCEE350B30 /* core.c */,
+				7B41E6109F83525E4CDE8C8C5E0AEEA8 /* core.h */,
+				39336717E64C7198225331484179B2F2 /* custom.c */,
+				4178916E65A516231528B4FF9932E5CA /* custom.h */,
+				664A8D4340021128673BCBD9DF397F4F /* drawing.c */,
+				EA31ADEBF60878A9B58CF4EF0A8C61D2 /* drawing.h */,
+				9F8F5F9480D4AC8B292FD9CAE1D50836 /* format.c */,
+				49A6383B637A88C6F47C54CBA1D2EE4A /* format.h */,
+				7CFA51208ABB83B4419459E6CF91659C /* hash_table.c */,
+				447E39D20159A8A05ACA7671B87B5203 /* hash_table.h */,
+				221852BED20CA00F63F49E62D4344EE0 /* ioapi.c */,
+				5BC7CD9C0E831DE549D07CE9B7576551 /* ioapi.h */,
+				5ECC16AEEBD27A80EC452644B2674647 /* libxlsxwriter-umbrella.h */,
+				873D098EF47B426E70DDFCD5D83F99CC /* packager.c */,
+				30F9A75D98F9809ECA33BC25DB4F567D /* packager.h */,
+				22DB319A0DED209EC0A62B2B12D338D7 /* queue.h */,
+				9CCDF6CAE2BD4241ECB5C26F6EC9D823 /* relationships.c */,
+				42BF5659BB088053E3053286D84D59B5 /* relationships.h */,
+				AA7119A704F86635FBAC984A3A345410 /* shared_strings.c */,
+				DEC0647146CDB51BE79B9921E5B74727 /* shared_strings.h */,
+				D35A50EAC2BB3C853F9F2524C06C7614 /* styles.c */,
+				4C15FCAA18EF3F74C6E02F35477DBA4C /* styles.h */,
+				415C5E26C86FD7676687BBFA6E8C0FD8 /* theme.c */,
+				26D75DDC8434E072DB6662EAD5E827F5 /* theme.h */,
+				1217836A76EF2FB554D6B7F91C122A16 /* tmpfileplus.c */,
+				5DE383BB7FA9D2FF01F203595EFCD801 /* tmpfileplus.h */,
+				EA49E231C20DD01B1239B92AAE238E6F /* tree.h */,
+				DD97119C46629D999AF97277A8B95DDF /* utility.c */,
+				1A4B059943DEF750CAC9F1D306067CA9 /* utility.h */,
+				18562408C8151FA8CCD218A90EFFA41C /* workbook.c */,
+				0BAAC08848F58AE593C30B77C2983AB5 /* workbook.h */,
+				9438CDC471170060DFD4B464F764B1EF /* worksheet.c */,
+				7F04B6ACC2D5B8FDC21031DBC79689FF /* worksheet.h */,
+				25CEB59336FD0A550AB6698A41414EA8 /* xlsxwriter.h */,
+				EF01B347539249BD1E78AF8033D87C80 /* xmlwriter.c */,
+				A46E6DD53E41EDAD7EF448BFEDBFBA95 /* xmlwriter.h */,
+				15544E89987467405EEA9EA0074B0AD6 /* zip.c */,
+				5E2AF47E80E3D403EDC7164CA15EBCC9 /* zip.h */,
+				1C07F71AAC43E0732C9C419AF6735962 /* Support Files */,
+			);
+			path = libxlsxwriter;
+			sourceTree = "<group>";
+		};
+		3DCAB2B7CDE207B3958B6CB957FCC758 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
+				9DC4BF93116F3DAE43EAFD012D4AD62F /* Pods */,
+				B91BC82A1E761A4666C429F07DB5565D /* Products */,
+				EC5B4640DEEEC8EEC69F1A2E9BFCF0AC /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		9B54D4367F726FF0500C7533E348EF3E /* Pods-anglesTests */ = {
+			isa = PBXGroup;
+			children = (
+				FAA4AF118D78208419D437FBB8CA3558 /* Info.plist */,
+				6669B3F11DA325005EB304D059FD3A66 /* Pods-anglesTests.modulemap */,
+				3C17AB785C4DFCC6E366207F2E8E79F6 /* Pods-anglesTests-acknowledgements.markdown */,
+				F91E2885E2E77F7B12DA9EA76E56DE14 /* Pods-anglesTests-acknowledgements.plist */,
+				81BC0A3F4D028086426068D31E599E21 /* Pods-anglesTests-dummy.m */,
+				80B348A88ABEE40BF5A93CDCB6044860 /* Pods-anglesTests-frameworks.sh */,
+				03819A8E011CC7F6427A3D6174210C8A /* Pods-anglesTests-resources.sh */,
+				8A4CB3100945D4233EF18D95CED21281 /* Pods-anglesTests-umbrella.h */,
+				AEF44285E8F81E08F05DADC069D69157 /* Pods-anglesTests.debug.xcconfig */,
+				653E757951FD3C15CE5A0B80BEA4AC47 /* Pods-anglesTests.release.xcconfig */,
+			);
+			name = "Pods-anglesTests";
+			path = "Target Support Files/Pods-anglesTests";
+			sourceTree = "<group>";
+		};
+		9DC4BF93116F3DAE43EAFD012D4AD62F /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3DA27F4D78B11E1C77525FC526854BE6 /* libxlsxwriter */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		B91BC82A1E761A4666C429F07DB5565D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				437F4A6DFADE2A95BBDFF5881DB8844B /* Pods_angles.framework */,
+				EC89ECDF6EFE5ED2AF1A90CBFEDAFA3E /* Pods_anglesTests.framework */,
+				4ADAA864D8188B518D6ACB7D14FF021C /* xlsxwriter.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3DCAB2B7CDE207B3958B6CB957FCC758 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D9E76E79C8B7E3D54E466820157A51AB /* Pods-angles */ = {
+			isa = PBXGroup;
+			children = (
+				D68BC151607311A45F890394BBB72BFB /* Info.plist */,
+				F549A11B2BCCFBC0FAAA8FF980272E85 /* Pods-angles.modulemap */,
+				F3514B64AC96791A1C6D81D9DC5B46A9 /* Pods-angles-acknowledgements.markdown */,
+				C57F6417AC1D1CE868DAB69C718AA231 /* Pods-angles-acknowledgements.plist */,
+				1B0A45815A9974CDDBCDEE8AEB6AA77C /* Pods-angles-dummy.m */,
+				1D5874B99548D5870A5D396BB1BF735A /* Pods-angles-frameworks.sh */,
+				2123FD14FC808F5E77FBEDF6B3E8883D /* Pods-angles-resources.sh */,
+				F276312FB09C7588B9DEBA173BD7DB80 /* Pods-angles-umbrella.h */,
+				EE4CF7AF45C7BC1CB8D863A226A3EF7E /* Pods-angles.debug.xcconfig */,
+				ABE4AFB3E83FEEECF058B477322EC04F /* Pods-angles.release.xcconfig */,
+			);
+			name = "Pods-angles";
+			path = "Target Support Files/Pods-angles";
+			sourceTree = "<group>";
+		};
+		EC5B4640DEEEC8EEC69F1A2E9BFCF0AC /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				D9E76E79C8B7E3D54E466820157A51AB /* Pods-angles */,
+				9B54D4367F726FF0500C7533E348EF3E /* Pods-anglesTests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		254E71CA74A07E1AECDF49EA3392E7F7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F42FC6090D9086A0241BEA6F889D0A08 /* Pods-anglesTests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		87F4AA8415F2EF4DC0C9127E82EDF965 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9EB9DBB71686CF57E0BCD5940CB58807 /* app.h in Headers */,
+				2F6052EE90903F89DCB5BC5B6C68618A /* chart.h in Headers */,
+				4C9B48643A1A07F9B845123DA47A213B /* common.h in Headers */,
+				C82CE1800C8A86EA8234F116771318E6 /* content_types.h in Headers */,
+				F839B658D54B2D08AF60B36F44602891 /* core.h in Headers */,
+				347DF04D3F0A4646324AFA3B41B7A496 /* custom.h in Headers */,
+				444495BE17F47F835BA78975ED905099 /* drawing.h in Headers */,
+				C3256CF28996A477BDC5A0C2F23A986E /* format.h in Headers */,
+				640939727732558EBFA4CECBACFC8D83 /* hash_table.h in Headers */,
+				0BF00B9DA6736F235C9752C45265A997 /* ioapi.h in Headers */,
+				34CF13380FB886975B984C47FEC96C2B /* libxlsxwriter-umbrella.h in Headers */,
+				A12703A704731113B7C64DCA3BFF8319 /* packager.h in Headers */,
+				B7DD0D6FDA701CD35826D83A665A3C37 /* queue.h in Headers */,
+				E96F8CA10E66D3F0F681953CB76994EC /* relationships.h in Headers */,
+				FE31C018B7CF3768125ECAF0BADF1DBB /* shared_strings.h in Headers */,
+				3257AAEA010837D1D3A35E0FD749F461 /* styles.h in Headers */,
+				4137F2B016F5AB0E4EDAECC6232641DC /* theme.h in Headers */,
+				55B9ED9E7C4353AD791529979550FA44 /* tmpfileplus.h in Headers */,
+				4687EBF2F4382659D3372ABB6F59D6E3 /* tree.h in Headers */,
+				860AC8C05A79E760F370AF7F50FBEC8C /* utility.h in Headers */,
+				E70F46B6CA62DBA86DDC583A8EDC16E8 /* workbook.h in Headers */,
+				8546C4028E1217CB3AD089B9AED1EAD1 /* worksheet.h in Headers */,
+				83BC5D1C66BD42A3DFB8F97CD1FE0BFF /* xlsxwriter.h in Headers */,
+				94514A388FE22B57ED4E4E64F12824A9 /* xmlwriter.h in Headers */,
+				743D36E89B76431E6473F15822843714 /* zip.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F9267481A26EC72595A34DABCCEC07F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8DD5ECD5A88D7D3FD30959ED1D921C1 /* Pods-angles-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		38EACD0DD123E67B3E10873F7BB4C78D /* Pods-anglesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6C6F1FD93050A6E08728470E40AB942 /* Build configuration list for PBXNativeTarget "Pods-anglesTests" */;
+			buildPhases = (
+				713CAE4E6E1717F2A9D1B4B9133E846C /* Sources */,
+				7AC78EC2B19317CE49C07C3FC7D75A61 /* Frameworks */,
+				254E71CA74A07E1AECDF49EA3392E7F7 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-anglesTests";
+			productName = "Pods-anglesTests";
+			productReference = EC89ECDF6EFE5ED2AF1A90CBFEDAFA3E /* Pods_anglesTests.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		452A8773AA6AA1716C9967C141E88B9C /* Pods-angles */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1025BDD2203D8321E2AF4BE3B413B1A6 /* Build configuration list for PBXNativeTarget "Pods-angles" */;
+			buildPhases = (
+				E3997C27029706C35747E6065A5D2D60 /* Sources */,
+				B80FE62E746E639795A25D63771A71D6 /* Frameworks */,
+				9F9267481A26EC72595A34DABCCEC07F /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66772FC5590D28EFB71C8745D6D0E6B0 /* PBXTargetDependency */,
+			);
+			name = "Pods-angles";
+			productName = "Pods-angles";
+			productReference = 437F4A6DFADE2A95BBDFF5881DB8844B /* Pods_angles.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		9D95C8517CCAF639F6C56A8CBDC61B1A /* libxlsxwriter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AACFBB1FF8B53FF1868EA3004A8D08A /* Build configuration list for PBXNativeTarget "libxlsxwriter" */;
+			buildPhases = (
+				53204118A75B557D78DE7B653711AE32 /* Sources */,
+				E22CC8055675BDB0813C03DB73385962 /* Frameworks */,
+				87F4AA8415F2EF4DC0C9127E82EDF965 /* Headers */,
+				59868777172D5EB5584F94452600336D /* Copy .. Public Headers */,
+				F41EE500533D052094FBFE64F81E8903 /* Copy . Public Headers */,
+				89C9155B74678D68C162DBC387EBCA57 /* Copy third_party Public Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libxlsxwriter;
+			productName = libxlsxwriter;
+			productReference = 4ADAA864D8188B518D6ACB7D14FF021C /* xlsxwriter.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = B91BC82A1E761A4666C429F07DB5565D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9D95C8517CCAF639F6C56A8CBDC61B1A /* libxlsxwriter */,
+				452A8773AA6AA1716C9967C141E88B9C /* Pods-angles */,
+				38EACD0DD123E67B3E10873F7BB4C78D /* Pods-anglesTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		53204118A75B557D78DE7B653711AE32 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C84BE5DDD7BC034D45864245F650DE9C /* app.c in Sources */,
+				1405A469F0081598D925F47A43B9F636 /* chart.c in Sources */,
+				3CD89101E4CF251BCDCA0D71B53125DE /* content_types.c in Sources */,
+				A7B20DF63D2AADDEC921A4C9D8BB6912 /* core.c in Sources */,
+				6999D6B25F0FAA1D55EEEFCB5A0E490A /* custom.c in Sources */,
+				58790A1DDB0A4E85AAF8C10A11684B50 /* drawing.c in Sources */,
+				03D39DEC6CD97AD2BF50C9884F506B98 /* format.c in Sources */,
+				8FB821D95B936B7F54C48EDD993C5B40 /* hash_table.c in Sources */,
+				46C459120062E1A70617DA85AFC3DA63 /* ioapi.c in Sources */,
+				08EDEB8B6A76C374BDC7453173B1687C /* libxlsxwriter-dummy.m in Sources */,
+				D19C96C203B1374F0DDF607476982E63 /* packager.c in Sources */,
+				B9D6C62D26F77893CF4BCBD77FFE8155 /* relationships.c in Sources */,
+				BF9AC4C4688BFED6E4AEC2F6FDD57027 /* shared_strings.c in Sources */,
+				7DCF59AC27BE8AAF82D17DF11BFE0A7A /* styles.c in Sources */,
+				8E082E8187EAF2DD1DB18479CC3F840F /* theme.c in Sources */,
+				04A4F1FD9BD76C98B12FCCB23249A78C /* tmpfileplus.c in Sources */,
+				14AAE3AB8F01B111A24FA397D81DCCD4 /* utility.c in Sources */,
+				BF3D81BE501BD4F92B2627487F95A2AD /* workbook.c in Sources */,
+				06FEB06EA901DC7AB70F1B15207270B2 /* worksheet.c in Sources */,
+				48F0B34D70770F56D8293C4291B34307 /* xmlwriter.c in Sources */,
+				385D3AB2E7E484B6598888BF6A6808C8 /* zip.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		713CAE4E6E1717F2A9D1B4B9133E846C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1291A06B2013D4132F369B3D26588904 /* Pods-anglesTests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E3997C27029706C35747E6065A5D2D60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C8E2109C8239BED8385094150B87A59B /* Pods-angles-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		66772FC5590D28EFB71C8745D6D0E6B0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libxlsxwriter;
+			target = 9D95C8517CCAF639F6C56A8CBDC61B1A /* libxlsxwriter */;
+			targetProxy = 3E1993CA3C3C80347BD4CB282FC79CB2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4354D19B86AA4548980A5741037EA4DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ABE4AFB3E83FEEECF058B477322EC04F /* Pods-angles.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-angles/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-angles/Pods-angles.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_angles;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		51ACF4A01A3C22DB466343DC69A5F0E3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C206C5E4265E39C66E4C0F2B83D56525 /* libxlsxwriter.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/libxlsxwriter/libxlsxwriter-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/libxlsxwriter/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/libxlsxwriter/libxlsxwriter.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_NAME = xlsxwriter;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		84FD87D359382A37B07149A12641B965 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				ONLY_ACTIVE_ARCH = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		A05C9634F93CDD7477B3403A42A68DAC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 653E757951FD3C15CE5A0B80BEA4AC47 /* Pods-anglesTests.release.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-anglesTests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-anglesTests/Pods-anglesTests.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_anglesTests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		C3487BCB02069BE4D16B6514F75CF9D5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C206C5E4265E39C66E4C0F2B83D56525 /* libxlsxwriter.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/libxlsxwriter/libxlsxwriter-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/libxlsxwriter/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/libxlsxwriter/libxlsxwriter.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = xlsxwriter;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		F594C655D48020EC34B00AA63E001773 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F78E4082B29D25165B984D2F2A17177C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AEF44285E8F81E08F05DADC069D69157 /* Pods-anglesTests.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-anglesTests/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-anglesTests/Pods-anglesTests.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_anglesTests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		FCDA1E6AD8FA1FC2ECE23BE353F870C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EE4CF7AF45C7BC1CB8D863A226A3EF7E /* Pods-angles.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "Target Support Files/Pods-angles/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-angles/Pods-angles.modulemap";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = Pods_angles;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1025BDD2203D8321E2AF4BE3B413B1A6 /* Build configuration list for PBXNativeTarget "Pods-angles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCDA1E6AD8FA1FC2ECE23BE353F870C4 /* Debug */,
+				4354D19B86AA4548980A5741037EA4DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84FD87D359382A37B07149A12641B965 /* Debug */,
+				F594C655D48020EC34B00AA63E001773 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5AACFBB1FF8B53FF1868EA3004A8D08A /* Build configuration list for PBXNativeTarget "libxlsxwriter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				51ACF4A01A3C22DB466343DC69A5F0E3 /* Debug */,
+				C3487BCB02069BE4D16B6514F75CF9D5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A6C6F1FD93050A6E08728470E40AB942 /* Build configuration list for PBXNativeTarget "Pods-anglesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F78E4082B29D25165B984D2F2A17177C /* Debug */,
+				A05C9634F93CDD7477B3403A42A68DAC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}

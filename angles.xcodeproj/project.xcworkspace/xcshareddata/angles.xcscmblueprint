@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "CD07D57CD75C5E6DD764E4FBA311AB4643EEF3AC",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "CD07D57CD75C5E6DD764E4FBA311AB4643EEF3AC" : 0,
+    "66858D06FBE52BF4B6B0AF3D04307F5F44319DB5" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "B14F0557-79E2-48F0-9DEC-6EA12FE1628F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "CD07D57CD75C5E6DD764E4FBA311AB4643EEF3AC" : "angles\/",
+    "66858D06FBE52BF4B6B0AF3D04307F5F44319DB5" : "angles\/submodules\/XlsxReaderWriter\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "angles",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "angles.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/renebigot\/XlsxReaderWriter.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "66858D06FBE52BF4B6B0AF3D04307F5F44319DB5"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/nathanjcochran\/angles",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "CD07D57CD75C5E6DD764E4FBA311AB4643EEF3AC"
+    }
+  ]
+}

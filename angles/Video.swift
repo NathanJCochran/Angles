@@ -6,6 +6,7 @@
 //  Copyright © 2016 Nathan. All rights reserved.
 //
 import UIKit
+import xlsxwriter
 
 class Video : NSObject, NSCoding{
     
@@ -18,8 +19,10 @@ class Video : NSObject, NSCoding{
     private static let DocumentsDirectoryURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     private static let VideoFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videoFiles")
     private static let CSVFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("csv")
+    private static let XLSXFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("xlsx")
     private static let ArchiveURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videos")
     private static let FileNameDateFormat = "yyyyMMddHHmmss"
+    private static let XLSXColumnWidth = 18.0
     
     enum VideoError: ErrorType {
         case SaveError(message: String, error: NSError?)
@@ -144,6 +147,12 @@ class Video : NSObject, NSCoding{
         return Video.CSVFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension)
     }
     
+    func getXLSXURL() -> NSURL {
+        let fileExtension = "xlsx"
+        let fileName = videoURL.URLByDeletingPathExtension!.lastPathComponent!
+        return Video.XLSXFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension)
+    }
+    
     func getCSV() -> String {
         let angleCount = getMaxAngleCount()
         
@@ -189,10 +198,77 @@ class Video : NSObject, NSCoding{
         }
     }
     
+    func saveXLSX() throws {
+        
+        // Create xlsx workbook:
+        let workbook = new_workbook((getXLSXURL().path! as NSString).fileSystemRepresentation)
+        let rightAlignedFormat = workbook_add_format(workbook)
+        format_set_align(rightAlignedFormat, UInt8(LXW_ALIGN_RIGHT.rawValue))
+        
+        // Create the points worksheet:
+        let pointsWorksheet = workbook_add_worksheet(workbook, "Points")
+        
+        // Create the header row:
+        let pointCount = getMaxPointCount()
+        worksheet_write_string(pointsWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
+        worksheet_set_column(pointsWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
+        for i in 1...pointCount {
+            worksheet_write_string(pointsWorksheet, 0, UInt16(i), String(format: "Point %d", i), rightAlignedFormat)
+            worksheet_set_column(pointsWorksheet, UInt16(i), UInt16(i), Video.XLSXColumnWidth, nil)
+        }
+        
+        // Create row for each frame:
+        for (i, frame) in frames.enumerate() {
+            worksheet_write_number(pointsWorksheet, UInt32(i+1), 0, frame.seconds, nil)
+            
+            // Add all of the frame's points to the row:
+            for (j, point) in frame.points.enumerate() {
+                worksheet_write_string(pointsWorksheet, UInt32(i+1), UInt16(j+1), String(format: "(%f, %f)", point.x, point.y) , nil)
+            }
+        }
+        
+        // Create the angles worksheet:
+        let anglesWorksheet = workbook_add_worksheet(workbook, "Angles")
+        
+        // Create header row:
+        let angleCount = getMaxAngleCount()
+        worksheet_write_string(anglesWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
+        worksheet_set_column(anglesWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
+        for i in 1...angleCount {
+            worksheet_write_string(anglesWorksheet, 0, UInt16(i), String(format: "Angle %d (degrees)", i), rightAlignedFormat)
+            worksheet_set_column(anglesWorksheet, UInt16(i), UInt16(i), Video.XLSXColumnWidth, nil)
+        }
+        
+        // Create row for each frame:
+        for (i, frame) in frames.enumerate() {
+            worksheet_write_number(anglesWorksheet, UInt32(i+1), 0, frame.seconds, nil)
+            
+            // Add all of the frame's angles to the row:
+            let angles = frame.getAnglesInDegrees()
+            for (j, angle) in angles.enumerate() {
+                worksheet_write_number(anglesWorksheet, UInt32(i+1), UInt16(j+1), Double(angle), nil)
+            }
+        }
+        
+        // Save the file:
+        workbook_close(workbook)
+    }
+    
     func getMaxAngleCount() -> Int {
         var max = 0
         for frame in frames {
             let count = frame.getAngleCount()
+            if count > max {
+                max = count
+            }
+        }
+        return max
+    }
+    
+    func getMaxPointCount() -> Int {
+        var max = 0
+        for frame in frames {
+            let count = frame.points.count
             if count > max {
                 max = count
             }

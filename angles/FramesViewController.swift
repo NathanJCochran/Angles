@@ -79,7 +79,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         videoImageGenerator.requestedTimeToleranceAfter = kCMTimeZero
         
         // Load document controller:
-        documentController = UIDocumentInteractionController(URL: video.getCSVURL())
+        documentController = UIDocumentInteractionController(URL: video.getXLSXURL())
         
         // Set slider min and max:
         frameSlider.minimumValue = 0
@@ -182,7 +182,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     @IBAction func export(sender: UIBarButtonItem) {
         do {
-            try video.saveCSV()
+            try video.saveXLSX()
             documentController.presentOptionsMenuFromBarButtonItem(exportButton, animated: true)
         } catch Video.VideoError.SaveError(let message, let error) {
             displayErrorAlert(message)
@@ -190,7 +190,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
                 print(error)
             }
         } catch let error as NSError {
-            displayErrorAlert("Something went wrong while attempting to export the data to CSV format")
+            displayErrorAlert("Something went wrong while attempting to export the data to XLSX format")
             print(error)
         }
     }
