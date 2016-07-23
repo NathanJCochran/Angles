@@ -27,6 +27,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     // MARK: UITableViewDataSource
 
+    // Setup:
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
@@ -38,18 +39,16 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cellIdentifier = "VideoTableViewCell"
         let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! VideoTableViewCell
-        
         let video = videos[indexPath.row]
-        cell.nameLabel.text = video.name
         
-        let formatter = NSDateFormatter()
-        formatter.dateStyle = .LongStyle
-        formatter.timeStyle = .ShortStyle
-        cell.dateLabel.text = formatter.stringFromDate(video.dateCreated)
+        cell.nameLabel.text = video.name
+        cell.dateLabel.text = video.getFormattedDateCreated()
+        cell.thumbnailImage.image = video.getThumbnailImage()
         
         return cell
     }
 
+    // Edit mode:
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         return true
     }
@@ -75,7 +74,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
     }
-    
     
     // MARK: UIImagePickerControllerDelegate
     

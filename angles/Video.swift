@@ -6,6 +6,7 @@
 //  Copyright © 2016 Nathan. All rights reserved.
 //
 import UIKit
+import AVFoundation
 import xlsxwriter
 
 class Video : NSObject, NSCoding{
@@ -15,6 +16,7 @@ class Video : NSObject, NSCoding{
     var dateCreated: NSDate
     var videoURL: NSURL
     var frames: [Frame]
+    var cachedThumbnailImage: UIImage?
     
     private static let DocumentsDirectoryURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     private static let VideoFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videoFiles")
@@ -125,6 +127,8 @@ class Video : NSObject, NSCoding{
         self.init(name: "Untitled", dateCreated: dateCreated, videoURL: newVideoURL)
     }
     
+    // MARK: Encoding
+    
     required convenience init?(coder aDecoder: NSCoder) {
         let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
         let dateCreated = aDecoder.decodeObjectForKey(PropertyKey.dateCreatedKey) as! NSDate
@@ -139,6 +143,15 @@ class Video : NSObject, NSCoding{
         aCoder.encodeObject(dateCreated, forKey: PropertyKey.dateCreatedKey)
         aCoder.encodeObject(videoURL.lastPathComponent!, forKey: PropertyKey.videoURLKey)
         aCoder.encodeObject(frames, forKey: PropertyKey.framesKey)
+    }
+    
+    // MARK: Utility functions
+    
+    func getFormattedDateCreated() -> String {
+        let formatter = NSDateFormatter()
+        formatter.dateStyle = .LongStyle
+        formatter.timeStyle = .ShortStyle
+        return formatter.stringFromDate(dateCreated)
     }
     
     func getCSVURL() -> NSURL {
@@ -176,6 +189,29 @@ class Video : NSObject, NSCoding{
         }
         
         return fileData
+    }
+    
+    func getThumbnailImage() -> UIImage {
+        if frames.first != nil {
+            return frames.first!.image
+        }
+        if cachedThumbnailImage != nil {
+            return cachedThumbnailImage!
+        }
+        
+        let videoAsset = AVURLAsset(URL: videoURL, options: nil)
+        let videoImageGenerator = AVAssetImageGenerator(asset: videoAsset)
+        videoImageGenerator.appliesPreferredTrackTransform = true
+        videoImageGenerator.requestedTimeToleranceBefore = kCMTimeZero
+        videoImageGenerator.requestedTimeToleranceAfter = kCMTimeZero
+        do {
+            let time = CMTime(seconds:0, preferredTimescale: videoAsset.duration.timescale)
+            let cgImage = try videoImageGenerator.copyCGImageAtTime(time, actualTime: nil)
+            cachedThumbnailImage = UIImage(CGImage: cgImage)
+            return cachedThumbnailImage!
+        } catch {
+            return UIImage() // TODO: Default image
+        }
     }
     
     func saveCSV() throws  {
