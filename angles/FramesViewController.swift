@@ -300,7 +300,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     private func drawPoint(point: CGPoint) {
-        let pointDiameter = getFrameImageRect().size.width / 25
+        let pointDiameter = min(getFrameImageRect().size.width, getFrameImageRect().size.height) / 25
         let rect = CGRect(
             x: point.x - (pointDiameter / 2),
             y: point.y - (pointDiameter / 2),

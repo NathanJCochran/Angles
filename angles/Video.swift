@@ -166,31 +166,6 @@ class Video : NSObject, NSCoding{
         return Video.XLSXFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension)
     }
     
-    func getCSV() -> String {
-        let angleCount = getMaxAngleCount()
-        
-        // Create header row:
-        var fileData = "Time (seconds),"
-        for i in 1...angleCount {
-            fileData += String(format: "Angle %d,", i)
-        }
-        fileData.removeAtIndex(fileData.endIndex.predecessor())
-        fileData += "\n"
-        
-        // Create row for each frame:
-        for frame in frames {
-            fileData += String(format: "%f,", frame.seconds)
-            let angles = frame.getAnglesInDegrees()
-            for angle in angles {
-                fileData += String(format: "%f,", angle)
-            }
-            fileData.removeAtIndex(fileData.endIndex.predecessor())
-            fileData += "\n"
-        }
-        
-        return fileData
-    }
-    
     func getThumbnailImage() -> UIImage {
         if frames.first != nil {
             return frames.first!.image
@@ -210,8 +185,33 @@ class Video : NSObject, NSCoding{
             cachedThumbnailImage = UIImage(CGImage: cgImage)
             return cachedThumbnailImage!
         } catch {
-            return UIImage() // TODO: Default image
+            return UIImage() // Default image
         }
+    }
+    
+    func getCSV() -> String {
+        let angleCount = getMaxAngleCount()
+        
+        // Create header row:
+        var fileData = "Time (seconds),"
+        for i in 0..<angleCount {
+            fileData += String(format: "Angle %d,", i+1)
+        }
+        fileData.removeAtIndex(fileData.endIndex.predecessor())
+        fileData += "\n"
+        
+        // Create row for each frame:
+        for frame in frames {
+            fileData += String(format: "%f,", frame.seconds)
+            let angles = frame.getAnglesInDegrees()
+            for angle in angles {
+                fileData += String(format: "%f,", angle)
+            }
+            fileData.removeAtIndex(fileData.endIndex.predecessor())
+            fileData += "\n"
+        }
+        
+        return fileData
     }
     
     func saveCSV() throws  {
@@ -235,6 +235,15 @@ class Video : NSObject, NSCoding{
     }
     
     func saveXLSX() throws {
+        // TODO: HANDLE ALL ERRORS FROM XLSX WRITER!!!!!
+        
+        // Make sure the XLSX files directory exists:
+        let fileManager = NSFileManager.defaultManager()
+        do {
+            try fileManager.createDirectoryAtURL(Video.XLSXFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            throw VideoError.SaveError(message: "Could not create XLSX files directory", error: error)
+        }
         
         // Create xlsx workbook:
         let workbook = new_workbook((getXLSXURL().path! as NSString).fileSystemRepresentation)
@@ -248,9 +257,9 @@ class Video : NSObject, NSCoding{
         let pointCount = getMaxPointCount()
         worksheet_write_string(pointsWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
         worksheet_set_column(pointsWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
-        for i in 1...pointCount {
-            worksheet_write_string(pointsWorksheet, 0, UInt16(i), String(format: "Point %d", i), rightAlignedFormat)
-            worksheet_set_column(pointsWorksheet, UInt16(i), UInt16(i), Video.XLSXColumnWidth, nil)
+        for i in 0..<pointCount {
+            worksheet_write_string(pointsWorksheet, 0, UInt16(i+1), String(format: "Point %d", i+1), rightAlignedFormat)
+            worksheet_set_column(pointsWorksheet, 0, UInt16(i+1), Video.XLSXColumnWidth, nil)
         }
         
         // Create row for each frame:
@@ -270,9 +279,9 @@ class Video : NSObject, NSCoding{
         let angleCount = getMaxAngleCount()
         worksheet_write_string(anglesWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
         worksheet_set_column(anglesWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
-        for i in 1...angleCount {
-            worksheet_write_string(anglesWorksheet, 0, UInt16(i), String(format: "Angle %d (degrees)", i), rightAlignedFormat)
-            worksheet_set_column(anglesWorksheet, UInt16(i), UInt16(i), Video.XLSXColumnWidth, nil)
+        for i in 0..<angleCount {
+            worksheet_write_string(anglesWorksheet, 0, UInt16(i+1), String(format: "Angle %d (degrees)", i+1), rightAlignedFormat)
+            worksheet_set_column(anglesWorksheet, 0, UInt16(i+1), Video.XLSXColumnWidth, nil)
         }
         
         // Create row for each frame:

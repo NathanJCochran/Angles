@@ -49,32 +49,41 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     }
 
     // Edit mode:
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true
-    }
-
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
+    
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        let deleteAction = UITableViewRowAction(style: .Normal, title: "Delete", handler: {action,index in
+            print("delete")
+            
             // Delete video file from user's Documents directory:
-            let video = videos[indexPath.row]
+            let video = self.videos[indexPath.row]
             do {
                 let fileManager = NSFileManager.defaultManager()
                 try fileManager.removeItemAtURL(video.videoURL)
             } catch let error as NSError {
-                displayErrorAlert("Could not delete file from Documents directory")
+                self.displayErrorAlert("Could not delete file from Documents directory")
                 print(error)
                 return
             }
             
             // Remove video object from list:
-            videos.removeAtIndex(indexPath.row)
-            saveVideos()
+            self.videos.removeAtIndex(indexPath.row)
+            self.saveVideos()
             
             // Remove video from table view:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        }
+        })
+        deleteAction.backgroundColor = UIColor(red: 0.85, green: 0, blue: 0, alpha: 1.0)
+        
+        let editAction = UITableViewRowAction(style: .Normal, title: " Edit  ", handler: {action,index in
+            print("edit")
+            // TODO" Open modal for text editing
+            tableView.setEditing(false, animated: true)
+        })
+        editAction.backgroundColor = UIColor(red: 0, green: 0.75, blue: 0, alpha: 1.0)
+        
+        return [deleteAction, editAction]
     }
-    
+
     // MARK: UIImagePickerControllerDelegate
     
     func imagePickerControllerDidCancel(picker: UIImagePickerController){
