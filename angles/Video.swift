@@ -16,7 +16,9 @@ class Video : NSObject, NSCoding{
     var dateCreated: NSDate
     var videoURL: NSURL
     var frames: [Frame]
-    var cachedThumbnailImage: UIImage?
+    
+    // Private:
+    private var cachedThumbnailImage: UIImage?
     
     private static let DocumentsDirectoryURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
     private static let VideoFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videoFiles")
@@ -138,6 +140,33 @@ class Video : NSObject, NSCoding{
     }
     
     // MARK: Utility functions
+    
+    func deleteData() throws {
+        let fileManager = NSFileManager.defaultManager()
+        do {
+            try fileManager.removeItemAtURL(videoURL)
+        } catch let error as NSError {
+            throw VideoError.SaveError(message: "Could not delete video file from Documents directory", error: error)
+        }
+        
+        let csvURL = getCSVURL()
+        if fileManager.fileExistsAtPath(csvURL.path!) {
+            do {
+                try fileManager.removeItemAtURL(csvURL)
+            } catch let error as NSError {
+                throw VideoError.SaveError(message: "Could not delete CSV file from Documents directory", error: error)
+            }
+        }
+        
+        let xlsxURL = getXLSXURL()
+        if fileManager.fileExistsAtPath(xlsxURL.path!) {
+            do {
+                try fileManager.removeItemAtURL(xlsxURL)
+            } catch let error as NSError {
+                throw VideoError.SaveError(message: "Could not delete XSLX file from Documents directory", error: error)
+            }
+        }
+    }
     
     func getFormattedDateCreated() -> String {
         let formatter = NSDateFormatter()

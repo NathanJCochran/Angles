@@ -81,6 +81,9 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         // Load document controller:
         documentController = UIDocumentInteractionController(URL: video.getXLSXURL())
         
+        // Set navbar title:
+        title = video.name
+        
         // Set slider min and max:
         frameSlider.minimumValue = 0
         frameSlider.maximumValue = Float(videoAsset.duration.seconds)

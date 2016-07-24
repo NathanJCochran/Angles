@@ -47,7 +47,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         cell.nameTextField.text = video.name
         cell.nameTextField.hidden = true
         cell.nameTextField.delegate = self
-        cell.nameTextField.tag = indexPath.row
         
         return cell
     }
@@ -56,18 +55,20 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         
-        // Delete:
-        let deleteAction = UITableViewRowAction(style: .Normal, title: "Delete", handler: {action,index in
-            
-            // Delete video file from user's Documents directory:
+        // Delete Action:
+        let deleteAction = UITableViewRowAction(style: .Normal, title: "Delete", handler: {action,indexPath in
             let video = self.videos[indexPath.row]
             do {
-                let fileManager = NSFileManager.defaultManager()
-                try fileManager.removeItemAtURL(video.videoURL)
+                // Delete video data from user's Documents directory:
+                try video.deleteData()
+            } catch Video.VideoError.SaveError(let message, let error) {
+                self.displayErrorAlert(message)
+                if error != nil {
+                    print(error)
+                }
             } catch let error as NSError {
-                self.displayErrorAlert("Could not delete file from Documents directory")
+                self.displayErrorAlert("Could not delete video data")
                 print(error)
-                return
             }
             
             // Remove video object from list:
@@ -76,26 +77,52 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             
             // Remove video from table view:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+
         })
-        deleteAction.backgroundColor = UIColor(red: 0.85, green: 0, blue: 0, alpha: 1.0)
+        deleteAction.backgroundColor = UIColor(red: 0.9, green: 0, blue: 0, alpha: 1.0)
         
-        // Edit:
-        let editAction = UITableViewRowAction(style: .Normal, title: " Edit  ", handler: {action,index in
-            
-            // Hide name label, and show text field:
-            let cell = tableView.cellForRowAtIndexPath(index) as! VideoTableViewCell
-            cell.nameLabel.hidden = true
-            cell.nameTextField.text = cell.nameLabel.text
-            cell.nameTextField.highlighted = true
-            cell.nameTextField.hidden = false
-            cell.nameTextField.becomeFirstResponder()
-            tableView.scrollToRowAtIndexPath(index, atScrollPosition: .Top , animated: true)
-            self.setEditing(false, animated: true)  // This doesn't always take, depending on how quickly the edit button is hit after swiping left to reveal it.
-                                                    // Hence, it is called again in textFieldDidEndEditing.
+        // Edit Action:
+        let editAction = UITableViewRowAction(style: .Normal, title: " Edit  ", handler: {action,indexPath in
+            self.editNameTextFieldAt(indexPath)
         })
-        editAction.backgroundColor = UIColor(red: 0, green: 0.75, blue: 0, alpha: 1.0)
+        editAction.backgroundColor = UIColor(red: 0, green: 0.7, blue: 0, alpha: 1.0)
         
         return [deleteAction, editAction]
+    }
+    
+    func editNameTextFieldAt(indexPath: NSIndexPath, highlightText: Bool = false) {
+        let cell = tableView.cellForRowAtIndexPath(indexPath) as! VideoTableViewCell
+        let textField = cell.nameTextField
+        
+        // Hide name label:
+        cell.nameLabel.hidden = true
+        
+        // Show text field:
+        textField.tag = indexPath.row
+        textField.text = cell.nameLabel.text
+        textField.hidden = false
+        textField.becomeFirstResponder()
+        if highlightText {
+            // Not sure why, but this has to be queued up to work:
+            async({
+                textField.selectedTextRange = textField.textRangeFromPosition(textField.beginningOfDocument, toPosition: textField.endOfDocument)
+            })
+        }
+        
+        // Scroll to the row:
+        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top , animated: true)
+        
+        // Stop edit mode:
+        stopEditMode()
+    }
+    
+    func stopEditMode() {
+        // Turn off edit mode (doesn't always work if still in the process of transitioning
+        // to edit mode from swipe. It is therefore called again after a short delay):
+        setEditing(false, animated: true)
+        delay(0.1, fn: {
+            self.setEditing(false, animated: true)
+        })
     }
     
     // MARK: UITextFieldDelegate
@@ -106,15 +133,25 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     }
     
     func textFieldDidEndEditing(textField: UITextField) {
-        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: textField.tag, inSection: 0)) as! VideoTableViewCell
+        let indexPath = NSIndexPath(forRow: textField.tag, inSection: 0)
+        let cell = tableView.cellForRowAtIndexPath(indexPath) as! VideoTableViewCell
+        
+        // If text field is not empty:
         if cell.nameTextField.text != nil && cell.nameTextField.text != "" {
+            
+            // Update video model and name label:
             cell.nameLabel.text = cell.nameTextField.text!
-            videos[textField.tag].name = cell.nameTextField.text!
+            videos[indexPath.row].name = cell.nameTextField.text!
             saveVideos()
         }
+        
+        // Hide text field, display label:
         cell.nameTextField.hidden = true
         cell.nameLabel.hidden = false
-        self.setEditing(false, animated: true) // This is called again here because it doesn't always take the first time (in editActionsForRowAtIndexPath).
+        
+        // Make sure editing mode is off:
+        // (in case it didn't work the first time, in editActionsForRowAtIndexPath)
+        setEditing(false, animated: true)
     }
 
     // MARK: UIImagePickerControllerDelegate
@@ -149,13 +186,13 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             let video = try Video(tempVideoURL: videoURL!, dateCreated: dateCreated)
             
             // Add new video to the list:
-            self.videos.append(video!)
+            videos.append(video!)
             saveVideos()
             
             // Make it display in the table view:
             let newIndexPath = NSIndexPath(forRow: self.videos.count-1, inSection: 0)
-            self.tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
-            
+            tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
+            editNameTextFieldAt(newIndexPath, highlightText: true)
         } catch Video.VideoError.SaveError(let message, let error) {
             displayErrorAlert(message)
             if error != nil {
@@ -221,8 +258,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     // MARK: Persistence
     
     func saveVideos() {
-        let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)
-        dispatch_async(backgroundQueue, {
+        background({
             do {
                 try Video.SaveVideos(self.videos)
             } catch Video.VideoError.SaveError(let message, let error) {
@@ -238,6 +274,26 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
                     print(error)
                 })
             }
+        })
+    }
+    
+    func async(fn: (() -> Void)) {
+        let mainQueue = dispatch_get_main_queue()
+        dispatch_async(mainQueue, {
+            fn()
+        })
+    }
+    
+    func delay(delay:Double, fn :(() -> Void)) {
+        let mainQueue = dispatch_get_main_queue()
+        let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC)))
+        dispatch_after(dispatchTime, mainQueue, fn)
+    }
+    
+    func background(fn: (() -> Void)) {
+        let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)
+        dispatch_async(backgroundQueue, {
+            fn()
         })
     }
 }
