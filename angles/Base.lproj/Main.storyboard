@@ -38,11 +38,17 @@
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DcQ-Z3-Yw6">
                                             <rect key="frame" x="0.0" y="0.0" width="79" height="79"/>
                                         </imageView>
+                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Name Text Field" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cWd-MF-OIL">
+                                            <rect key="frame" x="87" y="11" width="505" height="30"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <textInputTraits key="textInputTraits" autocapitalizationType="words" returnKeyType="done"/>
+                                        </textField>
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="dateLabel" destination="DZV-r5-R8A" id="9Zp-hU-xKu"/>
                                     <outlet property="nameLabel" destination="ysr-Va-0bH" id="Abo-zr-obh"/>
+                                    <outlet property="nameTextField" destination="cWd-MF-OIL" id="Yf2-q3-5xT"/>
                                     <outlet property="thumbnailImage" destination="DcQ-Z3-Yw6" id="cxm-ys-1xh"/>
                                     <segue destination="BYZ-38-t0r" kind="show" identifier="ShowFrames" id="c2K-Xe-5li"/>
                                 </connections>

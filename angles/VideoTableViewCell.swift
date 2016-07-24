@@ -14,6 +14,7 @@ class VideoTableViewCell: UITableViewCell {
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var thumbnailImage: UIImageView!
+    @IBOutlet weak var nameTextField: UITextField!
 
     override func awakeFromNib() {
         super.awakeFromNib()

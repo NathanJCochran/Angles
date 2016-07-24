@@ -44,10 +44,6 @@ class Video : NSObject, NSCoding{
         if !success {
             throw VideoError.SaveError(message: "Could not archive video objects", error: nil)
         }
-        
-        // for video in videos {
-        //     try video.saveCSV()
-        // }
     }
     
     static func LoadVideos() -> [Video] {
@@ -61,19 +57,15 @@ class Video : NSObject, NSCoding{
         let fileManager = NSFileManager.defaultManager()
         
         do {
-            let videoDirectoryContents = try fileManager.contentsOfDirectoryAtURL(Video.VideoFilesDirectoryURL, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
-            for content in videoDirectoryContents {
-                print("Removing: " + content.absoluteString)
-                try fileManager.removeItemAtURL(content)
-            }
-            
-            let directoryContents = try fileManager.contentsOfDirectoryAtURL(Video.DocumentsDirectoryURL, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
-            for content in directoryContents {
-                print("Removing: " + content.absoluteString)
-                try fileManager.removeItemAtURL(content)
+            for url in [Video.VideoFilesDirectoryURL, Video.CSVFilesDirectoryURL, Video.XLSXFilesDirectoryURL, Video.DocumentsDirectoryURL] {
+                let directoryContents = try fileManager.contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+                for content in directoryContents {
+                    print("Removing: " + content.absoluteString)
+                    try fileManager.removeItemAtURL(content)
+                }
             }
         } catch let error as NSError {
-            print("Could not remove saved video files from documents directory")
+            print("Could not remove files from documents directory")
             print(error)
         }
     }

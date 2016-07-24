@@ -9,7 +9,7 @@ import UIKit
 import MobileCoreServices
 import Photos
 
-class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, SaveVideoDelegate {
+class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate,  UITextFieldDelegate, SaveVideoDelegate {
     var videos = [Video]()
 
     override func viewDidLoad() {
@@ -44,6 +44,10 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         cell.nameLabel.text = video.name
         cell.dateLabel.text = video.getFormattedDateCreated()
         cell.thumbnailImage.image = video.getThumbnailImage()
+        cell.nameTextField.text = video.name
+        cell.nameTextField.hidden = true
+        cell.nameTextField.delegate = self
+        cell.nameTextField.tag = indexPath.row
         
         return cell
     }
@@ -51,8 +55,9 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     // Edit mode:
     
     override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        
+        // Delete:
         let deleteAction = UITableViewRowAction(style: .Normal, title: "Delete", handler: {action,index in
-            print("delete")
             
             // Delete video file from user's Documents directory:
             let video = self.videos[indexPath.row]
@@ -74,14 +79,42 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         })
         deleteAction.backgroundColor = UIColor(red: 0.85, green: 0, blue: 0, alpha: 1.0)
         
+        // Edit:
         let editAction = UITableViewRowAction(style: .Normal, title: " Edit  ", handler: {action,index in
-            print("edit")
-            // TODO" Open modal for text editing
-            tableView.setEditing(false, animated: true)
+            
+            // Hide name label, and show text field:
+            let cell = tableView.cellForRowAtIndexPath(index) as! VideoTableViewCell
+            cell.nameLabel.hidden = true
+            cell.nameTextField.text = cell.nameLabel.text
+            cell.nameTextField.highlighted = true
+            cell.nameTextField.hidden = false
+            cell.nameTextField.becomeFirstResponder()
+            tableView.scrollToRowAtIndexPath(index, atScrollPosition: .Top , animated: true)
+            self.setEditing(false, animated: true)  // This doesn't always take, depending on how quickly the edit button is hit after swiping left to reveal it.
+                                                    // Hence, it is called again in textFieldDidEndEditing.
         })
         editAction.backgroundColor = UIColor(red: 0, green: 0.75, blue: 0, alpha: 1.0)
         
         return [deleteAction, editAction]
+    }
+    
+    // MARK: UITextFieldDelegate
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: textField.tag, inSection: 0)) as! VideoTableViewCell
+        if cell.nameTextField.text != nil && cell.nameTextField.text != "" {
+            cell.nameLabel.text = cell.nameTextField.text!
+            videos[textField.tag].name = cell.nameTextField.text!
+            saveVideos()
+        }
+        cell.nameTextField.hidden = true
+        cell.nameLabel.hidden = false
+        self.setEditing(false, animated: true) // This is called again here because it doesn't always take the first time (in editActionsForRowAtIndexPath).
     }
 
     // MARK: UIImagePickerControllerDelegate
