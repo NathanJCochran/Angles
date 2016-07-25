@@ -104,7 +104,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         textField.becomeFirstResponder()
         if highlightText {
             // Not sure why, but this has to be queued up to work:
-            async({
+            delay(0.1, fn: {
                 textField.selectedTextRange = textField.textRangeFromPosition(textField.beginningOfDocument, toPosition: textField.endOfDocument)
             })
         }
@@ -192,6 +192,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             // Make it display in the table view:
             let newIndexPath = NSIndexPath(forRow: self.videos.count-1, inSection: 0)
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
+            tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: .Top, animated: true)
             editNameTextFieldAt(newIndexPath, highlightText: true)
         } catch Video.VideoError.SaveError(let message, let error) {
             displayErrorAlert(message)
@@ -262,7 +263,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             do {
                 try Video.SaveVideos(self.videos)
             } catch Video.VideoError.SaveError(let message, let error) {
-                dispatch_async(dispatch_get_main_queue(), {
+                self.async({
                     self.displayErrorAlert(message)
                     if error != nil {
                         print(error)
