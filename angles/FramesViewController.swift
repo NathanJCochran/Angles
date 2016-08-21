@@ -40,7 +40,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
                        UIColor.magentaColor(), UIColor.whiteColor()]
     
     // MARK: Frame button references for sake of toggle:
-    var saveFrameButtonRef: UIBarButtonItem!
     var deleteFrameButtonRef: UIBarButtonItem!
     var undoButtonRef: UIBarButtonItem!
     
@@ -48,7 +47,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     var saveDelegate: SaveVideoDelegate!
     
     // MARK: Outlets
-    @IBOutlet weak var saveFrameButton: UIBarButtonItem!
     @IBOutlet weak var deleteFrameButton: UIBarButtonItem!
     @IBOutlet weak var undoButton: UIBarButtonItem!
     @IBOutlet weak var exportButton: UIBarButtonItem!
@@ -72,7 +70,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
         
         // Save references to bar button items so we can toggle their existence:
-        saveFrameButtonRef = saveFrameButton
         deleteFrameButtonRef = deleteFrameButton
         undoButtonRef = undoButton
         
@@ -151,10 +148,13 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
                 let point2 = currentFrame.points[currentFrame.points.count - 1]
                 drawAngleLabel(denormalizePoint(point1), point2: denormalizePoint(point2), point3: location)
             }
-            currentFrame.points.append(normalizePoint(location))
-            saveDelegate.saveVideos()
             
-            undoButtonRef.enabled = true
+            currentFrame.points.append(normalizePoint(location))
+            if currentFrame.points.count == 1 {
+                saveCurrentFrame()
+            } else {
+                saveDelegate.saveVideos()
+            }
         }
     }
     
@@ -209,40 +209,12 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             angleLabelTextLayer.removeFromSuperlayer()
         }
         if currentFrame.points.isEmpty {
-            undoButtonRef.enabled = false
+            deleteCurrentFrame()
         }
     }
     
-    @IBAction func saveFrame(sender: UIBarButtonItem) {
-        var idx = video.frames.count
-        for (i, frame) in video.frames.enumerate() {
-            if frame.seconds > currentFrame.seconds {
-                idx = i
-                break
-            }
-        }
-        video.frames.insert(currentFrame, atIndex: idx)
-        let newIndexPath = NSIndexPath(forItem: idx, inSection: 0)
-        frameCollectionView.insertItemsAtIndexPaths([newIndexPath])
-        frameCollectionView.selectItemAtIndexPath(newIndexPath, animated: true, scrollPosition: .CenteredHorizontally)
-        showDeleteFrameButton()
-        saveDelegate.saveVideos()
-    }
-    
-    @IBAction func deleteFrame(sender: UIBarButtonItem) {
-        let selectedItemPath = frameCollectionView.indexPathsForSelectedItems()!.first
-        if selectedItemPath == nil {
-            displayErrorAlert("Could not get index path of currently selected frame")
-            return
-        }
-        video.frames.removeAtIndex(selectedItemPath!.item)
-        frameCollectionView.deleteItemsAtIndexPaths([selectedItemPath!])
-        currentFrame.points.removeAll()
-        clearPointsFromScreen()
-        clearLinesFromScreen()
-        clearAngleLabelsFromScreen()
-        showSaveFrameButton()
-        saveDelegate.saveVideos()
+    @IBAction func deleteFrameButtonPressed(sender: AnyObject) {
+        deleteCurrentFrame()
     }
     
     @IBAction func export(sender: UIBarButtonItem) {
@@ -287,13 +259,40 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: Set UI Elements:
     
-    private func setCurrentFrameTo(frame: Frame, drawPoints: Bool = true) {
-        showDeleteFrameButton()
-        if frame.points.isEmpty {
-            undoButtonRef.enabled = false
-        } else {
-            undoButtonRef.enabled = true
+    func saveCurrentFrame() {
+        var idx = video.frames.count
+        for (i, frame) in video.frames.enumerate() {
+            if frame.seconds > currentFrame.seconds {
+                idx = i
+                break
+            }
         }
+        video.frames.insert(currentFrame, atIndex: idx)
+        let newIndexPath = NSIndexPath(forItem: idx, inSection: 0)
+        frameCollectionView.insertItemsAtIndexPaths([newIndexPath])
+        frameCollectionView.selectItemAtIndexPath(newIndexPath, animated: true, scrollPosition: .CenteredHorizontally)
+        toggleUndoAndDeleteButtons(true)
+        saveDelegate.saveVideos()
+    }
+    
+    func deleteCurrentFrame() {
+        let selectedItemPath = frameCollectionView.indexPathsForSelectedItems()?.first
+        if selectedItemPath == nil {
+            displayErrorAlert("Could not get index path of currently selected frame")
+            return
+        }
+        video.frames.removeAtIndex(selectedItemPath!.item)
+        frameCollectionView.deleteItemsAtIndexPaths([selectedItemPath!])
+        currentFrame.points.removeAll()
+        clearPointsFromScreen()
+        clearLinesFromScreen()
+        clearAngleLabelsFromScreen()
+        toggleUndoAndDeleteButtons(false)
+        saveDelegate.saveVideos()
+    }
+    
+    private func setCurrentFrameTo(frame: Frame, drawPoints: Bool = true) {
+        toggleUndoAndDeleteButtons(true)
         clearPointsFromScreen()
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
@@ -315,7 +314,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             let cgImage = try videoImageGenerator.copyCGImageAtTime(time, actualTime: nil)
             let image = UIImage(CGImage: cgImage)
             
-            showSaveFrameButton()
+            toggleUndoAndDeleteButtons(false)
             clearPointsFromScreen()
             clearLinesFromScreen()
             clearAngleLabelsFromScreen()
@@ -346,19 +345,13 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
-    private func showSaveFrameButton() {
-        if saveFrameButtonRef == nil {
-            print("saveframebutton is nil")
-        } else {
-            navigationItem.setRightBarButtonItems([exportButton, saveFrameButtonRef, undoButtonRef], animated: true)
-        }
-    }
-    
-    private func showDeleteFrameButton() {
-        if saveFrameButtonRef == nil {
-            print("deleteframebutton is nil")
-        } else {
+    private func toggleUndoAndDeleteButtons(show: Bool) {
+        if deleteFrameButtonRef == nil {
+            print("deleteFrameButtonRef is nil")
+        } else if show {
             navigationItem.setRightBarButtonItems([exportButton, deleteFrameButtonRef, undoButtonRef], animated: true)
+        } else {
+            navigationItem.setRightBarButtonItems([exportButton], animated: true)
         }
     }
     

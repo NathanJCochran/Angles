@@ -174,14 +174,9 @@
                                     <action selector="export:" destination="BYZ-38-t0r" id="MSW-Cl-ea0"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Delete Frame" id="CBj-zq-7bk">
+                            <barButtonItem systemItem="trash" id="CBj-zq-7bk">
                                 <connections>
-                                    <action selector="deleteFrame:" destination="BYZ-38-t0r" id="2UQ-lA-hI7"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem title="Save Frame" id="T9D-IO-0P1">
-                                <connections>
-                                    <action selector="saveFrame:" destination="BYZ-38-t0r" id="rgd-qk-ctP"/>
+                                    <action selector="deleteFrameButtonPressed:" destination="BYZ-38-t0r" id="UFd-7n-Vcp"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem systemItem="undo" id="0ue-Z0-cTz">
@@ -197,7 +192,6 @@
                         <outlet property="frameCollectionView" destination="3di-tf-QCO" id="wdN-1j-LAu"/>
                         <outlet property="frameImageView" destination="Rgc-hj-ZZX" id="E25-ym-TOB"/>
                         <outlet property="frameSlider" destination="CGn-Z4-NeA" id="lYE-xh-GRg"/>
-                        <outlet property="saveFrameButton" destination="T9D-IO-0P1" id="CYn-uB-zGR"/>
                         <outlet property="undoButton" destination="0ue-Z0-cTz" id="fTg-e1-2lE"/>
                         <outlet property="videoDurationLabel" destination="oFb-FM-7e0" id="nPW-TI-ceE"/>
                     </connections>
