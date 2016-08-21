@@ -186,12 +186,12 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             let video = try Video(tempVideoURL: videoURL!, dateCreated: dateCreated)
             
             // Add new video to the list:
-            videos.append(video!)
+            videos.insert(video, atIndex: 0)
             saveVideos()
             
             // Make it display in the table view:
-            let newIndexPath = NSIndexPath(forRow: self.videos.count-1, inSection: 0)
-            tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Bottom)
+            let newIndexPath = NSIndexPath(forRow: 0, inSection: 0)
+            tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Top)
             tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: .Top, animated: true)
             editNameTextFieldAt(newIndexPath, highlightText: true)
         } catch Video.VideoError.SaveError(let message, let error) {

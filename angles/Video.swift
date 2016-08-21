@@ -73,17 +73,17 @@ class Video : NSObject, NSCoding{
         }
     }
 
-    init?(name: String, dateCreated: NSDate, videoURL: NSURL, frames: [Frame] = []) {
-        if name.isEmpty {
-            return nil
-        }
+    init(name: String, dateCreated: NSDate, videoURL: NSURL, frames: [Frame] = []) {
         self.name = name
+        if name == "" {
+            self.name = "Untitled"
+        }
         self.dateCreated = dateCreated
         self.videoURL = videoURL
         self.frames = frames
     }
     
-    convenience init?(tempVideoURL: NSURL, dateCreated: NSDate = NSDate()) throws {
+    convenience init(tempVideoURL: NSURL, dateCreated: NSDate = NSDate()) throws {
         
         // Make sure the video files directory exists:
         let fileManager = NSFileManager.defaultManager()
@@ -119,12 +119,12 @@ class Video : NSObject, NSCoding{
         }
         
         // Create new video domain object:
-        self.init(name: "Untitled", dateCreated: dateCreated, videoURL: newVideoURL)
+        self.init(name: "", dateCreated: dateCreated, videoURL: newVideoURL)
     }
     
     // MARK: Encoding
     
-    required convenience init?(coder aDecoder: NSCoder) {
+    required convenience init(coder aDecoder: NSCoder) {
         let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
         let dateCreated = aDecoder.decodeObjectForKey(PropertyKey.dateCreatedKey) as! NSDate
         let videoPathComponent = aDecoder.decodeObjectForKey(PropertyKey.videoURLKey) as! String
