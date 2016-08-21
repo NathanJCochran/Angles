@@ -30,6 +30,7 @@ class Video : NSObject, NSCoding{
     
     enum VideoError: ErrorType {
         case SaveError(message: String, error: NSError?)
+        case XLSXError(message: String, error: String?)
     }
     
     // MARK: Types
@@ -256,8 +257,6 @@ class Video : NSObject, NSCoding{
     }
     
     func saveXLSX() throws {
-        // TODO: HANDLE ALL ERRORS FROM XLSX WRITER!!!!!
-        
         // Make sure the XLSX files directory exists:
         let fileManager = NSFileManager.defaultManager()
         do {
@@ -276,20 +275,42 @@ class Video : NSObject, NSCoding{
         
         // Create the header row:
         let pointCount = getMaxPointCount()
-        worksheet_write_string(pointsWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
-        worksheet_set_column(pointsWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
-        for i in 0..<pointCount {
-            worksheet_write_string(pointsWorksheet, 0, UInt16(i+1), String(format: "Point %d", i+1), rightAlignedFormat)
-            worksheet_set_column(pointsWorksheet, 0, UInt16(i+1), Video.XLSXColumnWidth, nil)
+        var err = worksheet_write_string(pointsWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
+        if err != LXW_NO_ERROR {
+            throw VideoError.XLSXError(message: "Could not write column 0 header to Points worksheet", error: String.fromCString(lxw_strerror(err)))
         }
+        err = worksheet_set_column(pointsWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
+        if err != LXW_NO_ERROR {
+            throw VideoError.XLSXError(message: "Could not set column 0 width in xlsx Points worksheet", error: String.fromCString(lxw_strerror(err)))
+        }
+        for i in 0..<pointCount {
+            let column = UInt16(i+1)
+            err = worksheet_write_string(pointsWorksheet, 0, column, String(format: "Point %d", column), rightAlignedFormat)
+            if err != LXW_NO_ERROR {
+                throw VideoError.XLSXError(message: String(format:"Could not write column %d header to Points worksheet", column), error: String.fromCString(lxw_strerror(err)))
+            }
+            err = worksheet_set_column(pointsWorksheet, 0, column, Video.XLSXColumnWidth, nil)
+            if err != LXW_NO_ERROR {
+                throw VideoError.XLSXError(message: String(format: "Could not set column %d width in Points worksheet", column), error: String.fromCString(lxw_strerror(err)))
+            }
+        }
+        
         
         // Create row for each frame:
         for (i, frame) in frames.enumerate() {
-            worksheet_write_number(pointsWorksheet, UInt32(i+1), 0, frame.seconds, nil)
+            let row = UInt32(i+1)
+            err = worksheet_write_number(pointsWorksheet, row, 0, frame.seconds, nil)
+            if err != LXW_NO_ERROR {
+                throw VideoError.XLSXError(message: String(format: "Could not write row %d timestamp to Points worksheet", row), error: String.fromCString(lxw_strerror(err)))
+            }
             
             // Add all of the frame's points to the row:
             for (j, point) in frame.points.enumerate() {
-                worksheet_write_string(pointsWorksheet, UInt32(i+1), UInt16(j+1), String(format: "(%f, %f)", point.x, point.y) , rightAlignedFormat)
+                let column = UInt16(j+1)
+                err = worksheet_write_string(pointsWorksheet, row, column, String(format: "(%f, %f)", point.x, point.y) , rightAlignedFormat)
+                if err != LXW_NO_ERROR {
+                    throw VideoError.XLSXError(message: String(format:"Could not write row %d column %d point to Points worksheet", row, column), error: String.fromCString(lxw_strerror(err)))
+                }
             }
         }
         
@@ -298,26 +319,50 @@ class Video : NSObject, NSCoding{
         
         // Create header row:
         let angleCount = getMaxAngleCount()
-        worksheet_write_string(anglesWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
-        worksheet_set_column(anglesWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
+        err = worksheet_write_string(anglesWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
+        if err != LXW_NO_ERROR {
+            throw VideoError.XLSXError(message: "Could not write column 0 header to Angles worksheet", error: String.fromCString(lxw_strerror(err)))
+        }
+        err = worksheet_set_column(anglesWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
+        if err != LXW_NO_ERROR {
+            throw VideoError.XLSXError(message: "Could not set column 0 width in Angles worksheet", error: String.fromCString(lxw_strerror(err)))
+        }
         for i in 0..<angleCount {
-            worksheet_write_string(anglesWorksheet, 0, UInt16(i+1), String(format: "Angle %d (degrees)", i+1), rightAlignedFormat)
-            worksheet_set_column(anglesWorksheet, 0, UInt16(i+1), Video.XLSXColumnWidth, nil)
+            let column = UInt16(i+1)
+            err = worksheet_write_string(anglesWorksheet, 0, column, String(format: "Angle %d (degrees)", column), rightAlignedFormat)
+            if err != LXW_NO_ERROR {
+                throw VideoError.XLSXError(message: String(format:"Could not write column %d header to Angles worksheet", column), error: String.fromCString(lxw_strerror(err)))
+            }
+            err = worksheet_set_column(anglesWorksheet, 0, column, Video.XLSXColumnWidth, nil)
+            if err != LXW_NO_ERROR {
+                throw VideoError.XLSXError(message: String(format:"Could not set column %d width in Angles worksheet", column), error: String.fromCString(lxw_strerror(err)))
+            }
         }
         
         // Create row for each frame:
         for (i, frame) in frames.enumerate() {
-            worksheet_write_number(anglesWorksheet, UInt32(i+1), 0, frame.seconds, nil)
+            let row = UInt32(i+1)
+            err = worksheet_write_number(anglesWorksheet, row, 0, frame.seconds, nil)
+            if err != LXW_NO_ERROR {
+                throw VideoError.XLSXError(message: String(format:"Could not write row %d timestamp to Angles worksheet", row), error: String.fromCString(lxw_strerror(err)))
+            }
             
             // Add all of the frame's angles to the row:
             let angles = frame.getAnglesInDegrees()
             for (j, angle) in angles.enumerate() {
-                worksheet_write_number(anglesWorksheet, UInt32(i+1), UInt16(j+1), Double(angle), nil)
+                let column = UInt16(j+1)
+                err = worksheet_write_number(anglesWorksheet, row, column, Double(angle), nil)
+                if err != LXW_NO_ERROR {
+                    throw VideoError.XLSXError(message: String(format:"Could not write row %d column %d angle to Angles worksheet", row, column), error: String.fromCString(lxw_strerror(err)))
+                }
             }
         }
         
         // Save the file:
-        workbook_close(workbook)
+        err = workbook_close(workbook)
+        if err != LXW_NO_ERROR {
+            throw VideoError.XLSXError(message: "Could not close xlsx workbook", error: String.fromCString(lxw_strerror(err)))
+        }
     }
     
     func getMaxAngleCount() -> Int {

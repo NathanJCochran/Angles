@@ -192,6 +192,11 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             if error != nil {
                 print(error)
             }
+        } catch Video.VideoError.XLSXError(let message, let error) {
+            displayErrorAlert(message)
+            if error != nil {
+                print(error!)
+            }
         } catch let error as NSError {
             displayErrorAlert("Something went wrong while attempting to export the data to XLSX format")
             print(error)
