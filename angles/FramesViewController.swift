@@ -28,7 +28,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     var documentController: UIDocumentInteractionController!
     
     // MARK: References to drawn images:
-    var pointShapeLayers = [CAShapeLayer]()
+    var pointViews = [UIView]()
     var lineShapeLayers = [CAShapeLayer]()
     var angleLabelTextLayers = [CATextLayer]()
     
@@ -148,6 +148,45 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             }
             currentFrame.points.append(normalizePoint(location))
             saveDelegate.saveVideos()
+        }
+    }
+    
+    func movePoint(sender:UIPanGestureRecognizer) {
+        // Figure out what the new point is:
+        let translation = sender.translationInView(frameImageView)
+        let newPoint = CGPoint(x: CGFloat(sender.view!.center.x + translation.x), y: CGFloat(sender.view!.center.y + translation.y))
+        
+        // If it's out of bounds, stop:
+        let frameImageRect = getFrameImageRect()
+        if !frameImageRect.contains(newPoint) {
+            return
+        }
+        
+        // Update the current frame's point:
+        let pointIdx = sender.view!.tag
+        currentFrame.points[pointIdx] = normalizePoint(newPoint)
+        
+        // Move the point view:
+        sender.view!.center = newPoint
+        sender.setTranslation(CGPointZero, inView: frameImageView)
+        
+        // Redraw the lines:
+        if pointIdx > 0 {
+            redrawLine(pointIdx-1, point1: denormalizePoint(currentFrame.points[pointIdx-1]), point2: newPoint)
+        }
+        if pointIdx < currentFrame.points.count - 1 {
+            redrawLine(pointIdx, point1: newPoint, point2: denormalizePoint(currentFrame.points[pointIdx+1]))
+        }
+        
+        // Redraw the angle labels:
+        if pointIdx > 1 {
+            redrawAngleLabel(pointIdx-2, point1: denormalizePoint(currentFrame.points[pointIdx-2]), point2: denormalizePoint(currentFrame.points[pointIdx-1]), point3: newPoint)
+        }
+        if pointIdx > 0 && pointIdx < currentFrame.points.count - 1 {
+            redrawAngleLabel(pointIdx-1, point1: denormalizePoint(currentFrame.points[pointIdx-1]), point2: newPoint, point3: denormalizePoint(currentFrame.points[pointIdx+1]))
+        }
+        if pointIdx < currentFrame.points.count - 2{
+            redrawAngleLabel(pointIdx, point1: newPoint, point2: denormalizePoint(currentFrame.points[pointIdx+1]), point3: denormalizePoint(currentFrame.points[pointIdx+2]))
         }
     }
     
@@ -308,30 +347,46 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     private func drawPoint(point: CGPoint) {
+        
+        // Create point shapelayer:
         let pointDiameter = min(getFrameImageRect().size.width, getFrameImageRect().size.height) / 25
-        let rect = CGRect(
+        let shapeLayer = CAShapeLayer()
+        let circlePath = UIBezierPath(ovalInRect: CGRect(
+            x: 0,
+            y: 0,
+            width: pointDiameter,
+            height: pointDiameter
+        ))
+        shapeLayer.path = circlePath.CGPath
+        let color = pointColors[pointViews.count%pointColors.count]
+        shapeLayer.strokeColor = color.CGColor
+        shapeLayer.fillColor = color.colorWithAlphaComponent(0.5).CGColor
+        
+        // Create point view containing shapelayer:
+        let pointViewRect = CGRect(
             x: point.x - (pointDiameter / 2),
             y: point.y - (pointDiameter / 2),
             width: pointDiameter,
             height: pointDiameter
         )
-        let circlePath = UIBezierPath(ovalInRect: rect)
+        let pointView = UIView(frame: pointViewRect)
+        pointView.layer.addSublayer(shapeLayer)
+        pointView.tag = pointViews.count
         
-        let color = pointColors[pointShapeLayers.count%pointColors.count]
+        // Add gesture recognizer to point view:
+        let gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(movePoint(_:)))
+        pointView.addGestureRecognizer(gestureRecognizer)
         
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.path = circlePath.CGPath
-        shapeLayer.strokeColor = color.CGColor
-        shapeLayer.fillColor = color.colorWithAlphaComponent(0.5).CGColor
-        frameImageView.layer.addSublayer(shapeLayer)
-        pointShapeLayers.append(shapeLayer)
+        // Add point view to frameImageView:
+        frameImageView.addSubview(pointView)
+        pointViews.append(pointView)
     }
     
     private func clearPointsFromScreen() {
-        for pointShapeLayer in pointShapeLayers {
-            pointShapeLayer.removeFromSuperlayer()
+        for pointView in pointViews {
+            pointView.removeFromSuperview()
         }
-        pointShapeLayers.removeAll()
+        pointViews.removeAll()
     }
     
     // MARK: Draw Lines
@@ -350,14 +405,26 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
 
     
     private func drawLine(point1: CGPoint, point2: CGPoint) {
+        let shapeLayer = getLineShapeLayer(point1, point2: point2)
+        frameImageView.layer.addSublayer(shapeLayer)
+        lineShapeLayers.append(shapeLayer)
+    }
+    
+    private func redrawLine(lineIdx: Int, point1: CGPoint, point2: CGPoint) {
+        lineShapeLayers[lineIdx].removeFromSuperlayer()
+        let newLineShapeLayer = getLineShapeLayer(point1, point2: point2)
+        frameImageView.layer.addSublayer(newLineShapeLayer)
+        lineShapeLayers[lineIdx] = newLineShapeLayer
+    }
+    
+    private func getLineShapeLayer(point1: CGPoint, point2: CGPoint) -> CAShapeLayer {
         let path = UIBezierPath()
         path.moveToPoint(point1)
         path.addLineToPoint(point2)
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = path.CGPath
         shapeLayer.strokeColor = UIColor.blueColor().CGColor
-        frameImageView.layer.addSublayer(shapeLayer)
-        lineShapeLayers.append(shapeLayer)
+        return shapeLayer
     }
     
     private func clearLinesFromScreen() {
@@ -382,11 +449,25 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     private func drawAngleLabel(point1:CGPoint, point2:CGPoint, point3:CGPoint) {
+        let textLayer = getAngleLabelTextLayer(point1, point2:point2, point3:point3)
+        textLayer.foregroundColor = pointColors[(angleLabelTextLayers.count + 1) % pointColors.count].CGColor
+        frameImageView.layer.addSublayer(textLayer)
+        angleLabelTextLayers.append(textLayer)
+    }
+    
+    private func redrawAngleLabel(angleIdx: Int, point1: CGPoint, point2:CGPoint, point3:CGPoint) {
+        angleLabelTextLayers[angleIdx].removeFromSuperlayer()
+        let newAngleLabelTextLayer = getAngleLabelTextLayer(point1, point2:point2, point3:point3)
+        newAngleLabelTextLayer.foregroundColor = pointColors[(angleIdx + 1) % pointColors.count].CGColor
+        frameImageView.layer.addSublayer(newAngleLabelTextLayer)
+        angleLabelTextLayers[angleIdx] = newAngleLabelTextLayer
+    }
+    
+    private func getAngleLabelTextLayer(point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CATextLayer {
         let midPoint = CGPoint(x: (point1.x + point3.x) / 2, y: (point1.y + point3.y) / 2)
         let distanceToMidPoint = Math.getDistanceBetweenPoints(point2, b: midPoint)
         let ratio = 30.0 / distanceToMidPoint
         let labelCenterPoint = CGPoint(x: ((1.0-ratio) * point2.x) + (ratio * midPoint.x), y: ((1.0-ratio) * point2.y) + (ratio * midPoint.y))
-
         
         let labelWidth = CGFloat(100)
         let labelHeight = fontSize
@@ -394,15 +475,14 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         textLayer.font = UIFont(name: font, size: fontSize)
         textLayer.fontSize = fontSize
         textLayer.frame = CGRect(x: labelCenterPoint.x - (labelWidth/2), y: labelCenterPoint.y - (labelHeight/2), width: labelWidth, height: labelHeight)
-        textLayer.foregroundColor = pointColors[(angleLabelTextLayers.count + 1) % pointColors.count].CGColor
         textLayer.alignmentMode = kCAAlignmentCenter
         
         let angle = Math.getAcuteAngleInDegrees(point1, point2: point2, point3: point3)
         let roundedAngle = round(angle * 100) / 100
         textLayer.string = String(roundedAngle) + "\u{00B0}"
-        frameImageView.layer.addSublayer(textLayer)
-        angleLabelTextLayers.append(textLayer)
+        return textLayer
     }
+    
     
     private func clearAngleLabelsFromScreen() {
         for angleLabelTextLayer in angleLabelTextLayers {
