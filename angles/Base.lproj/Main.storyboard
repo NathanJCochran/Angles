@@ -184,6 +184,11 @@
                                     <action selector="saveFrame:" destination="BYZ-38-t0r" id="rgd-qk-ctP"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem systemItem="undo" id="0ue-Z0-cTz">
+                                <connections>
+                                    <action selector="undoPoint:" destination="BYZ-38-t0r" id="p2r-mk-Fpm"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
@@ -193,6 +198,7 @@
                         <outlet property="frameImageView" destination="Rgc-hj-ZZX" id="E25-ym-TOB"/>
                         <outlet property="frameSlider" destination="CGn-Z4-NeA" id="lYE-xh-GRg"/>
                         <outlet property="saveFrameButton" destination="T9D-IO-0P1" id="CYn-uB-zGR"/>
+                        <outlet property="undoButton" destination="0ue-Z0-cTz" id="fTg-e1-2lE"/>
                         <outlet property="videoDurationLabel" destination="oFb-FM-7e0" id="nPW-TI-ceE"/>
                     </connections>
                 </viewController>

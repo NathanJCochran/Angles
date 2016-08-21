@@ -16,6 +16,8 @@ protocol SaveVideoDelegate {
 
 class FramesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
+    let pointDiameterModifier = CGFloat(0.042)
+    let angleToPointDistance = CGFloat(35.0)
     let font = "Helvetica"
     let fontSize = CGFloat(14.0)
     
@@ -40,6 +42,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Frame button references for sake of toggle:
     var saveFrameButtonRef: UIBarButtonItem!
     var deleteFrameButtonRef: UIBarButtonItem!
+    var undoButtonRef: UIBarButtonItem!
     
     // MARK: Save videos delegate
     var saveDelegate: SaveVideoDelegate!
@@ -47,6 +50,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Outlets
     @IBOutlet weak var saveFrameButton: UIBarButtonItem!
     @IBOutlet weak var deleteFrameButton: UIBarButtonItem!
+    @IBOutlet weak var undoButton: UIBarButtonItem!
     @IBOutlet weak var exportButton: UIBarButtonItem!
     @IBOutlet weak var frameImageView: UIImageView!
     @IBOutlet weak var frameSlider: UISlider!
@@ -70,6 +74,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         // Save references to bar button items so we can toggle their existence:
         saveFrameButtonRef = saveFrameButton
         deleteFrameButtonRef = deleteFrameButton
+        undoButtonRef = undoButton
         
         // Load video and image generator:
         videoAsset = AVURLAsset(URL: video.videoURL, options: nil)
@@ -148,6 +153,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             }
             currentFrame.points.append(normalizePoint(location))
             saveDelegate.saveVideos()
+            
+            undoButtonRef.enabled = true
         }
     }
     
@@ -187,6 +194,22 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
         if pointIdx < currentFrame.points.count - 2{
             redrawAngleLabel(pointIdx, point1: newPoint, point2: denormalizePoint(currentFrame.points[pointIdx+1]), point3: denormalizePoint(currentFrame.points[pointIdx+2]))
+        }
+    }
+    
+    @IBAction func undoPoint(sender: UIBarButtonItem) {
+        currentFrame.points.removeLast()
+        if let pointView = pointViews.popLast() {
+            pointView.removeFromSuperview()
+        }
+        if let lineShapeLayer = lineShapeLayers.popLast() {
+            lineShapeLayer.removeFromSuperlayer()
+        }
+        if let angleLabelTextLayer = angleLabelTextLayers.popLast() {
+            angleLabelTextLayer.removeFromSuperlayer()
+        }
+        if currentFrame.points.isEmpty {
+            undoButtonRef.enabled = false
         }
     }
     
@@ -266,6 +289,11 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     private func setCurrentFrameTo(frame: Frame, drawPoints: Bool = true) {
         showDeleteFrameButton()
+        if frame.points.isEmpty {
+            undoButtonRef.enabled = false
+        } else {
+            undoButtonRef.enabled = true
+        }
         clearPointsFromScreen()
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
@@ -322,7 +350,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         if saveFrameButtonRef == nil {
             print("saveframebutton is nil")
         } else {
-            navigationItem.setRightBarButtonItems([exportButton, saveFrameButtonRef], animated: true)
+            navigationItem.setRightBarButtonItems([exportButton, saveFrameButtonRef, undoButtonRef], animated: true)
         }
     }
     
@@ -330,7 +358,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         if saveFrameButtonRef == nil {
             print("deleteframebutton is nil")
         } else {
-            navigationItem.setRightBarButtonItems([exportButton, deleteFrameButtonRef], animated: true)
+            navigationItem.setRightBarButtonItems([exportButton, deleteFrameButtonRef, undoButtonRef], animated: true)
         }
     }
     
@@ -349,7 +377,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     private func drawPoint(point: CGPoint) {
         
         // Create point shapelayer:
-        let pointDiameter = min(getFrameImageRect().size.width, getFrameImageRect().size.height) / 25
+        let pointDiameter = min(getFrameImageRect().size.width, getFrameImageRect().size.height) * pointDiameterModifier
         let shapeLayer = CAShapeLayer()
         let circlePath = UIBezierPath(ovalInRect: CGRect(
             x: 0,
@@ -466,7 +494,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     private func getAngleLabelTextLayer(point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CATextLayer {
         let midPoint = CGPoint(x: (point1.x + point3.x) / 2, y: (point1.y + point3.y) / 2)
         let distanceToMidPoint = Math.getDistanceBetweenPoints(point2, b: midPoint)
-        let ratio = 30.0 / distanceToMidPoint
+        let ratio = angleToPointDistance / distanceToMidPoint
         let labelCenterPoint = CGPoint(x: ((1.0-ratio) * point2.x) + (ratio * midPoint.x), y: ((1.0-ratio) * point2.y) + (ratio * midPoint.y))
         
         let labelWidth = CGFloat(100)
