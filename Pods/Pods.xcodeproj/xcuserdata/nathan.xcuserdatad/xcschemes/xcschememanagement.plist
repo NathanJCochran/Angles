@@ -4,35 +4,41 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Pods-angles.xcscheme</key>
+		<key>Pods-Angles.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
+			<key>orderHint</key>
+			<integer>1</integer>
 		</dict>
-		<key>Pods-anglesTests.xcscheme</key>
+		<key>Pods-AnglesTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
+			<key>orderHint</key>
+			<integer>2</integer>
 		</dict>
 		<key>libxlsxwriter.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
+			<key>orderHint</key>
+			<integer>0</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>38EACD0DD123E67B3E10873F7BB4C78D</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>452A8773AA6AA1716C9967C141E88B9C</key>
+		<key>4D946D8DCB09F4AAFCDDFAF1E6FCE5AC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>9D95C8517CCAF639F6C56A8CBDC61B1A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A271E908C5E0A5268E25A272E55B7F2D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

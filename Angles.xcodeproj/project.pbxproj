@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		488D6E2FC278BDD507252E18 /* Pods_angles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56D4880942501EDCF467324C /* Pods_angles.framework */; };
-		C0369B786F213B09041B7BAF /* Pods_anglesTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71E624801A5DD3241FA55CA7 /* Pods_anglesTests.framework */; };
+		1291DF6B5D42E3AD044756F7 /* Pods_Angles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFAAF20A3B5D9572EA1DC38C /* Pods_Angles.framework */; };
+		BCC84F6569F6148483A52FD1 /* Pods_AnglesTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A49AD40C7A6346A0F10859CC /* Pods_AnglesTests.framework */; };
 		D80495231CCD215100C1CDEA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495221CCD215100C1CDEA /* AppDelegate.swift */; };
 		D80495281CCD215100C1CDEA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D80495261CCD215100C1CDEA /* Main.storyboard */; };
 		D804952A1CCD215100C1CDEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D80495291CCD215100C1CDEA /* Assets.xcassets */; };
@@ -34,11 +34,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1A6FC39A3578A82EDF8E9686 /* Pods-angles.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-angles.release.xcconfig"; path = "Pods/Target Support Files/Pods-angles/Pods-angles.release.xcconfig"; sourceTree = "<group>"; };
-		3C2AEC7A5E67B705F71DD57A /* Pods-angles.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-angles.debug.xcconfig"; path = "Pods/Target Support Files/Pods-angles/Pods-angles.debug.xcconfig"; sourceTree = "<group>"; };
-		56D4880942501EDCF467324C /* Pods_angles.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_angles.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		71E624801A5DD3241FA55CA7 /* Pods_anglesTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_anglesTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		BB82F91F853365A2163A9B1B /* Pods-anglesTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anglesTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-anglesTests/Pods-anglesTests.debug.xcconfig"; sourceTree = "<group>"; };
+		41313D0F315E377BB5EEFF87 /* Pods-Angles.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Angles.release.xcconfig"; path = "Pods/Target Support Files/Pods-Angles/Pods-Angles.release.xcconfig"; sourceTree = "<group>"; };
+		9D39B641FE60FE2AEDB23CDB /* Pods-Angles.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Angles.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Angles/Pods-Angles.debug.xcconfig"; sourceTree = "<group>"; };
+		A49AD40C7A6346A0F10859CC /* Pods_AnglesTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AnglesTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A756DC0BD4A610032EC37D2B /* Pods-AnglesTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnglesTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AnglesTests/Pods-AnglesTests.debug.xcconfig"; sourceTree = "<group>"; };
+		B45EEA89CC95D7ACE0298ADE /* Pods-AnglesTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnglesTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AnglesTests/Pods-AnglesTests.release.xcconfig"; sourceTree = "<group>"; };
+		CFAAF20A3B5D9572EA1DC38C /* Pods_Angles.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Angles.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D804951F1CCD215100C1CDEA /* Angles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Angles.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D80495221CCD215100C1CDEA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D80495271CCD215100C1CDEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -55,7 +56,6 @@
 		D804954A1CE007E800C1CDEA /* Frame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
 		D804954C1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrameCollectionViewCell.swift; sourceTree = "<group>"; };
 		D85730341D31B1B1004CF17B /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
-		FBD18105069F3E5A9F52B952 /* Pods-anglesTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-anglesTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-anglesTests/Pods-anglesTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				488D6E2FC278BDD507252E18 /* Pods_angles.framework in Frameworks */,
+				1291DF6B5D42E3AD044756F7 /* Pods_Angles.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,20 +71,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C0369B786F213B09041B7BAF /* Pods_anglesTests.framework in Frameworks */,
+				BCC84F6569F6148483A52FD1 /* Pods_AnglesTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0F60BEAE92333BA6E0E8265D /* Frameworks */ = {
+		00E3CCEE2B775D903CCD4FA8 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				56D4880942501EDCF467324C /* Pods_angles.framework */,
-				71E624801A5DD3241FA55CA7 /* Pods_anglesTests.framework */,
+				9D39B641FE60FE2AEDB23CDB /* Pods-Angles.debug.xcconfig */,
+				41313D0F315E377BB5EEFF87 /* Pods-Angles.release.xcconfig */,
+				A756DC0BD4A610032EC37D2B /* Pods-AnglesTests.debug.xcconfig */,
+				B45EEA89CC95D7ACE0298ADE /* Pods-AnglesTests.release.xcconfig */,
 			);
-			name = Frameworks;
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		D80495161CCD215100C1CDEA = {
@@ -93,8 +95,8 @@
 				D80495211CCD215100C1CDEA /* Angles */,
 				D80495361CCD215100C1CDEA /* AnglesTests */,
 				D80495201CCD215100C1CDEA /* Products */,
-				FD33DB3F25D184FA8784F76D /* Pods */,
-				0F60BEAE92333BA6E0E8265D /* Frameworks */,
+				00E3CCEE2B775D903CCD4FA8 /* Pods */,
+				E289B1ADB4F2D34B4DB00927 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -135,15 +137,13 @@
 			path = AnglesTests;
 			sourceTree = "<group>";
 		};
-		FD33DB3F25D184FA8784F76D /* Pods */ = {
+		E289B1ADB4F2D34B4DB00927 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3C2AEC7A5E67B705F71DD57A /* Pods-angles.debug.xcconfig */,
-				1A6FC39A3578A82EDF8E9686 /* Pods-angles.release.xcconfig */,
-				BB82F91F853365A2163A9B1B /* Pods-anglesTests.debug.xcconfig */,
-				FBD18105069F3E5A9F52B952 /* Pods-anglesTests.release.xcconfig */,
+				CFAAF20A3B5D9572EA1DC38C /* Pods_Angles.framework */,
+				A49AD40C7A6346A0F10859CC /* Pods_AnglesTests.framework */,
 			);
-			name = Pods;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -262,7 +262,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-anglesTests/Pods-anglesTests-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AnglesTests/Pods-AnglesTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		30919FC31583472E4803FFFC /* [CP] Copy Pods Resources */ = {
@@ -277,7 +277,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-angles/Pods-angles-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Angles/Pods-Angles-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		9AC51ABE51F79912D88ED9E3 /* [CP] Embed Pods Frameworks */ = {
@@ -292,7 +292,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-angles/Pods-angles-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Angles/Pods-Angles-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		BB075886E8253235A9EB1264 /* [CP] Copy Pods Resources */ = {
@@ -307,7 +307,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-anglesTests/Pods-anglesTests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AnglesTests/Pods-AnglesTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		CD0EB4935E58D538825E2178 /* [CP] Check Pods Manifest.lock */ = {
@@ -483,7 +483,7 @@
 		};
 		D804953D1CCD215100C1CDEA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3C2AEC7A5E67B705F71DD57A /* Pods-angles.debug.xcconfig */;
+			baseConfigurationReference = 9D39B641FE60FE2AEDB23CDB /* Pods-Angles.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -500,7 +500,7 @@
 		};
 		D804953E1CCD215100C1CDEA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1A6FC39A3578A82EDF8E9686 /* Pods-angles.release.xcconfig */;
+			baseConfigurationReference = 41313D0F315E377BB5EEFF87 /* Pods-Angles.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -517,7 +517,7 @@
 		};
 		D80495401CCD215100C1CDEA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BB82F91F853365A2163A9B1B /* Pods-anglesTests.debug.xcconfig */;
+			baseConfigurationReference = A756DC0BD4A610032EC37D2B /* Pods-AnglesTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = anglesTests/Info.plist;
@@ -530,7 +530,7 @@
 		};
 		D80495411CCD215100C1CDEA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FBD18105069F3E5A9F52B952 /* Pods-anglesTests.release.xcconfig */;
+			baseConfigurationReference = B45EEA89CC95D7ACE0298ADE /* Pods-AnglesTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = anglesTests/Info.plist;

@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "452A8773AA6AA1716C9967C141E88B9C"
-               BuildableName = "Pods_angles.framework"
-               BlueprintName = "Pods-angles"
+               BlueprintIdentifier = "A271E908C5E0A5268E25A272E55B7F2D"
+               BuildableName = "Pods_Angles.framework"
+               BlueprintName = "Pods-Angles"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "452A8773AA6AA1716C9967C141E88B9C"
-            BuildableName = "Pods_angles.framework"
-            BlueprintName = "Pods-angles"
+            BlueprintIdentifier = "A271E908C5E0A5268E25A272E55B7F2D"
+            BuildableName = "Pods_Angles.framework"
+            BlueprintName = "Pods-Angles"
             ReferencedContainer = "container:Pods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
