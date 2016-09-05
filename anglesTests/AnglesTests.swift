@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import angles
+@testable import Angles
 
 class anglesTests: XCTestCase {
     

@@ -13,7 +13,7 @@
 		D80495281CCD215100C1CDEA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D80495261CCD215100C1CDEA /* Main.storyboard */; };
 		D804952A1CCD215100C1CDEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D80495291CCD215100C1CDEA /* Assets.xcassets */; };
 		D804952D1CCD215100C1CDEA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D804952B1CCD215100C1CDEA /* LaunchScreen.storyboard */; };
-		D80495381CCD215100C1CDEA /* anglesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495371CCD215100C1CDEA /* anglesTests.swift */; };
+		D80495381CCD215100C1CDEA /* AnglesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495371CCD215100C1CDEA /* AnglesTests.swift */; };
 		D80495431CCD2A2200C1CDEA /* VideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495421CCD2A2200C1CDEA /* VideoTableViewCell.swift */; };
 		D80495451CCD2E2400C1CDEA /* VideoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495441CCD2E2400C1CDEA /* VideoTableViewController.swift */; };
 		D80495471CCD2E6E00C1CDEA /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495461CCD2E6E00C1CDEA /* Video.swift */; };
@@ -45,8 +45,8 @@
 		D80495291CCD215100C1CDEA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D804952C1CCD215100C1CDEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D804952E1CCD215100C1CDEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D80495331CCD215100C1CDEA /* anglesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = anglesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D80495371CCD215100C1CDEA /* anglesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = anglesTests.swift; sourceTree = "<group>"; };
+		D80495331CCD215100C1CDEA /* AnglesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AnglesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D80495371CCD215100C1CDEA /* AnglesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnglesTests.swift; sourceTree = "<group>"; };
 		D80495391CCD215100C1CDEA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D80495421CCD2A2200C1CDEA /* VideoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTableViewCell.swift; sourceTree = "<group>"; };
 		D80495441CCD2E2400C1CDEA /* VideoTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTableViewController.swift; sourceTree = "<group>"; };
@@ -90,8 +90,8 @@
 		D80495161CCD215100C1CDEA = {
 			isa = PBXGroup;
 			children = (
-				D80495211CCD215100C1CDEA /* angles */,
-				D80495361CCD215100C1CDEA /* anglesTests */,
+				D80495211CCD215100C1CDEA /* Angles */,
+				D80495361CCD215100C1CDEA /* AnglesTests */,
 				D80495201CCD215100C1CDEA /* Products */,
 				FD33DB3F25D184FA8784F76D /* Pods */,
 				0F60BEAE92333BA6E0E8265D /* Frameworks */,
@@ -102,12 +102,12 @@
 			isa = PBXGroup;
 			children = (
 				D804951F1CCD215100C1CDEA /* Angles.app */,
-				D80495331CCD215100C1CDEA /* anglesTests.xctest */,
+				D80495331CCD215100C1CDEA /* AnglesTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D80495211CCD215100C1CDEA /* angles */ = {
+		D80495211CCD215100C1CDEA /* Angles */ = {
 			isa = PBXGroup;
 			children = (
 				D80495481CD7F1CA00C1CDEA /* FramesViewController.swift */,
@@ -123,15 +123,17 @@
 				D804952E1CCD215100C1CDEA /* Info.plist */,
 				D804954C1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift */,
 			);
+			name = Angles;
 			path = angles;
 			sourceTree = "<group>";
 		};
-		D80495361CCD215100C1CDEA /* anglesTests */ = {
+		D80495361CCD215100C1CDEA /* AnglesTests */ = {
 			isa = PBXGroup;
 			children = (
-				D80495371CCD215100C1CDEA /* anglesTests.swift */,
+				D80495371CCD215100C1CDEA /* AnglesTests.swift */,
 				D80495391CCD215100C1CDEA /* Info.plist */,
 			);
+			name = AnglesTests;
 			path = anglesTests;
 			sourceTree = "<group>";
 		};
@@ -149,9 +151,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D804951E1CCD215100C1CDEA /* angles */ = {
+		D804951E1CCD215100C1CDEA /* Angles */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D804953C1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "angles" */;
+			buildConfigurationList = D804953C1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "Angles" */;
 			buildPhases = (
 				CD0EB4935E58D538825E2178 /* [CP] Check Pods Manifest.lock */,
 				D804951B1CCD215100C1CDEA /* Sources */,
@@ -164,14 +166,14 @@
 			);
 			dependencies = (
 			);
-			name = angles;
+			name = Angles;
 			productName = angles;
 			productReference = D804951F1CCD215100C1CDEA /* Angles.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D80495321CCD215100C1CDEA /* anglesTests */ = {
+		D80495321CCD215100C1CDEA /* AnglesTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D804953F1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "anglesTests" */;
+			buildConfigurationList = D804953F1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "AnglesTests" */;
 			buildPhases = (
 				FFDCDEF35E30E59E03559557 /* [CP] Check Pods Manifest.lock */,
 				D804952F1CCD215100C1CDEA /* Sources */,
@@ -185,9 +187,9 @@
 			dependencies = (
 				D80495351CCD215100C1CDEA /* PBXTargetDependency */,
 			);
-			name = anglesTests;
+			name = AnglesTests;
 			productName = anglesTests;
-			productReference = D80495331CCD215100C1CDEA /* anglesTests.xctest */;
+			productReference = D80495331CCD215100C1CDEA /* AnglesTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -210,7 +212,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D804951A1CCD215100C1CDEA /* Build configuration list for PBXProject "angles" */;
+			buildConfigurationList = D804951A1CCD215100C1CDEA /* Build configuration list for PBXProject "Angles" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -223,8 +225,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D804951E1CCD215100C1CDEA /* angles */,
-				D80495321CCD215100C1CDEA /* anglesTests */,
+				D804951E1CCD215100C1CDEA /* Angles */,
+				D80495321CCD215100C1CDEA /* AnglesTests */,
 			);
 		};
 /* End PBXProject section */
@@ -362,7 +364,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D80495381CCD215100C1CDEA /* anglesTests.swift in Sources */,
+				D80495381CCD215100C1CDEA /* AnglesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -371,7 +373,7 @@
 /* Begin PBXTargetDependency section */
 		D80495351CCD215100C1CDEA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D804951E1CCD215100C1CDEA /* angles */;
+			target = D804951E1CCD215100C1CDEA /* Angles */;
 			targetProxy = D80495341CCD215100C1CDEA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -523,8 +525,8 @@
 				INFOPLIST_FILE = anglesTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.anglesTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/angles.app/angles";
+				PRODUCT_NAME = AnglesTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Angles.app/Angles";
 			};
 			name = Debug;
 		};
@@ -536,15 +538,15 @@
 				INFOPLIST_FILE = anglesTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.anglesTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/angles.app/angles";
+				PRODUCT_NAME = AnglesTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Angles.app/Angles";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D804951A1CCD215100C1CDEA /* Build configuration list for PBXProject "angles" */ = {
+		D804951A1CCD215100C1CDEA /* Build configuration list for PBXProject "Angles" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D804953A1CCD215100C1CDEA /* Debug */,
@@ -553,7 +555,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D804953C1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "angles" */ = {
+		D804953C1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "Angles" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D804953D1CCD215100C1CDEA /* Debug */,
@@ -562,7 +564,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D804953F1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "anglesTests" */ = {
+		D804953F1CCD215100C1CDEA /* Build configuration list for PBXNativeTarget "AnglesTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D80495401CCD215100C1CDEA /* Debug */,
