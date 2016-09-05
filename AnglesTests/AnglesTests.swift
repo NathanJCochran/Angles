@@ -9,7 +9,7 @@
 import XCTest
 @testable import Angles
 
-class anglesTests: XCTestCase {
+class AnglesTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
