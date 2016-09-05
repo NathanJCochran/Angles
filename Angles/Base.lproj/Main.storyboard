@@ -10,13 +10,13 @@
         <!--Videos-->
         <scene sceneID="fbX-Xq-Zmc">
             <objects>
-                <tableViewController id="57y-Oc-Ggc" customClass="VideoTableViewController" customModule="angles" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="57y-Oc-Ggc" customClass="VideoTableViewController" customModule="Angles" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="28" sectionFooterHeight="28" id="KEy-hj-mjV">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="VideoTableViewCell" rowHeight="80" id="TVO-tB-Nv7" customClass="VideoTableViewCell" customModule="angles" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="VideoTableViewCell" rowHeight="80" id="TVO-tB-Nv7" customClass="VideoTableViewCell" customModule="Angles" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="92" width="600" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TVO-tB-Nv7" id="Bhp-LI-Slf">
@@ -74,7 +74,7 @@
         <!--Frames-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController title="Frames" id="BYZ-38-t0r" customClass="FramesViewController" customModule="angles" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Frames" id="BYZ-38-t0r" customClass="FramesViewController" customModule="Angles" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -125,7 +125,7 @@
                                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         </collectionViewFlowLayout>
                                         <cells>
-                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FrameCollectionViewCell" id="2yZ-og-efA" customClass="FrameCollectionViewCell" customModule="angles" customModuleProvider="target">
+                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="FrameCollectionViewCell" id="2yZ-og-efA" customClass="FrameCollectionViewCell" customModule="Angles" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
