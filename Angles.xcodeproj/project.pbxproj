@@ -123,8 +123,7 @@
 				D804952E1CCD215100C1CDEA /* Info.plist */,
 				D804954C1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift */,
 			);
-			name = Angles;
-			path = angles;
+			path = Angles;
 			sourceTree = "<group>";
 		};
 		D80495361CCD215100C1CDEA /* AnglesTests */ = {
@@ -133,8 +132,7 @@
 				D80495371CCD215100C1CDEA /* AnglesTests.swift */,
 				D80495391CCD215100C1CDEA /* Info.plist */,
 			);
-			name = AnglesTests;
-			path = anglesTests;
+			path = AnglesTests;
 			sourceTree = "<group>";
 		};
 		FD33DB3F25D184FA8784F76D /* Pods */ = {
