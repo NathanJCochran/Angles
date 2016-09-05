@@ -1,6 +1,0 @@
-framework module Pods_AnglesTests {
-  umbrella header "Pods-AnglesTests-umbrella.h"
-
-  export *
-  module * { export * }
-}
