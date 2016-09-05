@@ -4,12 +4,12 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Pods-Angles.xcscheme</key>
+		<key>Pods-angles.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-AnglesTests.xcscheme</key>
+		<key>Pods-anglesTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
