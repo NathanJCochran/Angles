@@ -1,13 +1,13 @@
 //
-//  anglesTests.swift
-//  anglesTests
+//  AnglesTests.swift
+//  AnglesTests
 //
 //  Created by Nathan on 4/24/16.
 //  Copyright © 2016 Nathan. All rights reserved.
 //
 
 import XCTest
-@testable import angles
+@testable import Angles
 
 class anglesTests: XCTestCase {
     

@@ -1,6 +1,6 @@
 //
 //  Frame.swift
-//  angles
+//  Angles
 //
 //  Created by Nathan on 5/8/16.
 //  Copyright © 2016 Nathan. All rights reserved.

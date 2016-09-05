@@ -1,6 +1,6 @@
 //
 //  FrameCollectionViewCell.swift
-//  angles
+//  Angles
 //
 //  Created by Nathan on 5/15/16.
 //  Copyright © 2016 Nathan. All rights reserved.

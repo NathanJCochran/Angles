@@ -1,6 +1,6 @@
 //
 //  Math.swift
-//  angles
+//  Angles
 //
 //  Created by Nathan on 7/9/16.
 //  Copyright © 2016 Nathan. All rights reserved.
