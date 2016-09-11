@@ -211,6 +211,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         if currentFrame.points.isEmpty {
             deleteCurrentFrame()
         }
+        saveDelegate.saveVideos()
     }
     
     @IBAction func deleteFrameButtonPressed(sender: AnyObject) {

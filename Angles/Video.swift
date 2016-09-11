@@ -61,10 +61,12 @@ class Video : NSObject, NSCoding{
         
         do {
             for url in [Video.VideoFilesDirectoryURL, Video.CSVFilesDirectoryURL, Video.XLSXFilesDirectoryURL, Video.DocumentsDirectoryURL] {
-                let directoryContents = try fileManager.contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
-                for content in directoryContents {
-                    print("Removing: " + content.absoluteString)
-                    try fileManager.removeItemAtURL(content)
+                let directoryContents = try? fileManager.contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+                if directoryContents != nil {
+                    for content in directoryContents! {
+                        print("Removing: " + content.absoluteString)
+                        try fileManager.removeItemAtURL(content)
+                    }
                 }
             }
         } catch let error as NSError {

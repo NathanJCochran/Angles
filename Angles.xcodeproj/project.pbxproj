@@ -40,7 +40,7 @@
 		A756DC0BD4A610032EC37D2B /* Pods-AnglesTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnglesTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AnglesTests/Pods-AnglesTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B45EEA89CC95D7ACE0298ADE /* Pods-AnglesTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnglesTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AnglesTests/Pods-AnglesTests.release.xcconfig"; sourceTree = "<group>"; };
 		CFAAF20A3B5D9572EA1DC38C /* Pods_Angles.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Angles.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D804951F1CCD215100C1CDEA /* Angles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Angles.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D804951F1CCD215100C1CDEA /* Goniometer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Goniometer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D80495221CCD215100C1CDEA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D80495271CCD215100C1CDEA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D80495291CCD215100C1CDEA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -103,7 +103,7 @@
 		D80495201CCD215100C1CDEA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D804951F1CCD215100C1CDEA /* Angles.app */,
+				D804951F1CCD215100C1CDEA /* Goniometer.app */,
 				D80495331CCD215100C1CDEA /* AnglesTests.xctest */,
 			);
 			name = Products;
@@ -166,7 +166,7 @@
 			);
 			name = Angles;
 			productName = angles;
-			productReference = D804951F1CCD215100C1CDEA /* Angles.app */;
+			productReference = D804951F1CCD215100C1CDEA /* Goniometer.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D80495321CCD215100C1CDEA /* AnglesTests */ = {
@@ -491,7 +491,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.angles;
-				PRODUCT_NAME = Angles;
+				PRODUCT_NAME = Goniometer;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -508,7 +508,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.angles;
-				PRODUCT_NAME = Angles;
+				PRODUCT_NAME = Goniometer;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
