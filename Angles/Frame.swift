@@ -30,23 +30,23 @@ class Frame : NSObject, NSCoding{
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
-        let seconds = aDecoder.decodeDoubleForKey(PropertyKey.secondsKey)
-        let image = aDecoder.decodeObjectForKey(PropertyKey.imageKey) as! UIImage
-        let pointsCount = aDecoder.decodeIntegerForKey(PropertyKey.pointsCountKey)
+        let seconds = aDecoder.decodeDouble(forKey: PropertyKey.secondsKey)
+        let image = aDecoder.decodeObject(forKey: PropertyKey.imageKey) as! UIImage
+        let pointsCount = aDecoder.decodeInteger(forKey: PropertyKey.pointsCountKey)
         var points = [CGPoint]()
         for i in 0..<pointsCount {
-            let point = aDecoder.decodeCGPointForKey(PropertyKey.pointsKey + String(i))
+            let point = aDecoder.decodeCGPoint(forKey: PropertyKey.pointsKey + String(i))
             points.append(point)
         }
         self.init(seconds:seconds, image:image, points: points)
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeDouble(seconds, forKey: PropertyKey.secondsKey)
-        aCoder.encodeObject(image, forKey: PropertyKey.imageKey)
-        aCoder.encodeInteger(points.count, forKey: PropertyKey.pointsCountKey)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(seconds, forKey: PropertyKey.secondsKey)
+        aCoder.encode(image, forKey: PropertyKey.imageKey)
+        aCoder.encode(points.count, forKey: PropertyKey.pointsCountKey)
         for i in 0..<points.count {
-            aCoder.encodeCGPoint(points[i], forKey: PropertyKey.pointsKey + String(i))
+            aCoder.encode(points[i], forKey: PropertyKey.pointsKey + String(i))
         }
     }
     

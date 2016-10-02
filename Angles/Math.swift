@@ -10,11 +10,11 @@ import Foundation
 import CoreGraphics
 
 class Math {
-    static func getDistanceBetweenPoints(a:CGPoint, b:CGPoint) -> CGFloat {
+    static func getDistanceBetweenPoints(_ a:CGPoint, b:CGPoint) -> CGFloat {
         return hypot(a.x - b.x, a.y - b.y)
     }
     
-    static func getAcuteAngleInRadians(point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CGFloat {
+    static func getAcuteAngleInRadians(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CGFloat {
         let len12 = getDistanceBetweenPoints(point1, b: point2)
         let len23 = getDistanceBetweenPoints(point2, b: point3)
         let len31 = getDistanceBetweenPoints(point3, b: point1)
@@ -23,7 +23,7 @@ class Math {
         return angle
     }
     
-    static func getAcuteAngleInDegrees(point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CGFloat {
+    static func getAcuteAngleInDegrees(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CGFloat {
         let len12 = getDistanceBetweenPoints(point1, b: point2)
         let len23 = getDistanceBetweenPoints(point2, b: point3)
         let len31 = getDistanceBetweenPoints(point3, b: point1)
@@ -32,7 +32,7 @@ class Math {
         return radiansToDegrees(angle)
     }
     
-    static func radiansToDegrees(radians: CGFloat) -> CGFloat {
+    static func radiansToDegrees(_ radians: CGFloat) -> CGFloat {
         return (radians * 180) / CGFloat(M_PI)
     }
 }

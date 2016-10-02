@@ -14,7 +14,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        self.navigationItem.leftBarButtonItem = self.editButtonItem
         
         // Video.ClearSavedVideos()
         videos = Video.LoadVideos()
@@ -23,29 +23,28 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-
     
     // MARK: UITableViewDataSource
 
     // Setup:
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return videos.count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellIdentifier = "VideoTableViewCell"
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! VideoTableViewCell
-        let video = videos[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! VideoTableViewCell
+        let video = videos[(indexPath as NSIndexPath).row]
         
         cell.nameLabel.text = video.name
         cell.dateLabel.text = video.getFormattedDateCreated()
         cell.thumbnailImage.image = video.getThumbnailImage()
         cell.nameTextField.text = video.name
-        cell.nameTextField.hidden = true
+        cell.nameTextField.isHidden = true
         cell.nameTextField.delegate = self
         
         return cell
@@ -53,15 +52,15 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
 
     // Edit mode:
     
-    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         // Delete Action:
-        let deleteAction = UITableViewRowAction(style: .Normal, title: "Delete", handler: {action,indexPath in
-            let video = self.videos[indexPath.row]
+        let deleteAction = UITableViewRowAction(style: .normal, title: "Delete", handler: {action,indexPath in
+            let video = self.videos[(indexPath as NSIndexPath).row]
             do {
                 // Delete video data from user's Documents directory:
                 try video.deleteData()
-            } catch Video.VideoError.SaveError(let message, let error) {
+            } catch Video.VideoError.saveError(let message, let error) {
                 self.displayErrorAlert(message)
                 if error != nil {
                     print(error)
@@ -72,17 +71,17 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             }
             
             // Remove video object from list:
-            self.videos.removeAtIndex(indexPath.row)
+            self.videos.remove(at: (indexPath as NSIndexPath).row)
             self.saveVideos()
             
             // Remove video from table view:
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            tableView.deleteRows(at: [indexPath], with: .fade)
 
         })
         deleteAction.backgroundColor = UIColor(red: 0.9, green: 0, blue: 0, alpha: 1.0)
         
         // Edit Action:
-        let editAction = UITableViewRowAction(style: .Normal, title: " Edit  ", handler: {action,indexPath in
+        let editAction = UITableViewRowAction(style: .normal, title: " Edit  ", handler: {action,indexPath in
             self.editNameTextFieldAt(indexPath)
         })
         editAction.backgroundColor = UIColor(red: 0, green: 0.7, blue: 0, alpha: 1.0)
@@ -90,27 +89,27 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         return [deleteAction, editAction]
     }
     
-    func editNameTextFieldAt(indexPath: NSIndexPath, highlightText: Bool = false) {
-        let cell = tableView.cellForRowAtIndexPath(indexPath) as! VideoTableViewCell
+    func editNameTextFieldAt(_ indexPath: IndexPath, highlightText: Bool = false) {
+        let cell = tableView.cellForRow(at: indexPath) as! VideoTableViewCell
         let textField = cell.nameTextField
         
         // Hide name label:
-        cell.nameLabel.hidden = true
+        cell.nameLabel.isHidden = true
         
         // Show text field:
-        textField.tag = indexPath.row
-        textField.text = cell.nameLabel.text
-        textField.hidden = false
-        textField.becomeFirstResponder()
+        textField?.tag = (indexPath as NSIndexPath).row
+        textField?.text = cell.nameLabel.text
+        textField?.isHidden = false
+        textField?.becomeFirstResponder()
         if highlightText {
             // Not sure why, but this has to be queued up to work:
             delay(0.1, fn: {
-                textField.selectedTextRange = textField.textRangeFromPosition(textField.beginningOfDocument, toPosition: textField.endOfDocument)
+                textField?.selectedTextRange = textField?.textRange(from: (textField?.beginningOfDocument)!, to: (textField?.endOfDocument)!)
             })
         }
         
         // Scroll to the row:
-        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top , animated: true)
+        tableView.scrollToRow(at: indexPath, at: .top , animated: true)
         
         // Stop edit mode:
         stopEditMode()
@@ -127,27 +126,27 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     // MARK: UITextFieldDelegate
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
     
-    func textFieldDidEndEditing(textField: UITextField) {
-        let indexPath = NSIndexPath(forRow: textField.tag, inSection: 0)
-        let cell = tableView.cellForRowAtIndexPath(indexPath) as! VideoTableViewCell
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        let indexPath = IndexPath(row: textField.tag, section: 0)
+        let cell = tableView.cellForRow(at: indexPath) as! VideoTableViewCell
         
         // If text field is not empty:
         if cell.nameTextField.text != nil && cell.nameTextField.text != "" {
             
             // Update video model and name label:
             cell.nameLabel.text = cell.nameTextField.text!
-            videos[indexPath.row].name = cell.nameTextField.text!
+            videos[(indexPath as NSIndexPath).row].name = cell.nameTextField.text!
             saveVideos()
         }
         
         // Hide text field, display label:
-        cell.nameTextField.hidden = true
-        cell.nameLabel.hidden = false
+        cell.nameTextField.isHidden = true
+        cell.nameLabel.isHidden = false
         
         // Make sure editing mode is off:
         // (in case it didn't work the first time, in editActionsForRowAtIndexPath)
@@ -156,27 +155,27 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
 
     // MARK: UIImagePickerControllerDelegate
     
-    func imagePickerControllerDidCancel(picker: UIImagePickerController){
-        dismissViewControllerAnimated(true, completion: nil)
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController){
+        dismiss(animated: true, completion: nil)
     }
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]){
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
         
         // Dismiss the image picker controller:
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
         
         // Get the URL of the video in the tmp directory:
-        let videoURL = info[UIImagePickerControllerMediaURL] as? NSURL
+        let videoURL = info[UIImagePickerControllerMediaURL] as? URL
         if videoURL == nil {
             displayErrorAlert("Could not get video URL")
             return
         }
         
         // Get the creation date of the video, or the default (now):
-        var dateCreated = NSDate()
-        if let referenceURL = info[UIImagePickerControllerReferenceURL] as? NSURL {
-            if let libraryVideoAsset = PHAsset.fetchAssetsWithALAssetURLs([referenceURL], options: nil).firstObject as? PHAsset {
-                dateCreated = libraryVideoAsset.creationDate ?? NSDate()
+        var dateCreated = Date()
+        if let referenceURL = info[UIImagePickerControllerReferenceURL] as? URL {
+            if let libraryVideoAsset = PHAsset.fetchAssets(withALAssetURLs: [referenceURL], options: nil).firstObject as? PHAsset {
+                dateCreated = libraryVideoAsset.creationDate ?? Date()
             }
         }
         
@@ -186,15 +185,15 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             let video = try Video(tempVideoURL: videoURL!, dateCreated: dateCreated)
             
             // Add new video to the list:
-            videos.insert(video, atIndex: 0)
+            videos.insert(video, at: 0)
             saveVideos()
             
             // Make it display in the table view:
-            let newIndexPath = NSIndexPath(forRow: 0, inSection: 0)
-            tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Top)
-            tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: .Top, animated: true)
+            let newIndexPath = IndexPath(row: 0, section: 0)
+            tableView.insertRows(at: [newIndexPath], with: .top)
+            tableView.scrollToRow(at: newIndexPath, at: .top, animated: true)
             editNameTextFieldAt(newIndexPath, highlightText: true)
-        } catch Video.VideoError.SaveError(let message, let error) {
+        } catch Video.VideoError.saveError(let message, let error) {
             displayErrorAlert(message)
             if error != nil {
                 print(error)
@@ -208,51 +207,51 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     // MARK: Actions
     
-    @IBAction func addVideo(sender: UIBarButtonItem) {
+    @IBAction func addVideo(_ sender: UIBarButtonItem) {
         
-        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .Alert)
-        if UIImagePickerController.isSourceTypeAvailable(.Camera) && UIImagePickerController.isCameraDeviceAvailable(.Rear) {
-            menu.addAction(UIAlertAction(title: "Camera", style: .Default, handler: {_ in self.presentImagePickerController(.Camera)}))
+        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
+        if UIImagePickerController.isSourceTypeAvailable(.camera) && UIImagePickerController.isCameraDeviceAvailable(.rear) {
+            menu.addAction(UIAlertAction(title: "Camera", style: .default, handler: {_ in self.presentImagePickerController(.camera)}))
         }
-        if UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary) {
-            menu.addAction(UIAlertAction(title: "Photo Library", style: .Default, handler: {_ in self.presentImagePickerController(.PhotoLibrary)}))
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+            menu.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: {_ in self.presentImagePickerController(.photoLibrary)}))
         }
-        menu.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
-        presentViewController(menu, animated: true, completion: nil)
+        menu.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        present(menu, animated: true, completion: nil)
     }
     
-    private func presentImagePickerController(sourceType: UIImagePickerControllerSourceType) {
+    fileprivate func presentImagePickerController(_ sourceType: UIImagePickerControllerSourceType) {
         let imagePickerController = UIImagePickerController()
         imagePickerController.sourceType = sourceType
         imagePickerController.mediaTypes = [kUTTypeMovie as String]
-        if sourceType == .Camera {
-            imagePickerController.cameraCaptureMode = .Video
-            imagePickerController.cameraDevice = .Rear
+        if sourceType == .camera {
+            imagePickerController.cameraCaptureMode = .video
+            imagePickerController.cameraDevice = .rear
         }
         imagePickerController.allowsEditing = false
         imagePickerController.delegate = self
-        presentViewController(imagePickerController, animated: true, completion: nil)
+        present(imagePickerController, animated: true, completion: nil)
     }
     
     // MARK: - Navigation
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ShowFrames" {
-            let framesViewController = segue.destinationViewController as! FramesViewController
+            let framesViewController = segue.destination as! FramesViewController
             let selectedVideoCell = sender as! VideoTableViewCell
-            let indexPath = tableView.indexPathForCell(selectedVideoCell)!
-            framesViewController.video = videos[indexPath.row]
+            let indexPath = tableView.indexPath(for: selectedVideoCell)!
+            framesViewController.video = videos[(indexPath as NSIndexPath).row]
             framesViewController.saveDelegate = self
         }
     }
     
     // MARK: Helper methods
     
-    func displayErrorAlert(message: String) {
+    func displayErrorAlert(_ message: String) {
         print(message)
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .Alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))
-        presentViewController(alert, animated: true, completion: nil)
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
     
     
@@ -262,7 +261,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         background({
             do {
                 try Video.SaveVideos(self.videos)
-            } catch Video.VideoError.SaveError(let message, let error) {
+            } catch Video.VideoError.saveError(let message, let error) {
                 self.async({
                     self.displayErrorAlert(message)
                     if error != nil {
@@ -270,7 +269,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
                     }
                 })
             } catch let error as NSError {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.displayErrorAlert("Somethine went wrong while attempting to save videos")
                     print(error)
                 })
@@ -278,22 +277,22 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         })
     }
     
-    func async(fn: (() -> Void)) {
-        let mainQueue = dispatch_get_main_queue()
-        dispatch_async(mainQueue, {
+    func async(_ fn: @escaping (() -> Void)) {
+        let mainQueue = DispatchQueue.main
+        mainQueue.async(execute: {
             fn()
         })
     }
     
-    func delay(delay:Double, fn :(() -> Void)) {
-        let mainQueue = dispatch_get_main_queue()
-        let dispatchTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delay * Double(NSEC_PER_SEC)))
-        dispatch_after(dispatchTime, mainQueue, fn)
+    func delay(_ delay:Double, fn :@escaping (() -> Void)) {
+        let mainQueue = DispatchQueue.main
+        let dispatchTime = DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+        mainQueue.asyncAfter(deadline: dispatchTime, execute: fn)
     }
     
-    func background(fn: (() -> Void)) {
-        let backgroundQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)
-        dispatch_async(backgroundQueue, {
+    func background(_ fn: @escaping (() -> Void)) {
+        let backgroundQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated)
+        backgroundQueue.async(execute: {
             fn()
         })
     }

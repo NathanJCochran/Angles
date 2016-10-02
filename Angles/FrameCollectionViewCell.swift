@@ -16,6 +16,6 @@ class FrameCollectionViewCell: UICollectionViewCell {
         self.backgroundView = UIView(frame: self.bounds)
         self.backgroundView!.backgroundColor = nil
         self.selectedBackgroundView = UIView(frame:self.bounds)
-        self.selectedBackgroundView!.backgroundColor = UIColor.yellowColor()
+        self.selectedBackgroundView!.backgroundColor = UIColor.yellow
     }
 }

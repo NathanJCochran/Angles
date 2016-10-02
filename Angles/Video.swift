@@ -13,24 +13,24 @@ class Video : NSObject, NSCoding{
     
     // MARK: Properties
     var name: String
-    var dateCreated: NSDate
-    var videoURL: NSURL
+    var dateCreated: Date
+    var videoURL: URL
     var frames: [Frame]
     
     // Private:
-    private var cachedThumbnailImage: UIImage?
+    fileprivate var cachedThumbnailImage: UIImage?
     
-    private static let DocumentsDirectoryURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-    private static let VideoFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videoFiles")
-    private static let CSVFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("csv")
-    private static let XLSXFilesDirectoryURL = DocumentsDirectoryURL.URLByAppendingPathComponent("xlsx")
-    private static let ArchiveURL = DocumentsDirectoryURL.URLByAppendingPathComponent("videos")
-    private static let FileNameDateFormat = "yyyyMMddHHmmss"
-    private static let XLSXColumnWidth = 20.0
+    fileprivate static let DocumentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    fileprivate static let VideoFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("videoFiles")
+    fileprivate static let CSVFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("csv")
+    fileprivate static let XLSXFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("xlsx")
+    fileprivate static let ArchiveURL = DocumentsDirectoryURL.appendingPathComponent("videos")
+    fileprivate static let FileNameDateFormat = "yyyyMMddHHmmss"
+    fileprivate static let XLSXColumnWidth = 20.0
     
-    enum VideoError: ErrorType {
-        case SaveError(message: String, error: NSError?)
-        case XLSXError(message: String, error: String?)
+    enum VideoError: Error {
+        case saveError(message: String, error: NSError?)
+        case xlsxError(message: String, error: String?)
     }
     
     // MARK: Types
@@ -42,30 +42,30 @@ class Video : NSObject, NSCoding{
         static let framesCountKey = "framesCount"
     }
     
-    static func SaveVideos(videos: [Video]) throws {
-        let success = NSKeyedArchiver.archiveRootObject(videos, toFile: Video.ArchiveURL.path!)
+    static func SaveVideos(_ videos: [Video]) throws {
+        let success = NSKeyedArchiver.archiveRootObject(videos, toFile: Video.ArchiveURL.path)
         if !success {
-            throw VideoError.SaveError(message: "Could not archive video objects", error: nil)
+            throw VideoError.saveError(message: "Could not archive video objects", error: nil)
         }
     }
     
     static func LoadVideos() -> [Video] {
-        if let videos = NSKeyedUnarchiver.unarchiveObjectWithFile(Video.ArchiveURL.path!) as? [Video] {
+        if let videos = NSKeyedUnarchiver.unarchiveObject(withFile: Video.ArchiveURL.path) as? [Video] {
             return videos
         }
         return [Video]()
     }
     
     static func ClearSavedVideos() {
-        let fileManager = NSFileManager.defaultManager()
+        let fileManager = FileManager.default
         
         do {
             for url in [Video.VideoFilesDirectoryURL, Video.CSVFilesDirectoryURL, Video.XLSXFilesDirectoryURL, Video.DocumentsDirectoryURL] {
-                let directoryContents = try? fileManager.contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+                let directoryContents = try? fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions())
                 if directoryContents != nil {
                     for content in directoryContents! {
                         print("Removing: " + content.absoluteString)
-                        try fileManager.removeItemAtURL(content)
+                        try fileManager.removeItem(at: content)
                     }
                 }
             }
@@ -75,7 +75,7 @@ class Video : NSObject, NSCoding{
         }
     }
 
-    init(name: String, dateCreated: NSDate, videoURL: NSURL, frames: [Frame] = []) {
+    init(name: String, dateCreated: Date, videoURL: URL, frames: [Frame] = []) {
         self.name = name
         if name == "" {
             self.name = "Untitled"
@@ -85,39 +85,39 @@ class Video : NSObject, NSCoding{
         self.frames = frames
     }
     
-    convenience init(tempVideoURL: NSURL, dateCreated: NSDate = NSDate()) throws {
+    convenience init(tempVideoURL: URL, dateCreated: Date = Date()) throws {
         
         // Make sure the video files directory exists:
-        let fileManager = NSFileManager.defaultManager()
+        let fileManager = FileManager.default
         do {
-            try fileManager.createDirectoryAtURL(Video.VideoFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+            try fileManager.createDirectory(at: Video.VideoFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
         } catch let error as NSError {
-            throw VideoError.SaveError(message: "Could not create video files directory", error: error)
+            throw VideoError.saveError(message: "Could not create video files directory", error: error)
         }
         
         // Create new video URL:
         let fileExtension = tempVideoURL.pathExtension
         if fileExtension == nil {
-            throw VideoError.SaveError(message: "No file extension for video: " + tempVideoURL.absoluteString, error: nil)
+            throw VideoError.saveError(message: "No file extension for video: " + tempVideoURL.absoluteString, error: nil)
         }
-        let formatter = NSDateFormatter()
-        formatter.dateStyle = .NoStyle
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
         formatter.dateFormat = Video.FileNameDateFormat
-        let fileName = formatter.stringFromDate(dateCreated)
-        var newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension!)
+        let fileName = formatter.string(from: dateCreated)
+        var newVideoURL = Video.VideoFilesDirectoryURL.appendingPathComponent(fileName).appendingPathExtension(fileExtension)
         
         // Check if video already exists at this URL, and update URL if so:
         var count = 1
-        while fileManager.fileExistsAtPath(newVideoURL.path!) {
-            newVideoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(fileName + "_" + String(count)).URLByAppendingPathExtension(fileExtension!)
+        while fileManager.fileExists(atPath: newVideoURL.path) {
+            newVideoURL = Video.VideoFilesDirectoryURL.appendingPathComponent(fileName + "_" + String(count)).appendingPathExtension(fileExtension)
             count += 1
         }
         
         // Move the file from the tmp directory to the video files directory:
         do {
-            try fileManager.moveItemAtURL(tempVideoURL, toURL: newVideoURL)
+            try fileManager.moveItem(at: tempVideoURL, to: newVideoURL)
         } catch let error as NSError {
-            throw VideoError.SaveError(message: "Could not move video file from tmp directory", error:error)
+            throw VideoError.saveError(message: "Could not move video file from tmp directory", error:error)
         }
         
         // Create new video domain object:
@@ -127,67 +127,67 @@ class Video : NSObject, NSCoding{
     // MARK: Encoding
     
     required convenience init(coder aDecoder: NSCoder) {
-        let name = aDecoder.decodeObjectForKey(PropertyKey.nameKey) as! String
-        let dateCreated = aDecoder.decodeObjectForKey(PropertyKey.dateCreatedKey) as! NSDate
-        let videoPathComponent = aDecoder.decodeObjectForKey(PropertyKey.videoURLKey) as! String
-        let videoURL = Video.VideoFilesDirectoryURL.URLByAppendingPathComponent(videoPathComponent)
-        let frames = aDecoder.decodeObjectForKey(PropertyKey.framesKey) as! [Frame]
+        let name = aDecoder.decodeObject(forKey: PropertyKey.nameKey) as! String
+        let dateCreated = aDecoder.decodeObject(forKey: PropertyKey.dateCreatedKey) as! Date
+        let videoPathComponent = aDecoder.decodeObject(forKey: PropertyKey.videoURLKey) as! String
+        let videoURL = Video.VideoFilesDirectoryURL.appendingPathComponent(videoPathComponent)
+        let frames = aDecoder.decodeObject(forKey: PropertyKey.framesKey) as! [Frame]
         self.init(name: name, dateCreated: dateCreated, videoURL: videoURL, frames: frames)
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(name, forKey: PropertyKey.nameKey)
-        aCoder.encodeObject(dateCreated, forKey: PropertyKey.dateCreatedKey)
-        aCoder.encodeObject(videoURL.lastPathComponent!, forKey: PropertyKey.videoURLKey)
-        aCoder.encodeObject(frames, forKey: PropertyKey.framesKey)
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(name, forKey: PropertyKey.nameKey)
+        aCoder.encode(dateCreated, forKey: PropertyKey.dateCreatedKey)
+        aCoder.encode(videoURL.lastPathComponent, forKey: PropertyKey.videoURLKey)
+        aCoder.encode(frames, forKey: PropertyKey.framesKey)
     }
     
     // MARK: Utility functions
     
     func deleteData() throws {
-        let fileManager = NSFileManager.defaultManager()
+        let fileManager = FileManager.default
         do {
-            try fileManager.removeItemAtURL(videoURL)
+            try fileManager.removeItem(at: videoURL)
         } catch let error as NSError {
-            throw VideoError.SaveError(message: "Could not delete video file from Documents directory", error: error)
+            throw VideoError.saveError(message: "Could not delete video file from Documents directory", error: error)
         }
         
         let csvURL = getCSVURL()
-        if fileManager.fileExistsAtPath(csvURL.path!) {
+        if fileManager.fileExists(atPath: csvURL.path) {
             do {
-                try fileManager.removeItemAtURL(csvURL)
+                try fileManager.removeItem(at: csvURL)
             } catch let error as NSError {
-                throw VideoError.SaveError(message: "Could not delete CSV file from Documents directory", error: error)
+                throw VideoError.saveError(message: "Could not delete CSV file from Documents directory", error: error)
             }
         }
         
         let xlsxURL = getXLSXURL()
-        if fileManager.fileExistsAtPath(xlsxURL.path!) {
+        if fileManager.fileExists(atPath: xlsxURL.path) {
             do {
-                try fileManager.removeItemAtURL(xlsxURL)
+                try fileManager.removeItem(at: xlsxURL)
             } catch let error as NSError {
-                throw VideoError.SaveError(message: "Could not delete XSLX file from Documents directory", error: error)
+                throw VideoError.saveError(message: "Could not delete XSLX file from Documents directory", error: error)
             }
         }
     }
     
     func getFormattedDateCreated() -> String {
-        let formatter = NSDateFormatter()
-        formatter.dateStyle = .LongStyle
-        formatter.timeStyle = .ShortStyle
-        return formatter.stringFromDate(dateCreated)
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .short
+        return formatter.string(from: dateCreated)
     }
     
-    func getCSVURL() -> NSURL {
+    func getCSVURL() -> URL {
         let fileExtension = "csv"
-        let fileName = videoURL.URLByDeletingPathExtension!.lastPathComponent!
-        return Video.CSVFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension)
+        let fileName = videoURL.deletingPathExtension().lastPathComponent
+        return Video.CSVFilesDirectoryURL.appendingPathComponent(fileName).appendingPathExtension(fileExtension)
     }
     
-    func getXLSXURL() -> NSURL {
+    func getXLSXURL() -> URL {
         let fileExtension = "xlsx"
-        let fileName = videoURL.URLByDeletingPathExtension!.lastPathComponent!
-        return Video.XLSXFilesDirectoryURL.URLByAppendingPathComponent(fileName).URLByAppendingPathExtension(fileExtension)
+        let fileName = videoURL.deletingPathExtension().lastPathComponent
+        return Video.XLSXFilesDirectoryURL.appendingPathComponent(fileName).appendingPathExtension(fileExtension)
     }
     
     func getThumbnailImage() -> UIImage {
@@ -198,15 +198,15 @@ class Video : NSObject, NSCoding{
             return cachedThumbnailImage!
         }
         
-        let videoAsset = AVURLAsset(URL: videoURL, options: nil)
+        let videoAsset = AVURLAsset(url: videoURL, options: nil)
         let videoImageGenerator = AVAssetImageGenerator(asset: videoAsset)
         videoImageGenerator.appliesPreferredTrackTransform = true
         videoImageGenerator.requestedTimeToleranceBefore = kCMTimeZero
         videoImageGenerator.requestedTimeToleranceAfter = kCMTimeZero
         do {
             let time = CMTime(seconds:0, preferredTimescale: videoAsset.duration.timescale)
-            let cgImage = try videoImageGenerator.copyCGImageAtTime(time, actualTime: nil)
-            cachedThumbnailImage = UIImage(CGImage: cgImage)
+            let cgImage = try videoImageGenerator.copyCGImage(at: time, actualTime: nil)
+            cachedThumbnailImage = UIImage(cgImage: cgImage)
             return cachedThumbnailImage!
         } catch {
             return UIImage() // Default image
@@ -221,7 +221,7 @@ class Video : NSObject, NSCoding{
         for i in 0..<angleCount {
             fileData += String(format: "Angle %d,", i+1)
         }
-        fileData.removeAtIndex(fileData.endIndex.predecessor())
+        fileData.remove(at: fileData.characters.index(before: fileData.endIndex))
         fileData += "\n"
         
         // Create row for each frame:
@@ -231,7 +231,7 @@ class Video : NSObject, NSCoding{
             for angle in angles {
                 fileData += String(format: "%f,", angle)
             }
-            fileData.removeAtIndex(fileData.endIndex.predecessor())
+            fileData.remove(at: fileData.characters.index(before: fileData.endIndex))
             fileData += "\n"
         }
         
@@ -241,34 +241,34 @@ class Video : NSObject, NSCoding{
     func saveCSV() throws  {
         
         // Make sure the CSV files directory exists:
-        let fileManager = NSFileManager.defaultManager()
+        let fileManager = FileManager.default
         do {
-            try fileManager.createDirectoryAtURL(Video.CSVFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+            try fileManager.createDirectory(at: Video.CSVFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
         } catch let error as NSError {
-            throw VideoError.SaveError(message: "Could not create CSV files directory", error: error)
+            throw VideoError.saveError(message: "Could not create CSV files directory", error: error)
         }
 
         // Save the CSV data to the specified location:
         let fileData = getCSV()
         do {
             
-            try fileData.writeToURL(getCSVURL(), atomically: true, encoding: NSUTF8StringEncoding)
+            try fileData.write(to: getCSVURL(), atomically: true, encoding: String.Encoding.utf8)
         } catch let error as NSError {
-            throw VideoError.SaveError(message: "Could not write CSV data to temp file", error: error)
+            throw VideoError.saveError(message: "Could not write CSV data to temp file", error: error)
         }
     }
     
     func saveXLSX() throws {
         // Make sure the XLSX files directory exists:
-        let fileManager = NSFileManager.defaultManager()
+        let fileManager = FileManager.default
         do {
-            try fileManager.createDirectoryAtURL(Video.XLSXFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+            try fileManager.createDirectory(at: Video.XLSXFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
         } catch let error as NSError {
-            throw VideoError.SaveError(message: "Could not create XLSX files directory", error: error)
+            throw VideoError.saveError(message: "Could not create XLSX files directory", error: error)
         }
         
         // Create xlsx workbook:
-        let workbook = new_workbook((getXLSXURL().path! as NSString).fileSystemRepresentation)
+        let workbook = new_workbook((getXLSXURL().path as NSString).fileSystemRepresentation)
         let rightAlignedFormat = workbook_add_format(workbook)
         format_set_align(rightAlignedFormat, UInt8(LXW_ALIGN_RIGHT.rawValue))
         
@@ -279,39 +279,39 @@ class Video : NSObject, NSCoding{
         let pointCount = getMaxPointCount()
         var err = worksheet_write_string(pointsWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
         if err != LXW_NO_ERROR {
-            throw VideoError.XLSXError(message: "Could not write column 0 header to Points worksheet", error: String.fromCString(lxw_strerror(err)))
+            throw VideoError.xlsxError(message: "Could not write column 0 header to Points worksheet", error: String(cString: lxw_strerror(err)))
         }
         err = worksheet_set_column(pointsWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
         if err != LXW_NO_ERROR {
-            throw VideoError.XLSXError(message: "Could not set column 0 width in xlsx Points worksheet", error: String.fromCString(lxw_strerror(err)))
+            throw VideoError.xlsxError(message: "Could not set column 0 width in xlsx Points worksheet", error: String(cString: lxw_strerror(err)))
         }
         for i in 0..<pointCount {
             let column = UInt16(i+1)
             err = worksheet_write_string(pointsWorksheet, 0, column, String(format: "Point %d", column), rightAlignedFormat)
             if err != LXW_NO_ERROR {
-                throw VideoError.XLSXError(message: String(format:"Could not write column %d header to Points worksheet", column), error: String.fromCString(lxw_strerror(err)))
+                throw VideoError.xlsxError(message: String(format:"Could not write column %d header to Points worksheet", column), error: String(cString: lxw_strerror(err)))
             }
             err = worksheet_set_column(pointsWorksheet, 0, column, Video.XLSXColumnWidth, nil)
             if err != LXW_NO_ERROR {
-                throw VideoError.XLSXError(message: String(format: "Could not set column %d width in Points worksheet", column), error: String.fromCString(lxw_strerror(err)))
+                throw VideoError.xlsxError(message: String(format: "Could not set column %d width in Points worksheet", column), error: String(cString: lxw_strerror(err)))
             }
         }
         
         
         // Create row for each frame:
-        for (i, frame) in frames.enumerate() {
+        for (i, frame) in frames.enumerated() {
             let row = UInt32(i+1)
             err = worksheet_write_number(pointsWorksheet, row, 0, frame.seconds, nil)
             if err != LXW_NO_ERROR {
-                throw VideoError.XLSXError(message: String(format: "Could not write row %d timestamp to Points worksheet", row), error: String.fromCString(lxw_strerror(err)))
+                throw VideoError.xlsxError(message: String(format: "Could not write row %d timestamp to Points worksheet", row), error: String(cString: lxw_strerror(err)))
             }
             
             // Add all of the frame's points to the row:
-            for (j, point) in frame.points.enumerate() {
+            for (j, point) in frame.points.enumerated() {
                 let column = UInt16(j+1)
                 err = worksheet_write_string(pointsWorksheet, row, column, String(format: "(%f, %f)", point.x, point.y) , rightAlignedFormat)
                 if err != LXW_NO_ERROR {
-                    throw VideoError.XLSXError(message: String(format:"Could not write row %d column %d point to Points worksheet", row, column), error: String.fromCString(lxw_strerror(err)))
+                    throw VideoError.xlsxError(message: String(format:"Could not write row %d column %d point to Points worksheet", row, column), error: String(cString: lxw_strerror(err)))
                 }
             }
         }
@@ -323,39 +323,39 @@ class Video : NSObject, NSCoding{
         let angleCount = getMaxAngleCount()
         err = worksheet_write_string(anglesWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
         if err != LXW_NO_ERROR {
-            throw VideoError.XLSXError(message: "Could not write column 0 header to Angles worksheet", error: String.fromCString(lxw_strerror(err)))
+            throw VideoError.xlsxError(message: "Could not write column 0 header to Angles worksheet", error: String(cString: lxw_strerror(err)))
         }
         err = worksheet_set_column(anglesWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
         if err != LXW_NO_ERROR {
-            throw VideoError.XLSXError(message: "Could not set column 0 width in Angles worksheet", error: String.fromCString(lxw_strerror(err)))
+            throw VideoError.xlsxError(message: "Could not set column 0 width in Angles worksheet", error: String(cString: lxw_strerror(err)))
         }
         for i in 0..<angleCount {
             let column = UInt16(i+1)
             err = worksheet_write_string(anglesWorksheet, 0, column, String(format: "Angle %d (degrees)", column), rightAlignedFormat)
             if err != LXW_NO_ERROR {
-                throw VideoError.XLSXError(message: String(format:"Could not write column %d header to Angles worksheet", column), error: String.fromCString(lxw_strerror(err)))
+                throw VideoError.xlsxError(message: String(format:"Could not write column %d header to Angles worksheet", column), error: String(cString: lxw_strerror(err)))
             }
             err = worksheet_set_column(anglesWorksheet, 0, column, Video.XLSXColumnWidth, nil)
             if err != LXW_NO_ERROR {
-                throw VideoError.XLSXError(message: String(format:"Could not set column %d width in Angles worksheet", column), error: String.fromCString(lxw_strerror(err)))
+                throw VideoError.xlsxError(message: String(format:"Could not set column %d width in Angles worksheet", column), error: String(cString: lxw_strerror(err)))
             }
         }
         
         // Create row for each frame:
-        for (i, frame) in frames.enumerate() {
+        for (i, frame) in frames.enumerated() {
             let row = UInt32(i+1)
             err = worksheet_write_number(anglesWorksheet, row, 0, frame.seconds, nil)
             if err != LXW_NO_ERROR {
-                throw VideoError.XLSXError(message: String(format:"Could not write row %d timestamp to Angles worksheet", row), error: String.fromCString(lxw_strerror(err)))
+                throw VideoError.xlsxError(message: String(format:"Could not write row %d timestamp to Angles worksheet", row), error: String(cString: lxw_strerror(err)))
             }
             
             // Add all of the frame's angles to the row:
             let angles = frame.getAnglesInDegrees()
-            for (j, angle) in angles.enumerate() {
+            for (j, angle) in angles.enumerated() {
                 let column = UInt16(j+1)
                 err = worksheet_write_number(anglesWorksheet, row, column, Double(angle), nil)
                 if err != LXW_NO_ERROR {
-                    throw VideoError.XLSXError(message: String(format:"Could not write row %d column %d angle to Angles worksheet", row, column), error: String.fromCString(lxw_strerror(err)))
+                    throw VideoError.xlsxError(message: String(format:"Could not write row %d column %d angle to Angles worksheet", row, column), error: String(cString: lxw_strerror(err)))
                 }
             }
         }
@@ -363,7 +363,7 @@ class Video : NSObject, NSCoding{
         // Save the file:
         err = workbook_close(workbook)
         if err != LXW_NO_ERROR {
-            throw VideoError.XLSXError(message: "Could not close xlsx workbook", error: String.fromCString(lxw_strerror(err)))
+            throw VideoError.xlsxError(message: "Could not close xlsx workbook", error: String(cString: lxw_strerror(err)))
         }
     }
     
