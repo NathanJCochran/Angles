@@ -2,8 +2,8 @@
 //  ViewController.swift
 //  Angles
 //
-//  Created by Nathan on 4/24/16.
-//  Copyright © 2016 Nathan. All rights reserved.
+//  Created by Nathaniel J Cochran on 4/24/16.
+//  Copyright © 2016 Nathaniel J Cochran. All rights reserved.
 //
 
 import UIKit
@@ -332,7 +332,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     fileprivate func setVideoTimeLabel(_ totalSeconds:Double) {
         let hours = Int(floor(totalSeconds / 3600))
         let minutes = Int(floor(totalSeconds.truncatingRemainder(dividingBy: 3600) / 60))
-        let seconds = Int(floor((totalSeconds % 3600).truncatingRemainder(dividingBy: 60)))
+        let seconds = Int(floor((totalSeconds.truncatingRemainder(dividingBy: 3600)).truncatingRemainder(dividingBy: 60)))
         videoDurationLabel.text = String(format:"%d:%02d:%02d", hours, minutes, seconds)
     }
     
@@ -501,7 +501,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         let angle = Math.getAcuteAngleInDegrees(point1, point2: point2, point3: point3)
         let roundedAngle = round(angle * 100) / 100
-        textLayer.string = String(roundedAngle) + "\u{00B0}"
+        textLayer.string = String(describing: roundedAngle) + "\u{00B0}"
         return textLayer
     }
     

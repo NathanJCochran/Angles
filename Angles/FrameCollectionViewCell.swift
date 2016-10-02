@@ -2,8 +2,8 @@
 //  FrameCollectionViewCell.swift
 //  Angles
 //
-//  Created by Nathan on 5/15/16.
-//  Copyright © 2016 Nathan. All rights reserved.
+//  Created by Nathaniel J Cochran on 5/15/16.
+//  Copyright © 2016 Nathaniel J Cochran. All rights reserved.
 //
 
 import UIKit

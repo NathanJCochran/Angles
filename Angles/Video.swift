@@ -2,8 +2,8 @@
 //  Video.swift
 //  Angles
 //
-//  Created by Nathan on 4/24/16.
-//  Copyright © 2016 Nathan. All rights reserved.
+//  Created by Nathaniel J Cochran on 4/24/16.
+//  Copyright © 2016 Nathaniel J Cochran. All rights reserved.
 //
 import UIKit
 import AVFoundation
@@ -97,9 +97,6 @@ class Video : NSObject, NSCoding{
         
         // Create new video URL:
         let fileExtension = tempVideoURL.pathExtension
-        if fileExtension == nil {
-            throw VideoError.saveError(message: "No file extension for video: " + tempVideoURL.absoluteString, error: nil)
-        }
         let formatter = DateFormatter()
         formatter.dateStyle = .none
         formatter.dateFormat = Video.FileNameDateFormat

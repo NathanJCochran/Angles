@@ -2,8 +2,8 @@
 //  VideoTableViewController.swift
 //  Angles
 //
-//  Created by Nathan on 4/24/16.
-//  Copyright © 2016 Nathan. All rights reserved.
+//  Created by Nathaniel J Cochran on 4/24/16.
+//  Copyright © 2016 Nathaniel J Cochran. All rights reserved.
 //
 import UIKit
 import MobileCoreServices
@@ -16,7 +16,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = self.editButtonItem
         
-        // Video.ClearSavedVideos()
+        //Video.ClearSavedVideos()
         videos = Video.LoadVideos()
     }
 
@@ -174,7 +174,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         // Get the creation date of the video, or the default (now):
         var dateCreated = Date()
         if let referenceURL = info[UIImagePickerControllerReferenceURL] as? URL {
-            if let libraryVideoAsset = PHAsset.fetchAssets(withALAssetURLs: [referenceURL], options: nil).firstObject as? PHAsset {
+            if let libraryVideoAsset = PHAsset.fetchAssets(withALAssetURLs: [referenceURL], options: nil).firstObject as PHAsset? {
                 dateCreated = libraryVideoAsset.creationDate ?? Date()
             }
         }
