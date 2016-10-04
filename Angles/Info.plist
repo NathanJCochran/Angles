@@ -22,6 +22,10 @@
 	<string>3</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>The user is able to capture new videos</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>The user is able to capture videos with sound</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>The user is able to import videos from their photo library</string>
 	<key>UILaunchStoryboardName</key>

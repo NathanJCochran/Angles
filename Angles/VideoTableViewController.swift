@@ -227,6 +227,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         if sourceType == .camera {
             imagePickerController.cameraCaptureMode = .video
             imagePickerController.cameraDevice = .rear
+            imagePickerController.cameraFlashMode = .auto
         }
         imagePickerController.allowsEditing = false
         imagePickerController.delegate = self
