@@ -18,7 +18,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     let fontSize = CGFloat(14.0)
     
     // MARK: Properties
-    var videos: [Video]!
     var video: Video!
     var currentFrame: Frame!
     var documentController: UIDocumentInteractionController!
@@ -38,7 +37,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     var undoButtonRef: UIBarButtonItem!
     
     // MARK: Save videos delegate
-    // var saveDelegate: SaveVideoDelegate!
+    var saveDelegate: SaveVideosDelegate!
     
     // MARK: Outlets
     @IBOutlet weak var deleteFrameButton: UIBarButtonItem!
@@ -51,15 +50,15 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if videos == nil {
-            displayErrorAlert("Videos field not properly set")
+
+        // Make sure video was properly set:
+        if video == nil {
+            displayErrorAlert("video field not properly set")
             return
         }
         
-        // Make sure video was properly set:
-        if video == nil {
-            displayErrorAlert("Video field not properly set")
+        if saveDelegate == nil {
+            displayErrorAlert("saveDelegate field not properly set")
             return
         }
         
@@ -100,9 +99,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     override func didReceiveMemoryWarning() {
         print("FramesViewController received memory warning")
         super.didReceiveMemoryWarning()
-        for video in videos {
-            video.freeMemory()
-        }
+        
+        // TODO: Make sure parent view's didReceiveMemoryWarning method also called
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -147,7 +145,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             if currentFrame.points.count == 1 {
                 saveCurrentFrame()
             } else {
-                saveVideos()
+                //saveDelegate.saveVideos()
             }
         }
     }
@@ -205,7 +203,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         if currentFrame.points.isEmpty {
             deleteCurrentFrame()
         }
-        saveVideos()
+        //saveDelegate.saveVideos()
     }
     
     @IBAction func deleteFrameButtonPressed(_ sender: AnyObject) {
@@ -278,7 +276,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         frameCollectionView.insertItems(at: [newIndexPath])
         frameCollectionView.selectItem(at: newIndexPath, animated: true, scrollPosition: .centeredHorizontally)
         toggleUndoAndDeleteButtons(true)
-        saveVideos()
+        //saveDelegate.saveVideos()
     }
     
     func deleteCurrentFrame() {
@@ -294,7 +292,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
         toggleUndoAndDeleteButtons(false)
-        saveVideos()
+        //saveDelegate.saveVideos()
     }
     
     fileprivate func setCurrentFrameTo(_ frame: Frame, drawPoints: Bool = true) {
@@ -569,42 +567,5 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-    
-    // MARK: Persistence
-    
-    func saveVideos() {
-        background({
-            do {
-                try Video.SaveVideos(self.videos)
-            } catch Video.VideoError.saveError(let message, let error) {
-                self.async({
-                    self.displayErrorAlert(message)
-                    if error != nil {
-                        print(error!)
-                    }
-                })
-            } catch let error as NSError {
-                DispatchQueue.main.async(execute: {
-                    self.displayErrorAlert("Somethine went wrong while attempting to save videos")
-                    print(error)
-                })
-            }
-        })
-    }
-    
-    func async(_ fn: @escaping (() -> Void)) {
-        let mainQueue = DispatchQueue.main
-        mainQueue.async(execute: {
-            fn()
-        })
-    }
-    
-    func background(_ fn: @escaping (() -> Void)) {
-        let backgroundQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated)
-        backgroundQueue.async(execute: {
-            fn()
-        })
-    }
-
 }
 

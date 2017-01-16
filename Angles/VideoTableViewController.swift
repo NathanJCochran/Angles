@@ -9,23 +9,30 @@ import UIKit
 import MobileCoreServices
 import Photos
 
-class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate,  UITextFieldDelegate {
+protocol SaveVideosDelegate {
+    func saveVideos()
+    func freeMemory()
+}
+
+class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate,  UITextFieldDelegate, SaveVideosDelegate {
     var videos = [Video]()
 
     override func viewDidLoad() {
+        print("VideoTableViewController viewDidLoad")
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = self.editButtonItem
         
         // Video.ClearSavedVideos() // WARNING: Erases ALL user data
+        print("loading videos")
         videos = Video.LoadVideos()
+        print("videos loaded")
+        (UIApplication.shared.delegate as! AppDelegate).saveDelegate = self
     }
 
     override func didReceiveMemoryWarning() {
-        print("VideoTableViewController received memory warning")
+        print("VideoTableViewController didReceiveMemoryWarning")
         super.didReceiveMemoryWarning()
-        for video in videos {
-            video.freeMemory()
-        }
+        freeMemory()
     }
     
     deinit {
@@ -88,7 +95,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             
             // Remove video object from list:
             self.videos.remove(at: (indexPath as NSIndexPath).row)
-            self.saveVideos()
+            //self.saveVideos()
             
             // Remove video from table view:
             tableView.deleteRows(at: [indexPath], with: .fade)
@@ -157,7 +164,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             // Update video model and name label:
             cell.nameLabel.text = cell.nameTextField.text!
             videos[(indexPath as NSIndexPath).row].name = cell.nameTextField.text!
-            saveVideos()
+            //saveVideos()
         }
         
         // Hide text field, display label:
@@ -202,7 +209,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             
             // Add new video to the list:
             videos.insert(video, at: 0)
-            saveVideos()
+            //saveVideos()
             
             // Make it display in the table view:
             let newIndexPath = IndexPath(row: 0, section: 0)
@@ -257,8 +264,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             let framesViewController = segue.destination as! FramesViewController
             let selectedVideoCell = sender as! VideoTableViewCell
             let indexPath = tableView.indexPath(for: selectedVideoCell)!
-            framesViewController.videos = videos
             framesViewController.video = videos[(indexPath as NSIndexPath).row]
+            framesViewController.saveDelegate = self
         }
     }
     
@@ -275,23 +282,50 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     // MARK: Persistence
     
     func saveVideos() {
-        background({
-            do {
-                try Video.SaveVideos(self.videos)
-            } catch Video.VideoError.saveError(let message, let error) {
-                self.async({
-                    self.displayErrorAlert(message)
-                    if error != nil {
-                        print(error!)
-                    }
-                })
-            } catch let error as NSError {
-                DispatchQueue.main.async(execute: {
-                    self.displayErrorAlert("Somethine went wrong while attempting to save videos")
-                    print(error)
-                })
+        do {
+            print("saving videos")
+            try Video.SaveVideos(self.videos)
+            print("videos saved")
+        } catch Video.VideoError.saveError(let message, let error) {
+            self.displayErrorAlert(message)
+            if error != nil {
+                print(error!)
             }
-        })
+        } catch let error as NSError {
+            self.displayErrorAlert("Somethine went wrong while attempting to save videos")
+            print(error)
+            
+        }
+        
+        // Asynchronous version:
+        
+        //background({
+        //    do {
+        //        print("saving videos")
+        //        try Video.SaveVideos(self.videos)
+        //        print("videos saved")
+        //    } catch Video.VideoError.saveError(let message, let error) {
+        //        self.async({
+        //            self.displayErrorAlert(message)
+        //            if error != nil {
+        //                print(error!)
+        //            }
+        //        })
+        //    } catch let error as NSError {
+        //        DispatchQueue.main.async(execute: {
+        //            self.displayErrorAlert("Somethine went wrong while attempting to save videos")
+        //            print(error)
+        //        })
+        //    }
+        //})
+    }
+    
+    func freeMemory() {
+        print("freeing memory")
+        for video in videos {
+            video.freeMemory()
+        }
+        print("memory freed")
     }
     
     func async(_ fn: @escaping (() -> Void)) {
