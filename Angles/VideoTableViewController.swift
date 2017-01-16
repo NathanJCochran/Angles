@@ -9,19 +9,27 @@ import UIKit
 import MobileCoreServices
 import Photos
 
-class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate,  UITextFieldDelegate, SaveVideoDelegate {
+class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate,  UITextFieldDelegate {
     var videos = [Video]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.leftBarButtonItem = self.editButtonItem
         
-        //Video.ClearSavedVideos()
+        // Video.ClearSavedVideos() // WARNING: Erases ALL user data
         videos = Video.LoadVideos()
     }
 
     override func didReceiveMemoryWarning() {
+        print("VideoTableViewController received memory warning")
         super.didReceiveMemoryWarning()
+        for video in videos {
+            video.freeMemory()
+        }
+    }
+    
+    deinit {
+        print("VideoTableViewController deallocated")
     }
     
     // MARK: UITableViewDataSource
@@ -40,12 +48,20 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! VideoTableViewCell
         let video = videos[(indexPath as NSIndexPath).row]
         
-        cell.nameLabel.text = video.name
-        cell.dateLabel.text = video.getFormattedDateCreated()
-        cell.thumbnailImage.image = video.getThumbnailImage()
-        cell.nameTextField.text = video.name
-        cell.nameTextField.isHidden = true
-        cell.nameTextField.delegate = self
+        do {
+            cell.thumbnailImage.image = try video.getThumbnailImage()
+            cell.nameLabel.text = video.name
+            cell.dateLabel.text = video.getFormattedDateCreated()
+            cell.nameTextField.text = video.name
+            cell.nameTextField.isHidden = true
+            cell.nameTextField.delegate = self
+        } catch Video.VideoError.imageGenerationError(let message, let error) {
+            displayErrorAlert(message)
+            print(error)
+        } catch let error as NSError {
+            displayErrorAlert("Something went wrong while attempting to generate a thumbnail image")
+            print(error)
+        }
         
         return cell
     }
@@ -63,7 +79,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             } catch Video.VideoError.saveError(let message, let error) {
                 self.displayErrorAlert(message)
                 if error != nil {
-                    print(error)
+                    print(error!)
                 }
             } catch let error as NSError {
                 self.displayErrorAlert("Could not delete video data")
@@ -196,7 +212,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         } catch Video.VideoError.saveError(let message, let error) {
             displayErrorAlert(message)
             if error != nil {
-                print(error)
+                print(error!)
             }
         } catch let error as NSError {
             displayErrorAlert("Something went wrong while attempting to save new video")
@@ -241,8 +257,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             let framesViewController = segue.destination as! FramesViewController
             let selectedVideoCell = sender as! VideoTableViewCell
             let indexPath = tableView.indexPath(for: selectedVideoCell)!
+            framesViewController.videos = videos
             framesViewController.video = videos[(indexPath as NSIndexPath).row]
-            framesViewController.saveDelegate = self
         }
     }
     
@@ -266,7 +282,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
                 self.async({
                     self.displayErrorAlert(message)
                     if error != nil {
-                        print(error)
+                        print(error!)
                     }
                 })
             } catch let error as NSError {

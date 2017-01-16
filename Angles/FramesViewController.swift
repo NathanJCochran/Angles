@@ -10,10 +10,6 @@ import UIKit
 import CoreMedia
 import AVFoundation
 
-protocol SaveVideoDelegate {
-    func saveVideos()
-}
-
 class FramesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     let pointDiameterModifier = CGFloat(0.042)
@@ -22,11 +18,9 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     let fontSize = CGFloat(14.0)
     
     // MARK: Properties
-    
+    var videos: [Video]!
     var video: Video!
     var currentFrame: Frame!
-    var videoAsset: AVURLAsset!
-    var videoImageGenerator: AVAssetImageGenerator!
     var documentController: UIDocumentInteractionController!
     
     // MARK: References to drawn images:
@@ -44,7 +38,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     var undoButtonRef: UIBarButtonItem!
     
     // MARK: Save videos delegate
-    var saveDelegate: SaveVideoDelegate!
+    // var saveDelegate: SaveVideoDelegate!
     
     // MARK: Outlets
     @IBOutlet weak var deleteFrameButton: UIBarButtonItem!
@@ -58,27 +52,20 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if videos == nil {
+            displayErrorAlert("Videos field not properly set")
+            return
+        }
+        
         // Make sure video was properly set:
         if video == nil {
             displayErrorAlert("Video field not properly set")
             return
         }
         
-        // Make sure save delegate was property set:
-        if saveDelegate == nil {
-            displayErrorAlert("Save delegate field not properly set")
-        }
-        
         // Save references to bar button items so we can toggle their existence:
         deleteFrameButtonRef = deleteFrameButton
         undoButtonRef = undoButton
-        
-        // Load video and image generator:
-        videoAsset = AVURLAsset(url: video.videoURL as URL, options: nil)
-        videoImageGenerator = AVAssetImageGenerator(asset: videoAsset)
-        videoImageGenerator.appliesPreferredTrackTransform = true
-        videoImageGenerator.requestedTimeToleranceBefore = kCMTimeZero
-        videoImageGenerator.requestedTimeToleranceAfter = kCMTimeZero
         
         // Load document controller:
         documentController = UIDocumentInteractionController(url: video.getXLSXURL() as URL)
@@ -88,7 +75,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         // Set slider min and max:
         frameSlider.minimumValue = 0
-        frameSlider.maximumValue = Float(videoAsset.duration.seconds)
+        frameSlider.maximumValue = Float(video.getDuration().seconds)
         
         // Set current frame to first saved frame or default:
         if video.frames.count > 0 {
@@ -111,8 +98,11 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
 
     override func didReceiveMemoryWarning() {
+        print("FramesViewController received memory warning")
         super.didReceiveMemoryWarning()
-        print("Received memory warning")
+        for video in videos {
+            video.freeMemory()
+        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -125,6 +115,10 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             self.drawLinesForNormalizedPoints(self.currentFrame.points)
             self.drawAngleLabelsForNormalizedPoints(self.currentFrame.points)
         })
+    }
+    
+    deinit {
+        print("FramesViewController deallocated")
     }
     
     // MARK: Actions
@@ -153,7 +147,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             if currentFrame.points.count == 1 {
                 saveCurrentFrame()
             } else {
-                saveDelegate.saveVideos()
+                saveVideos()
             }
         }
     }
@@ -211,7 +205,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         if currentFrame.points.isEmpty {
             deleteCurrentFrame()
         }
-        saveDelegate.saveVideos()
+        saveVideos()
     }
     
     @IBAction func deleteFrameButtonPressed(_ sender: AnyObject) {
@@ -225,7 +219,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         } catch Video.VideoError.saveError(let message, let error) {
             displayErrorAlert(message)
             if error != nil {
-                print(error)
+                print(error!)
             }
         } catch Video.VideoError.xlsxError(let message, let error) {
             displayErrorAlert(message)
@@ -247,7 +241,18 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cellIdentifier = "FrameCollectionViewCell"
         let cell = frameCollectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! FrameCollectionViewCell
-        cell.frameImageView.image = video.frames[(indexPath as NSIndexPath).item].image
+        
+        let frame = video.frames[(indexPath as NSIndexPath).item]
+        do {
+            cell.frameImageView.image = try frame.getImage(video:video)
+        } catch Video.VideoError.imageGenerationError(let message, let error) {
+            displayErrorAlert(message)
+            print(error)
+        } catch let error as NSError {
+            displayErrorAlert("Something went wrong while attempting to generate a thumbnail image")
+            print(error)
+        }
+        
         return cell
     }
     
@@ -273,7 +278,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         frameCollectionView.insertItems(at: [newIndexPath])
         frameCollectionView.selectItem(at: newIndexPath, animated: true, scrollPosition: .centeredHorizontally)
         toggleUndoAndDeleteButtons(true)
-        saveDelegate.saveVideos()
+        saveVideos()
     }
     
     func deleteCurrentFrame() {
@@ -289,31 +294,38 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
         toggleUndoAndDeleteButtons(false)
-        saveDelegate.saveVideos()
+        saveVideos()
     }
     
     fileprivate func setCurrentFrameTo(_ frame: Frame, drawPoints: Bool = true) {
-        toggleUndoAndDeleteButtons(true)
-        clearPointsFromScreen()
-        clearLinesFromScreen()
-        clearAngleLabelsFromScreen()
-        setVideoTimeLabel(frame.seconds)
-        setSlider(frame.seconds)
-        frameImageView.image = frame.image
-        if drawPoints {
-            drawNormalizedPoints(frame.points)
-            drawLinesForNormalizedPoints(frame.points)
-            drawAngleLabelsForNormalizedPoints(frame.points)
+        do {
+            let image = try frame.getImage(video: video)
+            
+            toggleUndoAndDeleteButtons(true)
+            clearPointsFromScreen()
+            clearLinesFromScreen()
+            clearAngleLabelsFromScreen()
+            setVideoTimeLabel(frame.seconds)
+            setSlider(frame.seconds)
+            frameImageView.image = image
+            if drawPoints {
+                drawNormalizedPoints(frame.points)
+                drawLinesForNormalizedPoints(frame.points)
+                drawAngleLabelsForNormalizedPoints(frame.points)
+            }
+            currentFrame = frame
+        } catch Video.VideoError.imageGenerationError(let message, let error) {
+            displayErrorAlert(message)
+            print(error)
+        } catch let error as NSError {
+            displayErrorAlert("Something went wrong while attempting to generate an image")
+            print(error)
         }
-        currentFrame = frame
     }
-    
+
     fileprivate func setCurrentFrameTo(_ seconds: Double) {
         do {
-            // Generate new frame image from video asset:
-            let time = CMTime(seconds:seconds, preferredTimescale: videoAsset.duration.timescale)
-            let cgImage = try videoImageGenerator.copyCGImage(at: time, actualTime: nil)
-            let image = UIImage(cgImage: cgImage)
+            let image = try video.getImageAt(seconds: seconds)
             
             toggleUndoAndDeleteButtons(false)
             clearPointsFromScreen()
@@ -322,9 +334,12 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             clearFrameSelection()
             setVideoTimeLabel(seconds)
             frameImageView.image = image
-            currentFrame = Frame(seconds: seconds, image: image)
+            currentFrame = Frame(seconds: seconds)
+        } catch Video.VideoError.imageGenerationError(let message, let error) {
+            displayErrorAlert(message)
+            print(error)
         } catch let error as NSError {
-            displayErrorAlert("Could not generate thumbail image from video at " + String(seconds) + " seconds")
+            displayErrorAlert("Something went wrong while attempting to generate an image")
             print(error)
         }
     }
@@ -554,5 +569,42 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
+    
+    // MARK: Persistence
+    
+    func saveVideos() {
+        background({
+            do {
+                try Video.SaveVideos(self.videos)
+            } catch Video.VideoError.saveError(let message, let error) {
+                self.async({
+                    self.displayErrorAlert(message)
+                    if error != nil {
+                        print(error!)
+                    }
+                })
+            } catch let error as NSError {
+                DispatchQueue.main.async(execute: {
+                    self.displayErrorAlert("Somethine went wrong while attempting to save videos")
+                    print(error)
+                })
+            }
+        })
+    }
+    
+    func async(_ fn: @escaping (() -> Void)) {
+        let mainQueue = DispatchQueue.main
+        mainQueue.async(execute: {
+            fn()
+        })
+    }
+    
+    func background(_ fn: @escaping (() -> Void)) {
+        let backgroundQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated)
+        backgroundQueue.async(execute: {
+            fn()
+        })
+    }
+
 }
 

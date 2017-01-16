@@ -18,17 +18,21 @@ class Video : NSObject, NSCoding{
     var frames: [Frame]
     
     // Private:
-    fileprivate var cachedThumbnailImage: UIImage?
+    private var cachedVideoAsset: AVAsset?
+    private var cachedImageGenerator: AVAssetImageGenerator?
+    private var cachedThumbnailImage: UIImage?
     
-    fileprivate static let DocumentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    fileprivate static let VideoFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("videoFiles")
-    fileprivate static let CSVFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("csv")
-    fileprivate static let XLSXFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("xlsx")
-    fileprivate static let ArchiveURL = DocumentsDirectoryURL.appendingPathComponent("videos")
-    fileprivate static let FileNameDateFormat = "yyyyMMddHHmmss"
-    fileprivate static let XLSXColumnWidth = 20.0
+    private static let DocumentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    private static let VideoFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("videoFiles")
+    private static let CSVFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("csv")
+    private static let XLSXFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("xlsx")
+    private static let ArchiveURL = DocumentsDirectoryURL.appendingPathComponent("videos")
+    private static let FileNameDateFormat = "yyyyMMddHHmmss"
+    private static let XLSXColumnWidth = 20.0
     
+    // MARK: Errors
     enum VideoError: Error {
+        case imageGenerationError(message: String, error: NSError)
         case saveError(message: String, error: NSError?)
         case xlsxError(message: String, error: String?)
     }
@@ -41,6 +45,8 @@ class Video : NSObject, NSCoding{
         static let framesKey = "frames"
         static let framesCountKey = "framesCount"
     }
+    
+    // MARK: Static methods
     
     static func SaveVideos(_ videos: [Video]) throws {
         let success = NSKeyedArchiver.archiveRootObject(videos, toFile: Video.ArchiveURL.path)
@@ -56,6 +62,7 @@ class Video : NSObject, NSCoding{
         return [Video]()
     }
     
+    // WARNING: Erases ALL users data
     static func ClearSavedVideos() {
         let fileManager = FileManager.default
         
@@ -74,6 +81,8 @@ class Video : NSObject, NSCoding{
             print(error)
         }
     }
+    
+    // MARK: Instance methods:
 
     init(name: String, dateCreated: Date, videoURL: URL, frames: [Frame] = []) {
         self.name = name
@@ -141,6 +150,53 @@ class Video : NSObject, NSCoding{
     
     // MARK: Utility functions
     
+    func freeMemory() {
+        cachedVideoAsset = nil
+        cachedImageGenerator = nil
+        cachedThumbnailImage = nil
+        for frame in frames {
+            frame.freeMemory()
+        }
+    }
+    
+    func getVideoAsset() -> AVAsset {
+        if cachedVideoAsset == nil {
+            cachedVideoAsset = AVURLAsset(url: videoURL, options: nil)
+        }
+        return cachedVideoAsset!
+    }
+    
+    func getImageGenerator() -> AVAssetImageGenerator {
+        if cachedImageGenerator == nil {
+            // Load video and image generator:
+            cachedImageGenerator = AVAssetImageGenerator(asset: getVideoAsset())
+            cachedImageGenerator!.appliesPreferredTrackTransform = true
+            cachedImageGenerator!.requestedTimeToleranceBefore = kCMTimeZero
+            cachedImageGenerator!.requestedTimeToleranceAfter = kCMTimeZero
+            
+        }
+        return cachedImageGenerator!
+    }
+    
+    func getThumbnailImage() throws -> UIImage {
+        return try getImageAt(seconds: frames.first?.seconds ?? 0)
+    }
+    
+    func getImageAt(seconds: Double) throws -> UIImage {
+        do {
+            // Generate new frame image from video asset:
+            let time = CMTime(seconds:seconds, preferredTimescale: getDuration().timescale)
+            let cgImage = try getImageGenerator().copyCGImage(at: time, actualTime: nil)
+            return UIImage(cgImage: cgImage)
+        } catch let error as NSError {
+            throw VideoError.imageGenerationError(message: "Could not generate image from video at " + String(seconds) + " seconds", error: error)
+        }
+    }
+    
+    func getDuration() -> CMTime {
+        return getVideoAsset().duration
+    }
+    
     func deleteData() throws {
         let fileManager = FileManager.default
         do {
@@ -185,29 +241,6 @@ class Video : NSObject, NSCoding{
         let fileExtension = "xlsx"
         let fileName = videoURL.deletingPathExtension().lastPathComponent
         return Video.XLSXFilesDirectoryURL.appendingPathComponent(fileName).appendingPathExtension(fileExtension)
-    }
-    
-    func getThumbnailImage() -> UIImage {
-        if frames.first != nil {
-            return frames.first!.image
-        }
-        if cachedThumbnailImage != nil {
-            return cachedThumbnailImage!
-        }
-        
-        let videoAsset = AVURLAsset(url: videoURL, options: nil)
-        let videoImageGenerator = AVAssetImageGenerator(asset: videoAsset)
-        videoImageGenerator.appliesPreferredTrackTransform = true
-        videoImageGenerator.requestedTimeToleranceBefore = kCMTimeZero
-        videoImageGenerator.requestedTimeToleranceAfter = kCMTimeZero
-        do {
-            let time = CMTime(seconds:0, preferredTimescale: videoAsset.duration.timescale)
-            let cgImage = try videoImageGenerator.copyCGImage(at: time, actualTime: nil)
-            cachedThumbnailImage = UIImage(cgImage: cgImage)
-            return cachedThumbnailImage!
-        } catch {
-            return UIImage() // Default image
-        }
     }
     
     func getCSV() -> String {

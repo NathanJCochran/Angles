@@ -7,47 +7,61 @@
 //
 
 import UIKit
+import CoreMedia
+import AVFoundation
 
 class Frame : NSObject, NSCoding{
     
     // MARK: Properties
     var seconds: Double
-    var image: UIImage
     var points: [CGPoint]
+    
+    private var cachedImage: UIImage?
     
     // MARK: Types
     struct PropertyKey {
         static let secondsKey = "seconds"
-        static let imageKey = "image"
         static let pointsKey = "points"
         static let pointsCountKey = "pointsCount"
     }
     
-    init(seconds: Double, image:UIImage, points:[CGPoint] = []) {
+    init(seconds: Double, points:[CGPoint] = []) {
         self.seconds = seconds
-        self.image = image
         self.points = points
     }
     
+    // MARK: Encoding
+    
     required convenience init?(coder aDecoder: NSCoder) {
         let seconds = aDecoder.decodeDouble(forKey: PropertyKey.secondsKey)
-        let image = aDecoder.decodeObject(forKey: PropertyKey.imageKey) as! UIImage
         let pointsCount = aDecoder.decodeInteger(forKey: PropertyKey.pointsCountKey)
         var points = [CGPoint]()
         for i in 0..<pointsCount {
             let point = aDecoder.decodeCGPoint(forKey: PropertyKey.pointsKey + String(i))
             points.append(point)
         }
-        self.init(seconds:seconds, image:image, points: points)
+        self.init(seconds:seconds, points: points)
     }
     
     func encode(with aCoder: NSCoder) {
         aCoder.encode(seconds, forKey: PropertyKey.secondsKey)
-        aCoder.encode(image, forKey: PropertyKey.imageKey)
         aCoder.encode(points.count, forKey: PropertyKey.pointsCountKey)
         for i in 0..<points.count {
             aCoder.encode(points[i], forKey: PropertyKey.pointsKey + String(i))
         }
+    }
+    
+    // MARK: Utility functions
+    
+    func freeMemory() {
+        cachedImage = nil
+    }
+    
+    func getImage(video: Video) throws -> UIImage {
+        if cachedImage == nil {
+            cachedImage = try video.getImageAt(seconds: seconds)
+        }
+        return cachedImage!
     }
     
     func getAngleCount() -> Int {
