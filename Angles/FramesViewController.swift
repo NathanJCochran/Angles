@@ -22,6 +22,9 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     var currentFrame: Frame!
     var documentController: UIDocumentInteractionController!
     
+    // MARK: Cached items
+    var cachedFrameImageRect: CGRect?
+    
     // MARK: References to drawn images:
     var pointViews = [UIView]()
     var lineShapeLayers = [CAShapeLayer]()
@@ -98,12 +101,14 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
 
     override func didReceiveMemoryWarning() {
         print("FramesViewController received memory warning")
+        cachedFrameImageRect = nil
         super.didReceiveMemoryWarning()
         
         // TODO: Make sure parent view's didReceiveMemoryWarning method also called
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        cachedFrameImageRect = nil // Invalid cached image rect, size it's going to change
         clearPointsFromScreen()
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
@@ -242,7 +247,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         let frame = video.frames[(indexPath as NSIndexPath).item]
         do {
-            cell.frameImageView.image = try frame.getImage(video:video)
+            cell.frameImageView.image = try frame.getThumbnailImage(video:video, size:cell.frameImageView.frame.size)
         } catch Video.VideoError.imageGenerationError(let message, let error) {
             displayErrorAlert(message)
             print(error)
@@ -323,7 +328,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
 
     fileprivate func setCurrentFrameTo(_ seconds: Double) {
         do {
-            let image = try video.getImageAt(seconds: seconds)
+            let image = try video.getImageAt(seconds: seconds, size:CGSize.zero) // CGSIze.zero means original image size
             
             toggleUndoAndDeleteButtons(false)
             clearPointsFromScreen()
@@ -551,14 +556,17 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Other Utils
     
     fileprivate func getFrameImageRect() -> CGRect {
-        let widthRatio = frameImageView.bounds.size.width / frameImageView.image!.size.width
-        let heightRatio = frameImageView.bounds.size.height / frameImageView.image!.size.height
-        let scale = min(widthRatio, heightRatio)
-        let imageWidth = scale * frameImageView.image!.size.width
-        let imageHeight = scale * frameImageView.image!.size.height
-        let x = (frameImageView.bounds.size.width - imageWidth) / 2
-        let y = (frameImageView.bounds.size.height - imageHeight) / 2
-        return CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
+        if cachedFrameImageRect == nil {
+            let widthRatio = frameImageView.bounds.size.width / frameImageView.image!.size.width
+            let heightRatio = frameImageView.bounds.size.height / frameImageView.image!.size.height
+            let scale = min(widthRatio, heightRatio)
+            let imageWidth = scale * frameImageView.image!.size.width
+            let imageHeight = scale * frameImageView.image!.size.height
+            let x = (frameImageView.bounds.size.width - imageWidth) / 2
+            let y = (frameImageView.bounds.size.height - imageHeight) / 2
+            cachedFrameImageRect = CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
+        }
+        return cachedFrameImageRect!
     }
     
     fileprivate func displayErrorAlert(_ message: String) {

@@ -173,20 +173,40 @@ class Video : NSObject, NSCoding{
             cachedImageGenerator!.appliesPreferredTrackTransform = true
             cachedImageGenerator!.requestedTimeToleranceBefore = kCMTimeZero
             cachedImageGenerator!.requestedTimeToleranceAfter = kCMTimeZero
-            
         }
         return cachedImageGenerator!
     }
     
-    func getThumbnailImage() throws -> UIImage {
-        return try getImageAt(seconds: frames.first?.seconds ?? 0)
+    func getThumbnailImage(size: CGSize) throws -> UIImage {
+        if cachedThumbnailImage == nil {
+            // We need to generate a thumbnail image whose smaller dimension (width/height)
+            // matches the corresponding dimension of the image view, but whose larger dimension
+            // may overflow the view, since the image view's content mode is "Aspect Fill".
+            // This also leverages the fact that we know the image view is a square:
+            let videoAsset = getVideoAsset()
+            let videoSize = videoAsset.tracks(withMediaType: AVMediaTypeVideo).first!.naturalSize
+            var thumbnailSize: CGSize
+            if videoSize.width > videoSize.height {
+                // Zero width means don't worry about width, just scale it with the height.
+                thumbnailSize = CGSize(width: 0, height: size.height * UIScreen.main.scale) // Scaled because points != pixels
+            } else {
+                // Zero height means don't worry about height, just scale it with the width.
+                thumbnailSize = CGSize(width: size.width * UIScreen.main.scale, height: 0) // Scaled because points != pixels
+            }
+            cachedThumbnailImage = try getImageAt(seconds: frames.first?.seconds ?? 0, size: thumbnailSize)
+        }
+        return cachedThumbnailImage!
     }
     
-    func getImageAt(seconds: Double) throws -> UIImage {
+    func getImageAt(seconds: Double, size: CGSize) throws -> UIImage {
         do {
+            // Get and configure image generator:
+            let imageGenerator = getImageGenerator()
+            imageGenerator.maximumSize = size
+            
             // Generate new frame image from video asset:
             let time = CMTime(seconds:seconds, preferredTimescale: getDuration().timescale)
-            let cgImage = try getImageGenerator().copyCGImage(at: time, actualTime: nil)
+            let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
             return UIImage(cgImage: cgImage)
         } catch let error as NSError {
             throw VideoError.imageGenerationError(message: "Could not generate image from video at " + String(seconds) + " seconds", error: error)

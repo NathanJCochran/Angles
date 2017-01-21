@@ -56,7 +56,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         let video = videos[(indexPath as NSIndexPath).row]
         
         do {
-            cell.thumbnailImage.image = try video.getThumbnailImage()
+            cell.thumbnailImage.image = try video.getThumbnailImage(size: cell.thumbnailImage.frame.size)
             cell.nameLabel.text = video.name
             cell.dateLabel.text = video.getFormattedDateCreated()
             cell.nameTextField.text = video.name
@@ -231,7 +231,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     // MARK: Actions
     
     @IBAction func addVideo(_ sender: UIBarButtonItem) {
-        
         let menu = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
         if UIImagePickerController.isSourceTypeAvailable(.camera) && UIImagePickerController.isCameraDeviceAvailable(.rear) {
             menu.addAction(UIAlertAction(title: "Camera", style: .default, handler: {_ in self.presentImagePickerController(.camera)}))
