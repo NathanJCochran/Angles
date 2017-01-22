@@ -20,6 +20,7 @@
 		D80495491CD7F1CA00C1CDEA /* FramesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80495481CD7F1CA00C1CDEA /* FramesViewController.swift */; };
 		D804954B1CE007E800C1CDEA /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = D804954A1CE007E800C1CDEA /* Frame.swift */; };
 		D804954D1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D804954C1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift */; };
+		D81BC7AC1E3566FC006E13C6 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D81BC7AB1E3566FC006E13C6 /* Settings.bundle */; };
 		D85730351D31B1B1004CF17B /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85730341D31B1B1004CF17B /* Math.swift */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,7 @@
 		D80495481CD7F1CA00C1CDEA /* FramesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FramesViewController.swift; sourceTree = "<group>"; };
 		D804954A1CE007E800C1CDEA /* Frame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
 		D804954C1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FrameCollectionViewCell.swift; sourceTree = "<group>"; };
+		D81BC7AB1E3566FC006E13C6 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		D85730341D31B1B1004CF17B /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -124,6 +126,7 @@
 				D804952B1CCD215100C1CDEA /* LaunchScreen.storyboard */,
 				D804952E1CCD215100C1CDEA /* Info.plist */,
 				D804954C1CE8FDED00C1CDEA /* FrameCollectionViewCell.swift */,
+				D81BC7AB1E3566FC006E13C6 /* Settings.bundle */,
 			);
 			path = Angles;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D81BC7AC1E3566FC006E13C6 /* Settings.bundle in Resources */,
 				D804952D1CCD215100C1CDEA /* LaunchScreen.storyboard in Resources */,
 				D804952A1CCD215100C1CDEA /* Assets.xcassets in Resources */,
 				D80495281CCD215100C1CDEA /* Main.storyboard in Resources */,

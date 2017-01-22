@@ -52,6 +52,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     @IBOutlet weak var frameCollectionView: UICollectionView!
 
     override func viewDidLoad() {
+        print("FramesViewController viewDidLoad")
         super.viewDidLoad()
 
         // Make sure video was properly set:
@@ -88,9 +89,14 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             setCurrentFrameTo(0)
             frameSlider.value = 0
         }
+        
+        // Add observer for when user returns after selecting home button.
+        // Will check to see if settings have changed, and will update display of angles if so:
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        print("FramesViewController viewDidAppear")
         clearPointsFromScreen()
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
@@ -100,7 +106,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
 
     override func didReceiveMemoryWarning() {
-        print("FramesViewController received memory warning")
+        print("FramesViewController didReceiveMemoryWarning")
         cachedFrameImageRect = nil
         super.didReceiveMemoryWarning()
         
@@ -108,6 +114,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        print("FramesViewController viewWillTransition")
         cachedFrameImageRect = nil // Invalid cached image rect, size it's going to change
         clearPointsFromScreen()
         clearLinesFromScreen()
@@ -118,6 +125,15 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             self.drawLinesForNormalizedPoints(self.currentFrame.points)
             self.drawAngleLabelsForNormalizedPoints(self.currentFrame.points)
         })
+    }
+    
+    func willEnterForeground() {
+        print("FramesViewController willEnterForeground")
+        clearAngleLabelsFromScreen()
+        if displayAngleLabels() {
+            // Redraw all angle labels, to ensure that all are properly displayed:
+            drawAngleLabelsForNormalizedPoints(currentFrame.points)
+        }
     }
     
     deinit {
@@ -465,19 +481,27 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         drawAngleLabel(denormalizePoint(point1), point2: denormalizePoint(point2), point3: denormalizePoint(point3))
     }
     
+    fileprivate func displayAngleLabels() -> Bool {
+        return UserDefaults.standard.bool(forKey: "display_angles_preference")
+    }
+    
     fileprivate func drawAngleLabel(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) {
-        let textLayer = getAngleLabelTextLayer(point1, point2:point2, point3:point3)
-        textLayer.foregroundColor = pointColors[(angleLabelTextLayers.count + 1) % pointColors.count].cgColor
-        frameImageView.layer.addSublayer(textLayer)
-        angleLabelTextLayers.append(textLayer)
+        if displayAngleLabels() {
+            let textLayer = getAngleLabelTextLayer(point1, point2:point2, point3:point3)
+            textLayer.foregroundColor = pointColors[(angleLabelTextLayers.count + 1) % pointColors.count].cgColor
+            frameImageView.layer.addSublayer(textLayer)
+            angleLabelTextLayers.append(textLayer)
+        }
     }
     
     fileprivate func redrawAngleLabel(_ angleIdx: Int, point1: CGPoint, point2:CGPoint, point3:CGPoint) {
-        angleLabelTextLayers[angleIdx].removeFromSuperlayer()
-        let newAngleLabelTextLayer = getAngleLabelTextLayer(point1, point2:point2, point3:point3)
-        newAngleLabelTextLayer.foregroundColor = pointColors[(angleIdx + 1) % pointColors.count].cgColor
-        frameImageView.layer.addSublayer(newAngleLabelTextLayer)
-        angleLabelTextLayers[angleIdx] = newAngleLabelTextLayer
+        if displayAngleLabels() {
+            angleLabelTextLayers[angleIdx].removeFromSuperlayer()
+            let newAngleLabelTextLayer = getAngleLabelTextLayer(point1, point2:point2, point3:point3)
+            newAngleLabelTextLayer.foregroundColor = pointColors[(angleIdx + 1) % pointColors.count].cgColor
+            frameImageView.layer.addSublayer(newAngleLabelTextLayer)
+            angleLabelTextLayers[angleIdx] = newAngleLabelTextLayer
+        }
     }
     
     fileprivate func getAngleLabelTextLayer(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CATextLayer {
