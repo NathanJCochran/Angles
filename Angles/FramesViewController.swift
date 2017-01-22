@@ -219,19 +219,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         do {
             try video.saveXLSX()
             documentController.presentOptionsMenu(from: exportButton, animated: true)
-        } catch Video.VideoError.saveError(let message, let error) {
-            displayErrorAlert(message)
-            if error != nil {
-                print(error!)
-            }
-        } catch Video.VideoError.xlsxError(let message, let error) {
-            displayErrorAlert(message)
-            if error != nil {
-                print(error!)
-            }
-        } catch let error as NSError {
-            displayErrorAlert("Something went wrong while attempting to export the data to XLSX format")
-            print(error)
+        } catch {
+            displayErrorAlert(error.localizedDescription)
         }
     }
     
@@ -248,12 +237,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let frame = video.frames[(indexPath as NSIndexPath).item]
         do {
             cell.frameImageView.image = try frame.getThumbnailImage(video:video, size:cell.frameImageView.frame.size)
-        } catch Video.VideoError.imageGenerationError(let message, let error) {
-            displayErrorAlert(message)
-            print(error)
-        } catch let error as NSError {
-            displayErrorAlert("Something went wrong while attempting to generate a thumbnail image")
-            print(error)
+        } catch {
+            displayErrorAlert(error.localizedDescription)
         }
         
         return cell
@@ -317,12 +302,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
                 drawAngleLabelsForNormalizedPoints(frame.points)
             }
             currentFrame = frame
-        } catch Video.VideoError.imageGenerationError(let message, let error) {
-            displayErrorAlert(message)
-            print(error)
-        } catch let error as NSError {
-            displayErrorAlert("Something went wrong while attempting to generate an image")
-            print(error)
+        } catch {
+            displayErrorAlert(error.localizedDescription)
         }
     }
 
@@ -338,12 +319,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             setVideoTimeLabel(seconds)
             frameImageView.image = image
             currentFrame = Frame(seconds: seconds)
-        } catch Video.VideoError.imageGenerationError(let message, let error) {
-            displayErrorAlert(message)
-            print(error)
-        } catch let error as NSError {
-            displayErrorAlert("Something went wrong while attempting to generate an image")
-            print(error)
+        } catch {
+            displayErrorAlert(error.localizedDescription)
         }
     }
     

@@ -31,10 +31,30 @@ class Video : NSObject, NSCoding{
     private static let XLSXColumnWidth = 20.0
     
     // MARK: Errors
-    enum VideoError: Error {
-        case imageGenerationError(message: String, error: NSError)
-        case saveError(message: String, error: NSError?)
-        case xlsxError(message: String, error: String?)
+    enum VideoError: LocalizedError {
+        case archiveError
+        case directoryCreationError(directory: URL)
+        case videoFileMoveError(from: URL, to: URL)
+        case imageGenerationError(seconds: Double)
+        case fileDeletionError(fileURL: URL)
+        case fileWriteError(fileURL: URL)
+        case xlsxWriteError(worksheet: String, row: UInt32, column: UInt16)
+        case xlsxColumnSizeError(worksheet: String, column: UInt16)
+        case xlsxWorkbookCloseError
+        
+        var errorDescription: String? {
+            switch self {
+            case .archiveError: return "Could not archive video objects"
+            case .directoryCreationError(let directory): return "Could not create \(directory.lastPathComponent) directory"
+            case .videoFileMoveError(let from, let to): return "Could not move video file from \(from.lastPathComponent) to \(to.lastPathComponent)"
+            case .imageGenerationError(let seconds): return "Could not generate image from video file at time: \(seconds)s"
+            case .fileDeletionError(let fileURL): return "Could not delete file from Documents directory: \(fileURL.lastPathComponent)"
+            case .fileWriteError(let fileURL): return "Could not write to file: \(fileURL.lastPathComponent)"
+            case .xlsxWriteError(let worksheet, let row, let column): return "Could not write to row \(row) column \(column) of \(worksheet) worksheet"
+            case .xlsxColumnSizeError(let worksheet, let column): return "Could not set column \(column) width in \(worksheet) worksheet"
+            case .xlsxWorkbookCloseError: return "Could not close xlsx workbook"
+            }
+        }
     }
     
     // MARK: Types
@@ -51,7 +71,7 @@ class Video : NSObject, NSCoding{
     static func SaveVideos(_ videos: [Video]) throws {
         let success = NSKeyedArchiver.archiveRootObject(videos, toFile: Video.ArchiveURL.path)
         if !success {
-            throw VideoError.saveError(message: "Could not archive video objects", error: nil)
+            throw VideoError.archiveError
         }
     }
     
@@ -76,9 +96,9 @@ class Video : NSObject, NSCoding{
                     }
                 }
             }
-        } catch let error as NSError {
-            print("Could not remove files from documents directory")
+        } catch {
             print(error)
+            print("Could not remove files from documents directory")
         }
     }
     
@@ -100,8 +120,9 @@ class Video : NSObject, NSCoding{
         let fileManager = FileManager.default
         do {
             try fileManager.createDirectory(at: Video.VideoFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            throw VideoError.saveError(message: "Could not create video files directory", error: error)
+        } catch {
+            print(error)
+            throw VideoError.directoryCreationError(directory: Video.VideoFilesDirectoryURL)
         }
         
         // Create new video URL:
@@ -122,8 +143,9 @@ class Video : NSObject, NSCoding{
         // Move the file from the tmp directory to the video files directory:
         do {
             try fileManager.moveItem(at: tempVideoURL, to: newVideoURL)
-        } catch let error as NSError {
-            throw VideoError.saveError(message: "Could not move video file from tmp directory", error:error)
+        } catch {
+            print(error)
+            throw VideoError.videoFileMoveError(from: tempVideoURL, to: newVideoURL)
         }
         
         // Create new video domain object:
@@ -177,25 +199,8 @@ class Video : NSObject, NSCoding{
         return cachedImageGenerator!
     }
     
-    func getThumbnailImage(size: CGSize) throws -> UIImage {
-        if cachedThumbnailImage == nil {
-            // We need to generate a thumbnail image whose smaller dimension (width/height)
-            // matches the corresponding dimension of the image view, but whose larger dimension
-            // may overflow the view, since the image view's content mode is "Aspect Fill".
-            // This also leverages the fact that we know the image view is a square:
-            let videoAsset = getVideoAsset()
-            let videoSize = videoAsset.tracks(withMediaType: AVMediaTypeVideo).first!.naturalSize
-            var thumbnailSize: CGSize
-            if videoSize.width > videoSize.height {
-                // Zero width means don't worry about width, just scale it with the height.
-                thumbnailSize = CGSize(width: 0, height: size.height * UIScreen.main.scale) // Scaled because points != pixels
-            } else {
-                // Zero height means don't worry about height, just scale it with the width.
-                thumbnailSize = CGSize(width: size.width * UIScreen.main.scale, height: 0) // Scaled because points != pixels
-            }
-            cachedThumbnailImage = try getImageAt(seconds: frames.first?.seconds ?? 0, size: thumbnailSize)
-        }
-        return cachedThumbnailImage!
+    func getDuration() -> CMTime {
+        return getVideoAsset().duration
     }
     
     func getImageAt(seconds: Double, size: CGSize) throws -> UIImage {
@@ -209,28 +214,52 @@ class Video : NSObject, NSCoding{
             let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
             return UIImage(cgImage: cgImage)
         } catch let error as NSError {
-            throw VideoError.imageGenerationError(message: "Could not generate image from video at " + String(seconds) + " seconds", error: error)
+            print(error)
+            throw VideoError.imageGenerationError(seconds: seconds)
         }
     }
     
-    func getDuration() -> CMTime {
-        return getVideoAsset().duration
+    func getVideoSize() -> CGSize {
+        return getVideoAsset().tracks(withMediaType: AVMediaTypeVideo).first!.naturalSize
+    }
+    
+    func getThumbnailImageGenerationSize(targetSize: CGSize) -> CGSize {
+        // We need to generate a thumbnail image whose smaller dimension (width/height)
+        // matches the corresponding dimension of the target view, but whose larger dimension
+        // may overflow the view, since the image view's content mode is "Aspect Fill".
+        // This also leverages the fact that we know the image view is a square:
+        let videoSize = getVideoSize()
+        if videoSize.width > videoSize.height {
+            // Zero width means don't worry about width, just scale it with the height.
+            return CGSize(width: 0, height: targetSize.height * UIScreen.main.scale) // Scaled because points != pixels
+        }
+        // Zero height means don't worry about height, just scale it with the width.
+        return CGSize(width: targetSize.width * UIScreen.main.scale, height: 0) // Scaled because points != pixels
+    }
+    
+    func getThumbnailImage(size: CGSize) throws -> UIImage {
+        if cachedThumbnailImage == nil {
+            cachedThumbnailImage = try getImageAt(seconds: frames.first?.seconds ?? 0, size: getThumbnailImageGenerationSize(targetSize: size))
+        }
+        return cachedThumbnailImage!
     }
     
     func deleteData() throws {
         let fileManager = FileManager.default
         do {
             try fileManager.removeItem(at: videoURL)
-        } catch let error as NSError {
-            throw VideoError.saveError(message: "Could not delete video file from Documents directory", error: error)
+        } catch {
+            print(error)
+            throw VideoError.fileDeletionError(fileURL: videoURL)
         }
         
         let csvURL = getCSVURL()
         if fileManager.fileExists(atPath: csvURL.path) {
             do {
                 try fileManager.removeItem(at: csvURL)
-            } catch let error as NSError {
-                throw VideoError.saveError(message: "Could not delete CSV file from Documents directory", error: error)
+            } catch {
+                print(error)
+                throw VideoError.fileDeletionError(fileURL: csvURL)
             }
         }
         
@@ -238,8 +267,9 @@ class Video : NSObject, NSCoding{
         if fileManager.fileExists(atPath: xlsxURL.path) {
             do {
                 try fileManager.removeItem(at: xlsxURL)
-            } catch let error as NSError {
-                throw VideoError.saveError(message: "Could not delete XSLX file from Documents directory", error: error)
+            } catch {
+                print(error)
+                throw VideoError.fileDeletionError(fileURL: xlsxURL)
             }
         }
     }
@@ -249,6 +279,28 @@ class Video : NSObject, NSCoding{
         formatter.dateStyle = .long
         formatter.timeStyle = .short
         return formatter.string(from: dateCreated)
+    }
+    
+    func getMaxAngleCount() -> Int {
+        var max = 0
+        for frame in frames {
+            let count = frame.getAngleCount()
+            if count > max {
+                max = count
+            }
+        }
+        return max
+    }
+    
+    func getMaxPointCount() -> Int {
+        var max = 0
+        for frame in frames {
+            let count = frame.points.count
+            if count > max {
+                max = count
+            }
+        }
+        return max
     }
     
     func getCSVURL() -> URL {
@@ -294,17 +346,19 @@ class Video : NSObject, NSCoding{
         let fileManager = FileManager.default
         do {
             try fileManager.createDirectory(at: Video.CSVFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            throw VideoError.saveError(message: "Could not create CSV files directory", error: error)
+        } catch {
+            print(error)
+            throw VideoError.directoryCreationError(directory: Video.CSVFilesDirectoryURL)
         }
 
         // Save the CSV data to the specified location:
         let fileData = getCSV()
+        let fileURL = getCSVURL()
         do {
-            
-            try fileData.write(to: getCSVURL(), atomically: true, encoding: String.Encoding.utf8)
-        } catch let error as NSError {
-            throw VideoError.saveError(message: "Could not write CSV data to temp file", error: error)
+            try fileData.write(to: fileURL, atomically: true, encoding: String.Encoding.utf8)
+        } catch {
+            print(error)
+            throw VideoError.fileWriteError(fileURL: fileURL)
         }
     }
     
@@ -313,8 +367,9 @@ class Video : NSObject, NSCoding{
         let fileManager = FileManager.default
         do {
             try fileManager.createDirectory(at: Video.XLSXFilesDirectoryURL, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            throw VideoError.saveError(message: "Could not create XLSX files directory", error: error)
+        } catch {
+            print(error)
+            throw VideoError.directoryCreationError(directory: Video.XLSXFilesDirectoryURL)
         }
         
         // Create xlsx workbook:
@@ -329,21 +384,25 @@ class Video : NSObject, NSCoding{
         let pointCount = getMaxPointCount()
         var err = worksheet_write_string(pointsWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
         if err != LXW_NO_ERROR {
-            throw VideoError.xlsxError(message: "Could not write column 0 header to Points worksheet", error: String(cString: lxw_strerror(err)))
+            print(String(cString: lxw_strerror(err)))
+            throw VideoError.xlsxWriteError(worksheet: "Points", row: 0, column: 0)
         }
         err = worksheet_set_column(pointsWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
         if err != LXW_NO_ERROR {
-            throw VideoError.xlsxError(message: "Could not set column 0 width in xlsx Points worksheet", error: String(cString: lxw_strerror(err)))
+            print(String(cString: lxw_strerror(err)))
+            throw VideoError.xlsxColumnSizeError(worksheet: "Points", column: 0)
         }
         for i in 0..<pointCount {
             let column = UInt16(i+1)
             err = worksheet_write_string(pointsWorksheet, 0, column, String(format: "Point %d", column), rightAlignedFormat)
             if err != LXW_NO_ERROR {
-                throw VideoError.xlsxError(message: String(format:"Could not write column %d header to Points worksheet", column), error: String(cString: lxw_strerror(err)))
+                print(String(cString: lxw_strerror(err)))
+                throw VideoError.xlsxWriteError(worksheet: "Points", row: 0, column: column)
             }
             err = worksheet_set_column(pointsWorksheet, 0, column, Video.XLSXColumnWidth, nil)
             if err != LXW_NO_ERROR {
-                throw VideoError.xlsxError(message: String(format: "Could not set column %d width in Points worksheet", column), error: String(cString: lxw_strerror(err)))
+                print(String(cString: lxw_strerror(err)))
+                throw VideoError.xlsxColumnSizeError(worksheet: "Points", column: column)
             }
         }
         
@@ -353,7 +412,8 @@ class Video : NSObject, NSCoding{
             let row = UInt32(i+1)
             err = worksheet_write_number(pointsWorksheet, row, 0, frame.seconds, nil)
             if err != LXW_NO_ERROR {
-                throw VideoError.xlsxError(message: String(format: "Could not write row %d timestamp to Points worksheet", row), error: String(cString: lxw_strerror(err)))
+                print(String(cString: lxw_strerror(err)))
+                throw VideoError.xlsxWriteError(worksheet: "Points", row: row, column: 0)
             }
             
             // Add all of the frame's points to the row:
@@ -361,7 +421,8 @@ class Video : NSObject, NSCoding{
                 let column = UInt16(j+1)
                 err = worksheet_write_string(pointsWorksheet, row, column, String(format: "(%f, %f)", point.x, point.y) , rightAlignedFormat)
                 if err != LXW_NO_ERROR {
-                    throw VideoError.xlsxError(message: String(format:"Could not write row %d column %d point to Points worksheet", row, column), error: String(cString: lxw_strerror(err)))
+                    print(String(cString: lxw_strerror(err)))
+                    throw VideoError.xlsxWriteError(worksheet: "Points", row: row, column: column)
                 }
             }
         }
@@ -373,21 +434,25 @@ class Video : NSObject, NSCoding{
         let angleCount = getMaxAngleCount()
         err = worksheet_write_string(anglesWorksheet, 0, 0, "Time (seconds)", rightAlignedFormat)
         if err != LXW_NO_ERROR {
-            throw VideoError.xlsxError(message: "Could not write column 0 header to Angles worksheet", error: String(cString: lxw_strerror(err)))
+            print(String(cString: lxw_strerror(err)))
+            throw VideoError.xlsxWriteError(worksheet: "Angles", row: 0, column: 0)
         }
         err = worksheet_set_column(anglesWorksheet, 0, 0, Video.XLSXColumnWidth, nil)
         if err != LXW_NO_ERROR {
-            throw VideoError.xlsxError(message: "Could not set column 0 width in Angles worksheet", error: String(cString: lxw_strerror(err)))
+            print(String(cString: lxw_strerror(err)))
+            throw VideoError.xlsxColumnSizeError(worksheet: "Angles", column: 0)
         }
         for i in 0..<angleCount {
             let column = UInt16(i+1)
             err = worksheet_write_string(anglesWorksheet, 0, column, String(format: "Angle %d (degrees)", column), rightAlignedFormat)
             if err != LXW_NO_ERROR {
-                throw VideoError.xlsxError(message: String(format:"Could not write column %d header to Angles worksheet", column), error: String(cString: lxw_strerror(err)))
+                print(String(cString: lxw_strerror(err)))
+                throw VideoError.xlsxWriteError(worksheet: "Angles", row: 0, column: column)
             }
             err = worksheet_set_column(anglesWorksheet, 0, column, Video.XLSXColumnWidth, nil)
             if err != LXW_NO_ERROR {
-                throw VideoError.xlsxError(message: String(format:"Could not set column %d width in Angles worksheet", column), error: String(cString: lxw_strerror(err)))
+                print(String(cString: lxw_strerror(err)))
+                throw VideoError.xlsxColumnSizeError(worksheet: "Angles", column: column)
             }
         }
         
@@ -396,7 +461,8 @@ class Video : NSObject, NSCoding{
             let row = UInt32(i+1)
             err = worksheet_write_number(anglesWorksheet, row, 0, frame.seconds, nil)
             if err != LXW_NO_ERROR {
-                throw VideoError.xlsxError(message: String(format:"Could not write row %d timestamp to Angles worksheet", row), error: String(cString: lxw_strerror(err)))
+                print(String(cString: lxw_strerror(err)))
+                throw VideoError.xlsxWriteError(worksheet: "Angles", row: row, column: 0)
             }
             
             // Add all of the frame's angles to the row:
@@ -405,7 +471,8 @@ class Video : NSObject, NSCoding{
                 let column = UInt16(j+1)
                 err = worksheet_write_number(anglesWorksheet, row, column, Double(angle), nil)
                 if err != LXW_NO_ERROR {
-                    throw VideoError.xlsxError(message: String(format:"Could not write row %d column %d angle to Angles worksheet", row, column), error: String(cString: lxw_strerror(err)))
+                    print(String(cString: lxw_strerror(err)))
+                    throw VideoError.xlsxWriteError(worksheet: "Angles", row: row, column: column)
                 }
             }
         }
@@ -413,29 +480,8 @@ class Video : NSObject, NSCoding{
         // Save the file:
         err = workbook_close(workbook)
         if err != LXW_NO_ERROR {
-            throw VideoError.xlsxError(message: "Could not close xlsx workbook", error: String(cString: lxw_strerror(err)))
+            print(String(cString: lxw_strerror(err)))
+            throw VideoError.xlsxWorkbookCloseError
         }
-    }
-    
-    func getMaxAngleCount() -> Int {
-        var max = 0
-        for frame in frames {
-            let count = frame.getAngleCount()
-            if count > max {
-                max = count
-            }
-        }
-        return max
-    }
-    
-    func getMaxPointCount() -> Int {
-        var max = 0
-        for frame in frames {
-            let count = frame.points.count
-            if count > max {
-                max = count
-            }
-        }
-        return max
     }
 }

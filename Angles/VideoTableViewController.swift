@@ -62,12 +62,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             cell.nameTextField.text = video.name
             cell.nameTextField.isHidden = true
             cell.nameTextField.delegate = self
-        } catch Video.VideoError.imageGenerationError(let message, let error) {
-            displayErrorAlert(message)
-            print(error)
-        } catch let error as NSError {
-            displayErrorAlert("Something went wrong while attempting to generate a thumbnail image")
-            print(error)
+        } catch {
+            displayErrorAlert(error.localizedDescription)
         }
         
         return cell
@@ -83,14 +79,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             do {
                 // Delete video data from user's Documents directory:
                 try video.deleteData()
-            } catch Video.VideoError.saveError(let message, let error) {
-                self.displayErrorAlert(message)
-                if error != nil {
-                    print(error!)
-                }
-            } catch let error as NSError {
-                self.displayErrorAlert("Could not delete video data")
-                print(error)
+            } catch {
+                self.displayErrorAlert(error.localizedDescription)
             }
             
             // Remove video object from list:
@@ -216,14 +206,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             tableView.insertRows(at: [newIndexPath], with: .top)
             tableView.scrollToRow(at: newIndexPath, at: .top, animated: true)
             editNameTextFieldAt(newIndexPath, highlightText: true)
-        } catch Video.VideoError.saveError(let message, let error) {
-            displayErrorAlert(message)
-            if error != nil {
-                print(error!)
-            }
-        } catch let error as NSError {
-            displayErrorAlert("Something went wrong while attempting to save new video")
-            print(error)
+        } catch {
+            displayErrorAlert(error.localizedDescription)
         }
     }
     
@@ -285,15 +269,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             print("saving videos")
             try Video.SaveVideos(self.videos)
             print("videos saved")
-        } catch Video.VideoError.saveError(let message, let error) {
-            self.displayErrorAlert(message)
-            if error != nil {
-                print(error!)
-            }
-        } catch let error as NSError {
-            self.displayErrorAlert("Somethine went wrong while attempting to save videos")
-            print(error)
-            
+        } catch {
+            displayErrorAlert(error.localizedDescription)
         }
         
         // Asynchronous version:

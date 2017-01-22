@@ -69,21 +69,7 @@ class Frame : NSObject, NSCoding{
     
     func getThumbnailImage(video: Video, size: CGSize) throws -> UIImage {
         if cachedThumbnailImage == nil {
-            // We need to generate a thumbnail image whose smaller dimension (width/height)
-            // matches the corresponding dimension of the image view, but whose larger dimension
-            // may overflow the view, since the image view's content mode is "Aspect Fill".
-            // This also leverages the fact that we know the image view is a square:
-            let videoAsset = video.getVideoAsset()
-            let videoSize = videoAsset.tracks(withMediaType: AVMediaTypeVideo).first!.naturalSize
-            var thumbnailSize: CGSize
-            if videoSize.width > videoSize.height {
-                // Zero width means don't worry about width, just scale it with the height.
-                thumbnailSize = CGSize(width: 0, height: size.height * UIScreen.main.scale) // Scaled because points != pixels
-            } else {
-                // Zero height means don't worry about height, just scale it with the width.
-                thumbnailSize = CGSize(width: size.width * UIScreen.main.scale, height: 0) // Scaled because points != pixels
-            }
-            cachedThumbnailImage = try video.getImageAt(seconds: seconds, size: thumbnailSize)
+            cachedThumbnailImage = try video.getImageAt(seconds: seconds, size: video.getThumbnailImageGenerationSize(targetSize: size))
         }
         return cachedThumbnailImage!
     }
