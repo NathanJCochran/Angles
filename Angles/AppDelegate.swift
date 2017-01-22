@@ -12,7 +12,6 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var saveDelegate: SaveVideosDelegate!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -30,13 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         print("applicationDidEnterBackground")
-        
-        if saveDelegate != nil {
-            saveDelegate.saveVideos()
-            saveDelegate.freeMemory()
-        } else {
-            print("Error: no saveDelegate in AppDelegate")
-        }
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -52,12 +44,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         print("applicationWillTerminate")
-        
-        if saveDelegate != nil {
-            saveDelegate.saveVideos()
-        } else {
-            print("Error: could not save videos. No save delegate in AppDelegate")
-        }
     }
 }
 

@@ -39,9 +39,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     var deleteFrameButtonRef: UIBarButtonItem!
     var undoButtonRef: UIBarButtonItem!
     
-    // MARK: Save videos delegate
-    var saveDelegate: SaveVideosDelegate!
-    
     // MARK: Outlets
     @IBOutlet weak var deleteFrameButton: UIBarButtonItem!
     @IBOutlet weak var undoButton: UIBarButtonItem!
@@ -58,11 +55,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         // Make sure video was properly set:
         if video == nil {
             displayErrorAlert("video field not properly set")
-            return
-        }
-        
-        if saveDelegate == nil {
-            displayErrorAlert("saveDelegate field not properly set")
             return
         }
         
@@ -165,8 +157,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             currentFrame.points.append(normalizePoint(location))
             if currentFrame.points.count == 1 {
                 saveCurrentFrame()
-            } else {
-                //saveDelegate.saveVideos()
             }
         }
     }
@@ -224,7 +214,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         if currentFrame.points.isEmpty {
             deleteCurrentFrame()
         }
-        //saveDelegate.saveVideos()
     }
     
     @IBAction func deleteFrameButtonPressed(_ sender: AnyObject) {
@@ -282,7 +271,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         frameCollectionView.insertItems(at: [newIndexPath])
         frameCollectionView.selectItem(at: newIndexPath, animated: true, scrollPosition: .centeredHorizontally)
         toggleUndoAndDeleteButtons(true)
-        //saveDelegate.saveVideos()
     }
     
     func deleteCurrentFrame() {
@@ -298,7 +286,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
         toggleUndoAndDeleteButtons(false)
-        //saveDelegate.saveVideos()
     }
     
     fileprivate func setCurrentFrameTo(_ frame: Frame, drawPoints: Bool = true) {

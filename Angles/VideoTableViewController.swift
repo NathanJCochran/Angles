@@ -9,12 +9,7 @@ import UIKit
 import MobileCoreServices
 import Photos
 
-protocol SaveVideosDelegate {
-    func saveVideos()
-    func freeMemory()
-}
-
-class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate,  UITextFieldDelegate, SaveVideosDelegate {
+class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate,  UITextFieldDelegate {
     var videos = [Video]()
 
     override func viewDidLoad() {
@@ -23,16 +18,35 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         self.navigationItem.leftBarButtonItem = self.editButtonItem
         
         // Video.ClearSavedVideos() // WARNING: Erases ALL user data
+        
         print("loading videos")
         videos = Video.LoadVideos()
         print("videos loaded")
-        (UIApplication.shared.delegate as! AppDelegate).saveDelegate = self
+        
+        // Add observers for when the app enters the background or terminates:
+        NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: .UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(willTerminate), name: .UIApplicationWillTerminate, object: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        print("VideoTableViewController viewWillAppear")
     }
 
     override func didReceiveMemoryWarning() {
         print("VideoTableViewController didReceiveMemoryWarning")
         super.didReceiveMemoryWarning()
         freeMemory()
+    }
+    
+    func didEnterBackground() {
+        print("VideoTableViewController didEnterBackground")
+        saveVideos(async: false)
+        freeMemory()
+    }
+    
+    func willTerminate() {
+        print("VideoTableViewController willTerminate")
+        saveVideos(async:false)
     }
     
     deinit {
@@ -85,11 +99,12 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             
             // Remove video object from list:
             self.videos.remove(at: (indexPath as NSIndexPath).row)
-            //self.saveVideos()
             
             // Remove video from table view:
             tableView.deleteRows(at: [indexPath], with: .fade)
-
+            
+            // Save videos:
+            self.saveVideos(async: true)
         })
         deleteAction.backgroundColor = UIColor(red: 0.9, green: 0, blue: 0, alpha: 1.0)
         
@@ -154,7 +169,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             // Update video model and name label:
             cell.nameLabel.text = cell.nameTextField.text!
             videos[(indexPath as NSIndexPath).row].name = cell.nameTextField.text!
-            //saveVideos()
+            saveVideos(async:true)
         }
         
         // Hide text field, display label:
@@ -199,7 +214,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             
             // Add new video to the list:
             videos.insert(video, at: 0)
-            //saveVideos()
             
             // Make it display in the table view:
             let newIndexPath = IndexPath(row: 0, section: 0)
@@ -248,9 +262,13 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             let selectedVideoCell = sender as! VideoTableViewCell
             let indexPath = tableView.indexPath(for: selectedVideoCell)!
             framesViewController.video = videos[(indexPath as NSIndexPath).row]
-            framesViewController.saveDelegate = self
         }
     }
+    
+    //@IBAction func unwindToVideoTableView(sender: UIStoryboardSegue) {
+    //    print("VideoTableViewController unwindToVideoTableView")
+    //    saveVideos(async: true)
+    //}
     
     // MARK: Helper methods
     
@@ -263,36 +281,30 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     // MARK: Persistence
     
-    func saveVideos() {
-        do {
-            print("saving videos")
-            try Video.SaveVideos(self.videos)
-            print("videos saved")
-        } catch {
-            displayErrorAlert(error.localizedDescription)
+    func saveVideos(async: Bool) {
+        if async {
+            // Asynchronous version:
+            background({
+                do {
+                    print("saving videos")
+                    try Video.SaveVideos(self.videos)
+                    print("videos saved")
+                } catch {
+                    self.async({
+                        self.displayErrorAlert(error.localizedDescription)
+                    })
+                }
+            })
+        } else {
+            // Synchronous version:
+            do {
+                print("saving videos")
+                try Video.SaveVideos(videos)
+                print("videos saved")
+            } catch {
+                displayErrorAlert(error.localizedDescription)
+            }
         }
-        
-        // Asynchronous version:
-        
-        //background({
-        //    do {
-        //        print("saving videos")
-        //        try Video.SaveVideos(self.videos)
-        //        print("videos saved")
-        //    } catch Video.VideoError.saveError(let message, let error) {
-        //        self.async({
-        //            self.displayErrorAlert(message)
-        //            if error != nil {
-        //                print(error!)
-        //            }
-        //        })
-        //    } catch let error as NSError {
-        //        DispatchQueue.main.async(execute: {
-        //            self.displayErrorAlert("Somethine went wrong while attempting to save videos")
-        //            print(error)
-        //        })
-        //    }
-        //})
     }
     
     func freeMemory() {
