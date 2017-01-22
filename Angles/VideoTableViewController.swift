@@ -55,13 +55,13 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! VideoTableViewCell
         let video = videos[(indexPath as NSIndexPath).row]
         
+        cell.nameLabel.text = video.name
+        cell.dateLabel.text = video.getFormattedDateCreated()
+        cell.nameTextField.text = video.name
+        cell.nameTextField.isHidden = true
+        cell.nameTextField.delegate = self
         do {
             cell.thumbnailImage.image = try video.getThumbnailImage(size: cell.thumbnailImage.frame.size)
-            cell.nameLabel.text = video.name
-            cell.dateLabel.text = video.getFormattedDateCreated()
-            cell.nameTextField.text = video.name
-            cell.nameTextField.isHidden = true
-            cell.nameTextField.delegate = self
         } catch {
             displayErrorAlert(error.localizedDescription)
         }
@@ -260,7 +260,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-    
     
     // MARK: Persistence
     
