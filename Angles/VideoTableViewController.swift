@@ -265,11 +265,6 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         }
     }
     
-    //@IBAction func unwindToVideoTableView(sender: UIStoryboardSegue) {
-    //    print("VideoTableViewController unwindToVideoTableView")
-    //    saveVideos(async: true)
-    //}
-    
     // MARK: Helper methods
     
     func displayErrorAlert(_ message: String) {

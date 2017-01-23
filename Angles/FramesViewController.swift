@@ -96,6 +96,15 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         drawLinesForNormalizedPoints(currentFrame.points)
         drawAngleLabelsForNormalizedPoints(currentFrame.points)
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        print("FramesViewController viewWillDisappear")
+        
+        // Check if back button was pressed (parent is top of navigation stack):
+        if let videoTableViewController = self.navigationController?.topViewController as? VideoTableViewController {
+            videoTableViewController.saveVideos(async: true)
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         print("FramesViewController didReceiveMemoryWarning")
@@ -121,9 +130,10 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func willEnterForeground() {
         print("FramesViewController willEnterForeground")
+        
+        // Redraw angle labels (or don't), in case settings changed:
         clearAngleLabelsFromScreen()
         if displayAngleLabels() {
-            // Redraw all angle labels, to ensure that all are properly displayed:
             drawAngleLabelsForNormalizedPoints(currentFrame.points)
         }
     }
