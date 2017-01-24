@@ -103,6 +103,10 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         // Check if back button was pressed (parent is top of navigation stack):
         if let videoTableViewController = self.navigationController?.topViewController as? VideoTableViewController {
             videoTableViewController.saveVideos(async: true)
+            
+            for indexPath in videoTableViewController.tableView.indexPathsForVisibleRows ?? [] {
+                videoTableViewController.tableView.deselectRow(at: indexPath, animated: true)
+            }
         }
     }
 
@@ -248,12 +252,20 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cellIdentifier = "FrameCollectionViewCell"
         let cell = frameCollectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! FrameCollectionViewCell
-        
         let frame = video.frames[(indexPath as NSIndexPath).item]
-        do {
-            cell.frameImageView.image = try frame.getThumbnailImage(video:video, size:cell.frameImageView.frame.size)
-        } catch {
-            displayErrorAlert(error.localizedDescription)
+        
+        // Set the image asynchronously, because it can take awhile to generate:
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let image =  try frame.getThumbnailImage(video:self.video, size:cell.frameImageView.frame.size)
+                DispatchQueue.main.async {
+                    cell.frameImageView.image = image
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.displayErrorAlert(error.localizedDescription)
+                }
+            }
         }
         
         return cell
@@ -338,6 +350,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     fileprivate func setVideoTimeLabel(_ totalSeconds:Double) {
+        // TODO: Better time format. Fractions of a second? Milliseconds? Display hours, minutes depending on context?
         let hours = Int(floor(totalSeconds / 3600))
         let minutes = Int(floor(totalSeconds.truncatingRemainder(dividingBy: 3600) / 60))
         let seconds = Int(floor((totalSeconds.truncatingRemainder(dividingBy: 3600)).truncatingRemainder(dividingBy: 60)))

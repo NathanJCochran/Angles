@@ -74,10 +74,19 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         cell.nameTextField.text = video.name
         cell.nameTextField.isHidden = true
         cell.nameTextField.delegate = self
-        do {
-            cell.thumbnailImage.image = try video.getThumbnailImage(size: cell.thumbnailImage.frame.size)
-        } catch {
-            displayErrorAlert(error.localizedDescription)
+        
+        // Set the image asynchronously, because it can take awhile to generate:
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let image = try video.getThumbnailImage(size: cell.thumbnailImage.frame.size)
+                DispatchQueue.main.async {
+                    cell.thumbnailImage.image = image
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.displayErrorAlert(error.localizedDescription)
+                }
+            }
         }
         
         return cell
@@ -131,9 +140,9 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         textField?.becomeFirstResponder()
         if highlightText {
             // Not sure why, but this has to be queued up to work:
-            delay(0.1, fn: {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
                 textField?.selectedTextRange = textField?.textRange(from: (textField?.beginningOfDocument)!, to: (textField?.endOfDocument)!)
-            })
+            }
         }
         
         // Scroll to the row:
@@ -147,9 +156,9 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         // Turn off edit mode (doesn't always work if still in the process of transitioning
         // to edit mode from swipe. It is therefore called again after a short delay):
         setEditing(false, animated: true)
-        delay(0.1, fn: {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
             self.setEditing(false, animated: true)
-        })
+        }
     }
     
     // MARK: UITextFieldDelegate
@@ -279,17 +288,17 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     func saveVideos(async: Bool) {
         if async {
             // Asynchronous version:
-            background({
+            DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     print("saving videos")
                     try Video.SaveVideos(self.videos)
                     print("videos saved")
                 } catch {
-                    self.async({
+                    DispatchQueue.main.async {
                         self.displayErrorAlert(error.localizedDescription)
-                    })
+                    }
                 }
-            })
+            }
         } else {
             // Synchronous version:
             do {
@@ -308,25 +317,5 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             video.freeMemory()
         }
         print("memory freed")
-    }
-    
-    func async(_ fn: @escaping (() -> Void)) {
-        let mainQueue = DispatchQueue.main
-        mainQueue.async(execute: {
-            fn()
-        })
-    }
-    
-    func delay(_ delay:Double, fn :@escaping (() -> Void)) {
-        let mainQueue = DispatchQueue.main
-        let dispatchTime = DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-        mainQueue.asyncAfter(deadline: dispatchTime, execute: fn)
-    }
-    
-    func background(_ fn: @escaping (() -> Void)) {
-        let backgroundQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated)
-        backgroundQueue.async(execute: {
-            fn()
-        })
     }
 }
