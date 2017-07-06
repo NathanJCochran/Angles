@@ -220,7 +220,9 @@ class Video : NSObject, NSCoding{
     }
     
     func getVideoSize() -> CGSize {
-        return getVideoAsset().tracks(withMediaType: AVMediaTypeVideo).first!.naturalSize
+        let track = getVideoAsset().tracks(withMediaType: AVMediaTypeVideo).first!
+        let size = track.naturalSize.applying(track.preferredTransform)
+        return CGSize(width: fabs(size.width), height: fabs(size.height))
     }
     
     func getThumbnailImageGenerationSize(targetSize: CGSize) -> CGSize {

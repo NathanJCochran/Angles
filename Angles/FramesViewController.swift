@@ -371,10 +371,24 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearAngleLabelsFromScreen()
         clearFrameSelection()
         player.currentItem!.step(byCount: byCount)
-        let seconds = player.currentTime().seconds
-        setVideoTimeLabel(seconds)
-        setSlider(seconds)
-        currentFrame = Frame(seconds: seconds)
+        
+        // HACK: Wait for AVPlayer time to update:
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            let seconds = self.player.currentTime().seconds
+            self.setVideoTimeLabel(seconds)
+            self.setSlider(seconds)
+            for (i, frame) in self.video.frames.enumerated() {
+                if frame.seconds == seconds {
+                    self.drawNormalizedPoints(frame.points)
+                    self.drawLinesForNormalizedPoints(frame.points)
+                    self.drawAngleLabelsForNormalizedPoints(frame.points)
+                    self.frameCollectionView.selectItem(at: IndexPath(item: i, section: 0), animated: true, scrollPosition: UICollectionViewScrollPosition())
+                    self.currentFrame = frame
+                    return
+                }
+            }
+            self.currentFrame = Frame(seconds: seconds)
+        }
     }
     
     fileprivate func setVideoTimeLabel(_ totalSeconds:Double) {
