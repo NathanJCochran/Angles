@@ -44,6 +44,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     @IBOutlet weak var undoButton: UIBarButtonItem!
     @IBOutlet weak var exportButton: UIBarButtonItem!
     @IBOutlet weak var frameImageView: UIImageView!
+    @IBOutlet weak var frameStepper: UIStepper!
     @IBOutlet weak var frameSlider: UISlider!
     @IBOutlet weak var videoDurationLabel: UILabel!
     @IBOutlet weak var frameCollectionView: UICollectionView!
@@ -68,9 +69,13 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         // Set navbar title:
         title = video.name
         
+        // Set stepper min and max:
+        frameStepper.minimumValue = 0
+        frameStepper.maximumValue = Double(video.getFrameCount())
+        
         // Set slider min and max:
         frameSlider.minimumValue = 0
-        frameSlider.maximumValue = Float(video.getDuration().seconds)
+        frameSlider.maximumValue = Float(video.getFrameCount())
         
         // Set current frame to first saved frame or default:
         if video.frames.count > 0 {
@@ -79,7 +84,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         } else {
             // Default
             setCurrentFrameTo(0)
-            frameSlider.value = 0
         }
         
         // Add observer for when user returns after selecting home button.
@@ -148,9 +152,43 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: Actions
     
+    @IBAction func stepperPressed(_ sender: UIStepper) {
+        print("stepperPressed: sender.value=\(sender.value)")
+        
+        let frameNum = lround(sender.value)
+        print("stepperPressed: frameNum=\(frameNum)")
+        
+        changeFrame(frameNum: frameNum)
+    }
+    
     @IBAction func sliderMoved(_ sender: UISlider) {
-        let seconds = Double(sender.value)
-        setCurrentFrameTo(seconds)
+        print("sliderMoved: sender.value=\(sender.value)")
+        
+        // Rounder slider value to nearest int:
+        let frameNum = lroundf(sender.value)
+        setSlider(frameNum)
+        print("sliderMoved: frameNum=\(frameNum)")
+        
+        // If the slider moved to a different int value, change the frame:
+        if frameNum != currentFrame.num {
+            changeFrame(frameNum: frameNum)
+        }
+    }
+    
+    func changeFrame(frameNum: Int) {
+        // Check if there is a saved version of this frame:
+        for (i, frame) in video.frames.enumerated() {
+            if frame.num == frameNum {
+                print("changeFrame: using existing frame #\(frameNum)")
+                frameCollectionView.selectItem(at: IndexPath(item: i, section: 0), animated: true, scrollPosition: UICollectionViewScrollPosition())
+                setCurrentFrameTo(frame)
+                return
+            }
+        }
+        
+        // Otherwise, create a new frame:
+        print("changeFrame: creating new frame #\(frameNum)")
+        setCurrentFrameTo(frameNum)
     }
     
     @IBAction func selectPoint(_ sender: UITapGestureRecognizer) {
@@ -310,7 +348,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         toggleUndoAndDeleteButtons(false)
     }
     
-    fileprivate func setCurrentFrameTo(_ frame: Frame, drawPoints: Bool = true) {
+    func setCurrentFrameTo(_ frame: Frame, drawPoints: Bool = true) {
         do {
             let image = try frame.getImage(video: video)
             
@@ -319,7 +357,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             clearLinesFromScreen()
             clearAngleLabelsFromScreen()
             setVideoTimeLabel(frame.seconds)
-            setSlider(frame.seconds)
+            setStepper(frame.num)
+            setSlider(frame.num)
             frameImageView.image = image
             if drawPoints {
                 drawNormalizedPoints(frame.points)
@@ -332,7 +371,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
 
-    fileprivate func setCurrentFrameTo(_ seconds: Double) {
+    func setCurrentFrameTo(_ frameNum: Int) {
+        let seconds = Double(frameNum) * video.getSecondsPerFrame()
         do {
             let image = try video.getImageAt(seconds: seconds, size:CGSize.zero) // CGSIze.zero means original image size
             
@@ -340,16 +380,18 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             clearPointsFromScreen()
             clearLinesFromScreen()
             clearAngleLabelsFromScreen()
-            clearFrameSelection()
             setVideoTimeLabel(seconds)
+            setStepper(frameNum)
+            setSlider(frameNum)
+            clearFrameSelection()
             frameImageView.image = image
-            currentFrame = Frame(seconds: seconds)
+            currentFrame = Frame(num:frameNum, seconds: seconds)
         } catch {
             displayErrorAlert(error.localizedDescription)
         }
     }
     
-    fileprivate func setVideoTimeLabel(_ totalSeconds:Double) {
+    func setVideoTimeLabel(_ totalSeconds:Double) {
         // TODO: Better time format. Fractions of a second? Milliseconds? Display hours, minutes depending on context?
         let hours = Int(floor(totalSeconds / 3600))
         let minutes = Int(floor(totalSeconds.truncatingRemainder(dividingBy: 3600) / 60))
@@ -357,17 +399,21 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         videoDurationLabel.text = String(format:"%d:%02d:%02d", hours, minutes, seconds)
     }
     
-    fileprivate func setSlider(_ seconds: Double) {
-        frameSlider.setValue(Float(seconds), animated: true)
+    func setStepper(_ frameNum: Int) {
+        frameStepper.value = Double(frameNum)
     }
     
-    fileprivate func clearFrameSelection() {
+    func setSlider(_ frameNum: Int) {
+        frameSlider.setValue(Float(frameNum), animated: true)
+    }
+    
+    func clearFrameSelection() {
         for indexPath in frameCollectionView.indexPathsForSelectedItems! {
             frameCollectionView.deselectItem(at: indexPath, animated: true)
         }
     }
     
-    fileprivate func toggleUndoAndDeleteButtons(_ show: Bool) {
+    func toggleUndoAndDeleteButtons(_ show: Bool) {
         if deleteFrameButtonRef == nil {
             print("deleteFrameButtonRef is nil")
         } else if show {
@@ -379,17 +425,17 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: Draw Points
     
-    fileprivate func drawNormalizedPoints(_ points: [CGPoint]) {
+    func drawNormalizedPoints(_ points: [CGPoint]) {
         for point in points {
             drawNormalizedPoint(point)
         }
     }
 
-    fileprivate func drawNormalizedPoint(_ point: CGPoint) {
+    func drawNormalizedPoint(_ point: CGPoint) {
         drawPoint(denormalizePoint(point))
     }
     
-    fileprivate func drawPoint(_ point: CGPoint) {
+    func drawPoint(_ point: CGPoint) {
         
         // Create point shapelayer:
         let pointDiameter = min(getFrameImageRect().size.width, getFrameImageRect().size.height) * pointDiameterModifier
@@ -425,7 +471,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         pointViews.append(pointView)
     }
     
-    fileprivate func clearPointsFromScreen() {
+    func clearPointsFromScreen() {
         for pointView in pointViews {
             pointView.removeFromSuperview()
         }
@@ -434,7 +480,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: Draw Lines
     
-    fileprivate func drawLinesForNormalizedPoints(_ points: [CGPoint]) {
+    func drawLinesForNormalizedPoints(_ points: [CGPoint]) {
         if points.count > 1 {
             for i in 1..<points.count {
                 drawLineForNormalizedPoints(points[i-1], point2: points[i])
@@ -442,7 +488,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
-    fileprivate func drawLineForNormalizedPoints(_ point1: CGPoint, point2: CGPoint) {
+    func drawLineForNormalizedPoints(_ point1: CGPoint, point2: CGPoint) {
         drawLine(denormalizePoint(point1), point2: denormalizePoint(point2))
     }
 
@@ -453,14 +499,14 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         lineShapeLayers.append(shapeLayer)
     }
     
-    fileprivate func redrawLine(_ lineIdx: Int, point1: CGPoint, point2: CGPoint) {
+    func redrawLine(_ lineIdx: Int, point1: CGPoint, point2: CGPoint) {
         lineShapeLayers[lineIdx].removeFromSuperlayer()
         let newLineShapeLayer = getLineShapeLayer(point1, point2: point2)
         frameImageView.layer.addSublayer(newLineShapeLayer)
         lineShapeLayers[lineIdx] = newLineShapeLayer
     }
     
-    fileprivate func getLineShapeLayer(_ point1: CGPoint, point2: CGPoint) -> CAShapeLayer {
+    func getLineShapeLayer(_ point1: CGPoint, point2: CGPoint) -> CAShapeLayer {
         let path = UIBezierPath()
         path.move(to: point1)
         path.addLine(to: point2)
@@ -470,7 +516,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         return shapeLayer
     }
     
-    fileprivate func clearLinesFromScreen() {
+    func clearLinesFromScreen() {
         for lineShapeLayer in lineShapeLayers {
             lineShapeLayer.removeFromSuperlayer()
         }
@@ -479,7 +525,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: Draw Angle Labels:
     
-    fileprivate func drawAngleLabelsForNormalizedPoints(_ points:[CGPoint]) {
+    func drawAngleLabelsForNormalizedPoints(_ points:[CGPoint]) {
         if points.count > 2 {
             for i in 0..<points.count-2 {
                 drawAngleLabelForNormalizedPoints(points[i], point2: points[i+1], point3: points[i+2])
@@ -487,15 +533,15 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
-    fileprivate func drawAngleLabelForNormalizedPoints(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) {
+    func drawAngleLabelForNormalizedPoints(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) {
         drawAngleLabel(denormalizePoint(point1), point2: denormalizePoint(point2), point3: denormalizePoint(point3))
     }
     
-    fileprivate func displayAngleLabels() -> Bool {
+    func displayAngleLabels() -> Bool {
         return UserDefaults.standard.bool(forKey: "display_angles_preference")
     }
     
-    fileprivate func drawAngleLabel(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) {
+    func drawAngleLabel(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) {
         if displayAngleLabels() {
             let textLayer = getAngleLabelTextLayer(point1, point2:point2, point3:point3)
             textLayer.foregroundColor = pointColors[(angleLabelTextLayers.count + 1) % pointColors.count].cgColor
@@ -514,7 +560,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
-    fileprivate func getAngleLabelTextLayer(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CATextLayer {
+    func getAngleLabelTextLayer(_ point1:CGPoint, point2:CGPoint, point3:CGPoint) -> CATextLayer {
         let midPoint = CGPoint(x: (point1.x + point3.x) / 2, y: (point1.y + point3.y) / 2)
         let distanceToMidPoint = Math.getDistanceBetweenPoints(point2, b: midPoint)
         let ratio = angleToPointDistance / distanceToMidPoint
@@ -535,7 +581,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     
-    fileprivate func clearAngleLabelsFromScreen() {
+    func clearAngleLabelsFromScreen() {
         for angleLabelTextLayer in angleLabelTextLayers {
             angleLabelTextLayer.removeFromSuperlayer()
         }
@@ -544,7 +590,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: Normalization of Points
     
-    fileprivate func normalizePoint(_ point: CGPoint) -> CGPoint {
+    func normalizePoint(_ point: CGPoint) -> CGPoint {
         let frameImageRect = getFrameImageRect()
         let adjustedPoint = CGPoint(x: point.x - frameImageRect.minX, y: point.y - frameImageRect.minY)
         let scaledPoint = CGPoint(
@@ -554,7 +600,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         return scaledPoint
     }
     
-    fileprivate func denormalizePoint(_ point:CGPoint) -> CGPoint{
+    func denormalizePoint(_ point:CGPoint) -> CGPoint{
         let frameImageRect = getFrameImageRect()
         let adjustedPoint = CGPoint(
             x: (point.x / frameImageView.image!.size.width) * frameImageRect.width,
@@ -566,7 +612,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     // MARK: Other Utils
     
-    fileprivate func getFrameImageRect() -> CGRect {
+    func getFrameImageRect() -> CGRect {
         if cachedFrameImageRect == nil {
             let widthRatio = frameImageView.bounds.size.width / frameImageView.image!.size.width
             let heightRatio = frameImageView.bounds.size.height / frameImageView.image!.size.height
@@ -580,7 +626,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         return cachedFrameImageRect!
     }
     
-    fileprivate func displayErrorAlert(_ message: String) {
+    func displayErrorAlert(_ message: String) {
         print(message)
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: nil))

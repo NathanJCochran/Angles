@@ -91,7 +91,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="HjT-4Y-GXy">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="HjT-4Y-GXy">
                                 <rect key="frame" x="20" y="64" width="728" height="960"/>
                                 <subviews>
                                     <imageView contentMode="scaleAspectFit" verticalHuggingPriority="249" verticalCompressionResistancePriority="749" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="500" translatesAutoresizingMaskIntoConstraints="NO" id="Rgc-hj-ZZX">
@@ -105,8 +105,14 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="rgM-wa-cAu">
                                         <rect key="frame" x="0.0" y="850" width="728" height="30"/>
                                         <subviews>
+                                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="jPg-UJ-ndg">
+                                                <rect key="frame" x="0.0" y="0.0" width="94" height="29"/>
+                                                <connections>
+                                                    <action selector="stepperPressed:" destination="BYZ-38-t0r" eventType="valueChanged" id="8CZ-My-jR7"/>
+                                                </connections>
+                                            </stepper>
                                             <slider opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="CGn-Z4-NeA">
-                                                <rect key="frame" x="-2" y="0.0" width="666" height="31"/>
+                                                <rect key="frame" x="97" y="0.0" width="567" height="31"/>
                                                 <connections>
                                                     <action selector="sliderMoved:" destination="BYZ-38-t0r" eventType="valueChanged" id="x7W-t0-js6"/>
                                                 </connections>
@@ -199,6 +205,7 @@
                         <outlet property="frameCollectionView" destination="3di-tf-QCO" id="wdN-1j-LAu"/>
                         <outlet property="frameImageView" destination="Rgc-hj-ZZX" id="E25-ym-TOB"/>
                         <outlet property="frameSlider" destination="CGn-Z4-NeA" id="lYE-xh-GRg"/>
+                        <outlet property="frameStepper" destination="jPg-UJ-ndg" id="YOa-XS-7yS"/>
                         <outlet property="undoButton" destination="0ue-Z0-cTz" id="fTg-e1-2lE"/>
                         <outlet property="videoDurationLabel" destination="oFb-FM-7e0" id="nPW-TI-ceE"/>
                     </connections>

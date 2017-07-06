@@ -203,6 +203,20 @@ class Video : NSObject, NSCoding{
         return getVideoAsset().duration
     }
     
+    func getFramesPerSecond() -> Float {
+        return getVideoAsset().tracks(withMediaType: AVMediaTypeVideo).first!.nominalFrameRate
+    }
+    
+    func getSecondsPerFrame() -> Double {
+        print("minFrameDuration: \(getVideoAsset().tracks(withMediaType: AVMediaTypeVideo).first!.minFrameDuration.seconds)")
+        print("secondsPerFrame: \(1 / getFramesPerSecond())")
+        return getVideoAsset().tracks(withMediaType: AVMediaTypeVideo).first!.minFrameDuration.seconds
+    }
+    
+    func getFrameCount() -> Int {
+        return Int(getDuration().seconds * Double(getFramesPerSecond()))
+    }
+    
     func getImageAt(seconds: Double, size: CGSize) throws -> UIImage {
         do {
             // Get and configure image generator:
