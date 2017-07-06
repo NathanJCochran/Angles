@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreMedia
+import AVKit
 import AVFoundation
 
 class FramesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -20,10 +21,9 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Properties
     var video: Video!
     var currentFrame: Frame!
+    var player: AVPlayer!
+    var playerLayer: AVPlayerLayer!
     var documentController: UIDocumentInteractionController!
-    
-    // MARK: Cached items
-    var cachedFrameImageRect: CGRect?
     
     // MARK: References to drawn images:
     var pointViews = [UIView]()
@@ -43,8 +43,9 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     @IBOutlet weak var deleteFrameButton: UIBarButtonItem!
     @IBOutlet weak var undoButton: UIBarButtonItem!
     @IBOutlet weak var exportButton: UIBarButtonItem!
-    @IBOutlet weak var frameImageView: UIImageView!
+    @IBOutlet weak var frameVideoView: UIView!
     @IBOutlet weak var frameSlider: UISlider!
+    @IBOutlet weak var frameStepper: UIStepper!
     @IBOutlet weak var videoDurationLabel: UILabel!
     @IBOutlet weak var frameCollectionView: UICollectionView!
 
@@ -57,6 +58,9 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             displayErrorAlert("video field not properly set")
             return
         }
+        
+        // Create AVPlayer for video:
+        player = AVPlayer(url: video.videoURL)
         
         // Save references to bar button items so we can toggle their existence:
         deleteFrameButtonRef = deleteFrameButton
@@ -71,6 +75,11 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         // Set slider min and max:
         frameSlider.minimumValue = 0
         frameSlider.maximumValue = Float(video.getDuration().seconds)
+        
+        // Set stepper min and max:
+        frameStepper.minimumValue = Double(Int.min)
+        frameStepper.maximumValue = Double(Int.max)
+        frameStepper.value = 0
         
         // Set current frame to first saved frame or default:
         if video.frames.count > 0 {
@@ -89,6 +98,12 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     override func viewDidAppear(_ animated: Bool) {
         print("FramesViewController viewDidAppear")
+        if playerLayer != nil {
+            playerLayer.removeFromSuperlayer()
+        }
+        playerLayer = AVPlayerLayer(player: player)
+        playerLayer.frame = frameVideoView.bounds
+        frameVideoView.layer.addSublayer(playerLayer)
         clearPointsFromScreen()
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
@@ -112,7 +127,6 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
 
     override func didReceiveMemoryWarning() {
         print("FramesViewController didReceiveMemoryWarning")
-        cachedFrameImageRect = nil
         super.didReceiveMemoryWarning()
         
         // TODO: Make sure parent view's didReceiveMemoryWarning method also called
@@ -120,12 +134,17 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         print("FramesViewController viewWillTransition")
-        cachedFrameImageRect = nil // Invalid cached image rect, size it's going to change
+        if playerLayer != nil {
+            playerLayer.removeFromSuperlayer()
+        }
         clearPointsFromScreen()
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
         coordinator.animate(alongsideTransition: nil, completion: {
             _ in
+            self.playerLayer = AVPlayerLayer(player: self.player)
+            self.playerLayer.frame = self.frameVideoView.bounds
+            self.frameVideoView.layer.addSublayer(self.playerLayer)
             self.drawNormalizedPoints(self.currentFrame.points)
             self.drawLinesForNormalizedPoints(self.currentFrame.points)
             self.drawAngleLabelsForNormalizedPoints(self.currentFrame.points)
@@ -149,15 +168,22 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Actions
     
     @IBAction func sliderMoved(_ sender: UISlider) {
+        print("sliderMoved: sender.value=\(sender.value)")
         let seconds = Double(sender.value)
         setCurrentFrameTo(seconds)
     }
     
+    @IBAction func stepperPressed(_ sender: UIStepper) {
+        print("stepperPressed: sender.value=\(sender.value)")
+        stepCurrentFrame(Int(sender.value))
+        frameStepper.value = 0
+    }
+    
     @IBAction func selectPoint(_ sender: UITapGestureRecognizer) {
-        let location = sender.location(in: frameImageView)
-        let frameImageRect = getFrameImageRect()
+        let location = sender.location(in: frameVideoView)
+        print("selectPoint: location=\(location)")
         
-        if frameImageRect.contains(location) {
+        if playerLayer.videoRect.contains(location) {
             drawPoint(location)
             if currentFrame.points.count > 0 {
                 drawLine(denormalizePoint(currentFrame.points.last!), point2: location)
@@ -177,12 +203,11 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func movePoint(_ sender:UIPanGestureRecognizer) {
         // Figure out what the new point is:
-        let translation = sender.translation(in: frameImageView)
+        let translation = sender.translation(in: frameVideoView)
         let newPoint = CGPoint(x: CGFloat(sender.view!.center.x + translation.x), y: CGFloat(sender.view!.center.y + translation.y))
         
         // If it's out of bounds, stop:
-        let frameImageRect = getFrameImageRect()
-        if !frameImageRect.contains(newPoint) {
+        if !playerLayer.videoRect.contains(newPoint) {
             return
         }
         
@@ -192,7 +217,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         // Move the point view:
         sender.view!.center = newPoint
-        sender.setTranslation(CGPoint.zero, in: frameImageView)
+        sender.setTranslation(CGPoint.zero, in: frameVideoView)
         
         // Redraw the lines:
         if pointIdx > 0 {
@@ -311,42 +336,45 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     fileprivate func setCurrentFrameTo(_ frame: Frame, drawPoints: Bool = true) {
-        do {
-            let image = try frame.getImage(video: video)
-            
-            toggleUndoAndDeleteButtons(true)
-            clearPointsFromScreen()
-            clearLinesFromScreen()
-            clearAngleLabelsFromScreen()
-            setVideoTimeLabel(frame.seconds)
-            setSlider(frame.seconds)
-            frameImageView.image = image
-            if drawPoints {
-                drawNormalizedPoints(frame.points)
-                drawLinesForNormalizedPoints(frame.points)
-                drawAngleLabelsForNormalizedPoints(frame.points)
-            }
-            currentFrame = frame
-        } catch {
-            displayErrorAlert(error.localizedDescription)
+        toggleUndoAndDeleteButtons(true)
+        clearPointsFromScreen()
+        clearLinesFromScreen()
+        clearAngleLabelsFromScreen()
+        let time = CMTime(seconds:frame.seconds, preferredTimescale: video.getDuration().timescale)
+        player.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        setVideoTimeLabel(frame.seconds)
+        setSlider(frame.seconds)
+        if drawPoints {
+            drawNormalizedPoints(frame.points)
+            drawLinesForNormalizedPoints(frame.points)
+            drawAngleLabelsForNormalizedPoints(frame.points)
         }
+        currentFrame = frame
     }
 
     fileprivate func setCurrentFrameTo(_ seconds: Double) {
-        do {
-            let image = try video.getImageAt(seconds: seconds, size:CGSize.zero) // CGSIze.zero means original image size
-            
-            toggleUndoAndDeleteButtons(false)
-            clearPointsFromScreen()
-            clearLinesFromScreen()
-            clearAngleLabelsFromScreen()
-            clearFrameSelection()
-            setVideoTimeLabel(seconds)
-            frameImageView.image = image
-            currentFrame = Frame(seconds: seconds)
-        } catch {
-            displayErrorAlert(error.localizedDescription)
-        }
+        toggleUndoAndDeleteButtons(false)
+        clearPointsFromScreen()
+        clearLinesFromScreen()
+        clearAngleLabelsFromScreen()
+        clearFrameSelection()
+        let time = CMTime(seconds:seconds, preferredTimescale: video.getDuration().timescale)
+        player.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        setVideoTimeLabel(seconds)
+        currentFrame = Frame(seconds: seconds)
+    }
+    
+    fileprivate func stepCurrentFrame(_ byCount: Int) {
+        toggleUndoAndDeleteButtons(false)
+        clearPointsFromScreen()
+        clearLinesFromScreen()
+        clearAngleLabelsFromScreen()
+        clearFrameSelection()
+        player.currentItem!.step(byCount: byCount)
+        let seconds = player.currentTime().seconds
+        setVideoTimeLabel(seconds)
+        setSlider(seconds)
+        currentFrame = Frame(seconds: seconds)
     }
     
     fileprivate func setVideoTimeLabel(_ totalSeconds:Double) {
@@ -392,7 +420,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     fileprivate func drawPoint(_ point: CGPoint) {
         
         // Create point shapelayer:
-        let pointDiameter = min(getFrameImageRect().size.width, getFrameImageRect().size.height) * pointDiameterModifier
+        let pointDiameter = min(playerLayer.videoRect.size.width, playerLayer.videoRect.size.height) * pointDiameterModifier
         let shapeLayer = CAShapeLayer()
         let circlePath = UIBezierPath(ovalIn: CGRect(
             x: 0,
@@ -420,8 +448,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(movePoint(_:)))
         pointView.addGestureRecognizer(gestureRecognizer)
         
-        // Add point view to frameImageView:
-        frameImageView.addSubview(pointView)
+        // Add point view to frameVideoView:
+        frameVideoView.addSubview(pointView)
         pointViews.append(pointView)
     }
     
@@ -449,14 +477,14 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     fileprivate func drawLine(_ point1: CGPoint, point2: CGPoint) {
         let shapeLayer = getLineShapeLayer(point1, point2: point2)
-        frameImageView.layer.addSublayer(shapeLayer)
+        frameVideoView.layer.addSublayer(shapeLayer)
         lineShapeLayers.append(shapeLayer)
     }
     
     fileprivate func redrawLine(_ lineIdx: Int, point1: CGPoint, point2: CGPoint) {
         lineShapeLayers[lineIdx].removeFromSuperlayer()
         let newLineShapeLayer = getLineShapeLayer(point1, point2: point2)
-        frameImageView.layer.addSublayer(newLineShapeLayer)
+        frameVideoView.layer.addSublayer(newLineShapeLayer)
         lineShapeLayers[lineIdx] = newLineShapeLayer
     }
     
@@ -499,7 +527,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         if displayAngleLabels() {
             let textLayer = getAngleLabelTextLayer(point1, point2:point2, point3:point3)
             textLayer.foregroundColor = pointColors[(angleLabelTextLayers.count + 1) % pointColors.count].cgColor
-            frameImageView.layer.addSublayer(textLayer)
+            frameVideoView.layer.addSublayer(textLayer)
             angleLabelTextLayers.append(textLayer)
         }
     }
@@ -509,7 +537,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             angleLabelTextLayers[angleIdx].removeFromSuperlayer()
             let newAngleLabelTextLayer = getAngleLabelTextLayer(point1, point2:point2, point3:point3)
             newAngleLabelTextLayer.foregroundColor = pointColors[(angleIdx + 1) % pointColors.count].cgColor
-            frameImageView.layer.addSublayer(newAngleLabelTextLayer)
+            frameVideoView.layer.addSublayer(newAngleLabelTextLayer)
             angleLabelTextLayers[angleIdx] = newAngleLabelTextLayer
         }
     }
@@ -545,40 +573,24 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Normalization of Points
     
     fileprivate func normalizePoint(_ point: CGPoint) -> CGPoint {
-        let frameImageRect = getFrameImageRect()
-        let adjustedPoint = CGPoint(x: point.x - frameImageRect.minX, y: point.y - frameImageRect.minY)
+        let adjustedPoint = CGPoint(x: point.x - playerLayer.videoRect.minX, y: point.y - playerLayer.videoRect.minY)
         let scaledPoint = CGPoint(
-            x: (adjustedPoint.x / frameImageRect.width) * frameImageView.image!.size.width,
-            y: (adjustedPoint.y / frameImageRect.height) * frameImageView.image!.size.height
+            x: (adjustedPoint.x / playerLayer.videoRect.width) * video.getVideoSize().width,
+            y: (adjustedPoint.y / playerLayer.videoRect.height) * video.getVideoSize().height
         )
         return scaledPoint
     }
     
     fileprivate func denormalizePoint(_ point:CGPoint) -> CGPoint{
-        let frameImageRect = getFrameImageRect()
         let adjustedPoint = CGPoint(
-            x: (point.x / frameImageView.image!.size.width) * frameImageRect.width,
-            y: (point.y / frameImageView.image!.size.height) * frameImageRect.height
+            x: (point.x / video.getVideoSize().width) * playerLayer.videoRect.width,
+            y: (point.y / video.getVideoSize().height) * playerLayer.videoRect.height
         )
-        let realPoint = CGPoint(x: adjustedPoint.x + frameImageRect.minX, y: adjustedPoint.y + frameImageRect.minY)
+        let realPoint = CGPoint(x: adjustedPoint.x + playerLayer.videoRect.minX, y: adjustedPoint.y + playerLayer.videoRect.minY)
         return realPoint
     }
     
     // MARK: Other Utils
-    
-    fileprivate func getFrameImageRect() -> CGRect {
-        if cachedFrameImageRect == nil {
-            let widthRatio = frameImageView.bounds.size.width / frameImageView.image!.size.width
-            let heightRatio = frameImageView.bounds.size.height / frameImageView.image!.size.height
-            let scale = min(widthRatio, heightRatio)
-            let imageWidth = scale * frameImageView.image!.size.width
-            let imageHeight = scale * frameImageView.image!.size.height
-            let x = (frameImageView.bounds.size.width - imageWidth) / 2
-            let y = (frameImageView.bounds.size.height - imageHeight) / 2
-            cachedFrameImageRect = CGRect(x: x, y: y, width: imageWidth, height: imageHeight)
-        }
-        return cachedFrameImageRect!
-    }
     
     fileprivate func displayErrorAlert(_ message: String) {
         print(message)

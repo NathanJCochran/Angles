@@ -24,7 +24,7 @@
                                 <rect key="frame" x="0.0" y="28" width="768" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TVO-tB-Nv7" id="Bhp-LI-Slf">
-                                    <rect key="frame" x="0.0" y="0.0" width="768" height="80"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="768" height="79"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Date Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DZV-r5-R8A">
@@ -91,22 +91,28 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="HjT-4Y-GXy">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="HjT-4Y-GXy">
                                 <rect key="frame" x="20" y="64" width="728" height="960"/>
                                 <subviews>
-                                    <imageView contentMode="scaleAspectFit" verticalHuggingPriority="249" verticalCompressionResistancePriority="749" placeholderIntrinsicWidth="400" placeholderIntrinsicHeight="500" translatesAutoresizingMaskIntoConstraints="NO" id="Rgc-hj-ZZX">
+                                    <view contentMode="scaleAspectFit" verticalHuggingPriority="249" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="uaw-dz-3O0">
                                         <rect key="frame" x="0.0" y="0.0" width="728" height="845"/>
-                                        <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
                                         <connections>
-                                            <outletCollection property="gestureRecognizers" destination="e3z-Jm-hMM" appends="YES" id="mEo-gg-rFV"/>
+                                            <outletCollection property="gestureRecognizers" destination="pOX-zc-ncA" appends="YES" id="9Bn-wb-Stk"/>
                                         </connections>
-                                    </imageView>
+                                    </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="rgM-wa-cAu">
                                         <rect key="frame" x="0.0" y="850" width="728" height="30"/>
                                         <subviews>
+                                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Ac7-dF-d7n">
+                                                <rect key="frame" x="0.0" y="0.0" width="94" height="29"/>
+                                                <connections>
+                                                    <action selector="stepperPressed:" destination="BYZ-38-t0r" eventType="valueChanged" id="wlb-gj-ptt"/>
+                                                </connections>
+                                            </stepper>
                                             <slider opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" horizontalCompressionResistancePriority="749" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="CGn-Z4-NeA">
-                                                <rect key="frame" x="-2" y="0.0" width="666" height="31"/>
+                                                <rect key="frame" x="97" y="0.0" width="567" height="31"/>
                                                 <connections>
                                                     <action selector="sliderMoved:" destination="BYZ-38-t0r" eventType="valueChanged" id="x7W-t0-js6"/>
                                                 </connections>
@@ -197,16 +203,17 @@
                         <outlet property="deleteFrameButton" destination="CBj-zq-7bk" id="lZ9-b2-pbH"/>
                         <outlet property="exportButton" destination="M50-Xv-dEH" id="LvA-5E-btw"/>
                         <outlet property="frameCollectionView" destination="3di-tf-QCO" id="wdN-1j-LAu"/>
-                        <outlet property="frameImageView" destination="Rgc-hj-ZZX" id="E25-ym-TOB"/>
                         <outlet property="frameSlider" destination="CGn-Z4-NeA" id="lYE-xh-GRg"/>
+                        <outlet property="frameStepper" destination="Ac7-dF-d7n" id="IQ0-bA-vVk"/>
+                        <outlet property="frameVideoView" destination="uaw-dz-3O0" id="yOK-NY-av6"/>
                         <outlet property="undoButton" destination="0ue-Z0-cTz" id="fTg-e1-2lE"/>
                         <outlet property="videoDurationLabel" destination="oFb-FM-7e0" id="nPW-TI-ceE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="e3z-Jm-hMM">
+                <tapGestureRecognizer id="pOX-zc-ncA">
                     <connections>
-                        <action selector="selectPoint:" destination="BYZ-38-t0r" id="zfB-eE-cT4"/>
+                        <action selector="selectPoint:" destination="BYZ-38-t0r" id="932-ap-giC"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
