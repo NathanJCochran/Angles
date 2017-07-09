@@ -13,6 +13,7 @@ import AVFoundation
 class Frame : NSObject, NSCoding{
     
     // MARK: Properties
+    var index: Int
     var seconds: Double
     var points: [CGPoint]
     
@@ -22,12 +23,14 @@ class Frame : NSObject, NSCoding{
     
     // MARK: Types
     struct PropertyKey {
+        static let indexKey = "index"
         static let secondsKey = "seconds"
         static let pointsKey = "points"
         static let pointsCountKey = "pointsCount"
     }
     
-    init(seconds: Double, points:[CGPoint] = []) {
+    init(index: Int, seconds: Double, points:[CGPoint] = []) {
+        self.index = index
         self.seconds = seconds
         self.points = points
     }
@@ -35,6 +38,7 @@ class Frame : NSObject, NSCoding{
     // MARK: Encoding
     
     required convenience init?(coder aDecoder: NSCoder) {
+        let index = aDecoder.decodeInteger(forKey: PropertyKey.indexKey)
         let seconds = aDecoder.decodeDouble(forKey: PropertyKey.secondsKey)
         let pointsCount = aDecoder.decodeInteger(forKey: PropertyKey.pointsCountKey)
         var points = [CGPoint]()
@@ -42,10 +46,11 @@ class Frame : NSObject, NSCoding{
             let point = aDecoder.decodeCGPoint(forKey: PropertyKey.pointsKey + String(i))
             points.append(point)
         }
-        self.init(seconds:seconds, points: points)
+        self.init(index: index, seconds:seconds, points: points)
     }
     
     func encode(with aCoder: NSCoder) {
+        aCoder.encode(index, forKey: PropertyKey.indexKey)
         aCoder.encode(seconds, forKey: PropertyKey.secondsKey)
         aCoder.encode(points.count, forKey: PropertyKey.pointsCountKey)
         for i in 0..<points.count {

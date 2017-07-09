@@ -16,11 +16,13 @@ class Video : NSObject, NSCoding{
     var dateCreated: Date
     var videoURL: URL
     var frames: [Frame]
+    var version: Int
     
     // Private:
     private var cachedVideoAsset: AVAsset?
     private var cachedImageGenerator: AVAssetImageGenerator?
     private var cachedThumbnailImage: UIImage?
+    private var cachedFrameTimestamps: [CMTime]?
     
     private static let DocumentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     private static let VideoFilesDirectoryURL = DocumentsDirectoryURL.appendingPathComponent("videoFiles")
@@ -29,12 +31,14 @@ class Video : NSObject, NSCoding{
     private static let ArchiveURL = DocumentsDirectoryURL.appendingPathComponent("videos")
     private static let FileNameDateFormat = "yyyyMMddHHmmss"
     private static let XLSXColumnWidth = 20.0
+    private static let CurrentVersion = 1
     
     // MARK: Errors
     enum VideoError: LocalizedError {
         case archiveError
         case directoryCreationError(directory: URL)
         case videoFileMoveError(from: URL, to: URL)
+        case videoAssetReaderError(videoURL: URL)
         case imageGenerationError(seconds: Double)
         case fileDeletionError(fileURL: URL)
         case fileWriteError(fileURL: URL)
@@ -47,6 +51,7 @@ class Video : NSObject, NSCoding{
             case .archiveError: return "Could not archive video objects"
             case .directoryCreationError(let directory): return "Could not create \(directory.lastPathComponent) directory"
             case .videoFileMoveError(let from, let to): return "Could not move video file from \(from.lastPathComponent) to \(to.lastPathComponent)"
+            case .videoAssetReaderError(let videoURL): return "Could not create asset reader for video: \(videoURL.lastPathComponent)"
             case .imageGenerationError(let seconds): return "Could not generate image from video file at time: \(seconds)s"
             case .fileDeletionError(let fileURL): return "Could not delete file from Documents directory: \(fileURL.lastPathComponent)"
             case .fileWriteError(let fileURL): return "Could not write to file: \(fileURL.lastPathComponent)"
@@ -64,6 +69,7 @@ class Video : NSObject, NSCoding{
         static let videoURLKey = "videoURL"
         static let framesKey = "frames"
         static let framesCountKey = "framesCount"
+        static let versionKey = "version"
     }
     
     // MARK: Static methods
@@ -82,7 +88,7 @@ class Video : NSObject, NSCoding{
         return [Video]()
     }
     
-    // WARNING: Erases ALL users data
+    // WARNING: Erases ALL user data
     static func ClearSavedVideos() {
         let fileManager = FileManager.default
         
@@ -104,7 +110,7 @@ class Video : NSObject, NSCoding{
     
     // MARK: Instance methods:
 
-    init(name: String, dateCreated: Date, videoURL: URL, frames: [Frame] = []) {
+    init(name: String, dateCreated: Date, videoURL: URL, frames: [Frame] = [], version: Int) {
         self.name = name
         if name == "" {
             self.name = "Untitled"
@@ -112,6 +118,7 @@ class Video : NSObject, NSCoding{
         self.dateCreated = dateCreated
         self.videoURL = videoURL
         self.frames = frames
+        self.version = version
     }
     
     convenience init(tempVideoURL: URL, dateCreated: Date = Date()) throws {
@@ -149,7 +156,7 @@ class Video : NSObject, NSCoding{
         }
         
         // Create new video domain object:
-        self.init(name: "", dateCreated: dateCreated, videoURL: newVideoURL)
+        self.init(name: "", dateCreated: dateCreated, videoURL: newVideoURL, version: Video.CurrentVersion)
     }
     
     // MARK: Encoding
@@ -160,7 +167,8 @@ class Video : NSObject, NSCoding{
         let videoPathComponent = aDecoder.decodeObject(forKey: PropertyKey.videoURLKey) as! String
         let videoURL = Video.VideoFilesDirectoryURL.appendingPathComponent(videoPathComponent)
         let frames = aDecoder.decodeObject(forKey: PropertyKey.framesKey) as! [Frame]
-        self.init(name: name, dateCreated: dateCreated, videoURL: videoURL, frames: frames)
+        let version = aDecoder.decodeInteger(forKey: PropertyKey.versionKey)
+        self.init(name: name, dateCreated: dateCreated, videoURL: videoURL, frames: frames, version: version)
     }
     
     func encode(with aCoder: NSCoder) {
@@ -168,6 +176,30 @@ class Video : NSObject, NSCoding{
         aCoder.encode(dateCreated, forKey: PropertyKey.dateCreatedKey)
         aCoder.encode(videoURL.lastPathComponent, forKey: PropertyKey.videoURLKey)
         aCoder.encode(frames, forKey: PropertyKey.framesKey)
+        aCoder.encode(version, forKey: PropertyKey.versionKey)
+    }
+    
+    // MARK: Backwards Compatibility Migrations:
+    
+    func isOutdatedVersion() -> Bool {
+        return version < Video.CurrentVersion
+    }
+    
+    func backpopulateData() throws {
+        if version == Video.CurrentVersion {
+            print("backpopulateData: already at current version")
+            return
+        } else if version == 0 {
+            print("backpopulateData: backpopulating from version 0 to version 1")
+            let frameTimestamps = try getFrameTimestamps()
+            for (i, frame) in frames.enumerated() {
+                print("backpopulateData: frame \(i): seconds=\(frame.seconds)")
+                frame.index = try getNearestFrameIndex(seconds: frame.seconds)
+                frame.seconds = frameTimestamps[frame.index].seconds
+                print("backpopulateData: frame \(i): new index= \(frame.index) new seconds=\(frame.seconds)")
+            }
+            version = 1
+        }
     }
     
     // MARK: Utility functions
@@ -176,6 +208,7 @@ class Video : NSObject, NSCoding{
         cachedVideoAsset = nil
         cachedImageGenerator = nil
         cachedThumbnailImage = nil
+        cachedFrameTimestamps = nil
         for frame in frames {
             frame.freeMemory()
         }
@@ -186,6 +219,79 @@ class Video : NSObject, NSCoding{
             cachedVideoAsset = AVURLAsset(url: videoURL, options: nil)
         }
         return cachedVideoAsset!
+    }
+    
+    func getVideoAssetReader() throws -> AVAssetReader {
+        do {
+            return try AVAssetReader(asset: getVideoAsset())
+        } catch {
+            print(error)
+            throw VideoError.videoAssetReaderError(videoURL: videoURL)
+            
+        }
+    }
+    
+    func getFrameTimestamps() throws -> [CMTime] {
+        if cachedFrameTimestamps == nil {
+            let track = getVideoAsset().tracks(withMediaType: AVMediaTypeVideo).first!
+            let output = AVAssetReaderTrackOutput(track: track, outputSettings: nil) // nil gets original sample data without overhead for decompression
+            let reader = try getVideoAssetReader()
+            output.alwaysCopiesSampleData = false
+            reader.add(output)
+            reader.startReading()
+            
+            var frameTimestamps = [CMTime]()
+            while let sampleBuffer = output.copyNextSampleBuffer() {
+                if !CMSampleBufferIsValid(sampleBuffer) {
+                    print("getFrameTimestamps: Invalid sample buffer")
+                    continue
+                } else if CMSampleBufferGetTotalSampleSize(sampleBuffer) == 0 {
+                    print("getFrameTimestamps: Total sample size 0")
+                    continue
+                }
+                
+                let frameTimestamp = CMSampleBufferGetOutputPresentationTimeStamp(sampleBuffer)
+                if !frameTimestamp.isValid {
+                    print("getFrameTimestamps: Invalid frame timestamp")
+                    continue
+                }
+                frameTimestamps.append(frameTimestamp)
+            }
+            if reader.status != .completed {
+                print("getFrameTimestamps: AVAssetReader finished with unexpected status: \(reader.status.rawValue)")
+            }
+            frameTimestamps.sort()
+            cachedFrameTimestamps = frameTimestamps
+        }
+        return cachedFrameTimestamps!
+    }
+    
+    // TODO: Move to video class, and implement data migration for backwards compatibility
+    func getNearestFrameIndex(seconds: Double) throws -> Int {
+        let frameTimestamps = try getFrameTimestamps()
+        if frameTimestamps.count == 0 {
+            return 0
+        }
+        
+        // Bisection search:
+        var low = 0
+        var high = frameTimestamps.count - 1
+        while (low + 1) != high {
+            let mid = low + ((high - low) / 2)
+            let frame = frameTimestamps[mid]
+            if frame.seconds == seconds {
+                return mid
+            } else if frame.seconds < seconds {
+                low = mid
+            } else {
+                high = mid
+            }
+        }
+        return low
+    }
+    
+    func getDuration() -> CMTime {
+        return getVideoAsset().duration
     }
     
     func getImageGenerator() -> AVAssetImageGenerator {
@@ -199,10 +305,6 @@ class Video : NSObject, NSCoding{
         return cachedImageGenerator!
     }
     
-    func getDuration() -> CMTime {
-        return getVideoAsset().duration
-    }
-    
     func getImageAt(seconds: Double, size: CGSize) throws -> UIImage {
         do {
             // Get and configure image generator:
@@ -213,7 +315,7 @@ class Video : NSObject, NSCoding{
             let time = CMTime(seconds:seconds, preferredTimescale: getDuration().timescale)
             let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
             return UIImage(cgImage: cgImage)
-        } catch let error as NSError {
+        } catch {
             print(error)
             throw VideoError.imageGenerationError(seconds: seconds)
         }

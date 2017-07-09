@@ -21,6 +21,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     // MARK: Properties
     var video: Video!
     var currentFrame: Frame!
+    var frameTimestamps = [CMTime]()
     var player: AVPlayer!
     var playerLayer: AVPlayerLayer!
     var documentController: UIDocumentInteractionController!
@@ -59,6 +60,24 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             return
         }
         
+        // Backpopulate data if the video is an older version:
+        if video.isOutdatedVersion() {
+            do {
+                try video.backpopulateData()
+            } catch {
+                print("Error backpopulating data")
+                displayErrorAlert(error.localizedDescription)
+            }
+        }
+        
+        // Get the presentation timestamps of the video frames:
+        do {
+            frameTimestamps = try video.getFrameTimestamps()
+            print("Got \(frameTimestamps.count) timestamps")
+        } catch {
+            displayErrorAlert(error.localizedDescription)
+        }
+        
         // Create AVPlayer for video:
         player = AVPlayer(url: video.videoURL)
         
@@ -74,20 +93,19 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         // Set slider min and max:
         frameSlider.minimumValue = 0
-        frameSlider.maximumValue = Float(video.getDuration().seconds)
+        frameSlider.maximumValue = Float(frameTimestamps.count) - 1
         
         // Set stepper min and max:
-        frameStepper.minimumValue = Double(Int.min)
-        frameStepper.maximumValue = Double(Int.max)
-        frameStepper.value = 0
+        frameStepper.minimumValue = 0
+        frameStepper.maximumValue = Double(frameTimestamps.count) - 1
         
         // Set current frame to first saved frame or default:
         if video.frames.count > 0 {
-            setCurrentFrameTo(video.frames.first!, drawPoints: false)
-            frameCollectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: true, scrollPosition: UICollectionViewScrollPosition())
+            setCurrentFrameTo(frame: video.frames.first!, drawPoints: false)
+            frameCollectionView.selectItem(at: IndexPath(item: 0, section: 0), animated: true, scrollPosition: .centeredHorizontally)
         } else {
             // Default
-            setCurrentFrameTo(0)
+            setCurrentFrameTo(frameIndex: 0)
             frameSlider.value = 0
         }
         
@@ -169,14 +187,48 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     @IBAction func sliderMoved(_ sender: UISlider) {
         print("sliderMoved: sender.value=\(sender.value)")
-        let seconds = Double(sender.value)
-        setCurrentFrameTo(seconds)
+        let frameIndex = Int(sender.value)
+        print("sliderMoved: frameIndex=\(frameIndex)")
+        
+        // If the slider hasn't moved to another frame, don't change anything:
+        if frameIndex == currentFrame.index {
+            return
+        }
+        
+        // Check if this frame already exists:
+        // TODO: Bisection search
+        for (i, frame) in video.frames.enumerated() {
+            if frame.index == frameIndex {
+                frameCollectionView.selectItem(at: IndexPath(item: i, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+                setCurrentFrameTo(frame: frame)
+                return
+            }
+        }
+        
+        // Create new frame at this time:
+        setStepper(frameIndex: frameIndex)
+        setCurrentFrameTo(frameIndex: frameIndex)
     }
     
     @IBAction func stepperPressed(_ sender: UIStepper) {
         print("stepperPressed: sender.value=\(sender.value)")
-        stepCurrentFrame(Int(sender.value))
-        frameStepper.value = 0
+        let frameIndex = Int(sender.value)
+        print("stepperPressed: frameIndex=\(frameIndex)")
+        
+        // Check if this frame already exists:
+        // TODO: Bisection search
+        for (i, frame) in video.frames.enumerated() {
+            if frame.index == frameIndex {
+                frameCollectionView.selectItem(at: IndexPath(item: i, section: 0), animated: true, scrollPosition: .centeredHorizontally)
+                setCurrentFrameTo(frame: frame)
+                return
+            }
+        }
+        
+        // Create new frame at this time:
+        // Update slider:
+        setSlider(frameIndex: frameIndex)
+        setCurrentFrameTo(frameIndex: frameIndex)
     }
     
     @IBAction func selectPoint(_ sender: UITapGestureRecognizer) {
@@ -300,13 +352,15 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let frame = video.frames[(indexPath as NSIndexPath).item]
-        setCurrentFrameTo(frame)
+        setCurrentFrameTo(frame: frame)
     }
     
-    // MARK: Set UI Elements:
+    // MARK: Current Frame:
     
     func saveCurrentFrame() {
         var idx = video.frames.count
+        
+        // TODO: Bisection search
         for (i, frame) in video.frames.enumerated() {
             if frame.seconds > currentFrame.seconds {
                 idx = i
@@ -335,15 +389,18 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         toggleUndoAndDeleteButtons(false)
     }
     
-    fileprivate func setCurrentFrameTo(_ frame: Frame, drawPoints: Bool = true) {
+    // NOTE: Does not highlight item in collection view
+    fileprivate func setCurrentFrameTo(frame: Frame, drawPoints: Bool = true) {
+        print("setCurrentFrameTo: frame.index=\(frame.index)")
         toggleUndoAndDeleteButtons(true)
         clearPointsFromScreen()
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
-        let time = CMTime(seconds:frame.seconds, preferredTimescale: video.getDuration().timescale)
-        player.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        let frameTimestamp = CMTime(seconds:frame.seconds, preferredTimescale: video.getDuration().timescale)
+        player.seek(to: frameTimestamp, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
         setVideoTimeLabel(frame.seconds)
-        setSlider(frame.seconds)
+        setSlider(frameIndex: frame.index)
+        setStepper(frameIndex: frame.index)
         if drawPoints {
             drawNormalizedPoints(frame.points)
             drawLinesForNormalizedPoints(frame.points)
@@ -352,18 +409,21 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         currentFrame = frame
     }
 
-    fileprivate func setCurrentFrameTo(_ seconds: Double) {
+    // NOTE: Does not set stepper or slider
+    fileprivate func setCurrentFrameTo(frameIndex: Int) {
+        print("setCurrentFrameTo: frameIndex=\(frameIndex)")
         toggleUndoAndDeleteButtons(false)
         clearPointsFromScreen()
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
         clearFrameSelection()
-        let time = CMTime(seconds:seconds, preferredTimescale: video.getDuration().timescale)
-        player.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
-        setVideoTimeLabel(seconds)
-        currentFrame = Frame(seconds: seconds)
+        let frameTimestamp = frameTimestamps[frameIndex]
+        player.seek(to: frameTimestamps[frameIndex], toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        setVideoTimeLabel(frameTimestamp.seconds)
+        currentFrame = Frame(index: frameIndex, seconds: frameTimestamp.seconds)
     }
-    
+
+    /*
     fileprivate func stepCurrentFrame(_ byCount: Int) {
         toggleUndoAndDeleteButtons(false)
         clearPointsFromScreen()
@@ -390,17 +450,24 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
             self.currentFrame = Frame(seconds: seconds)
         }
     }
+ */
+    
+    // Other UI Elements:
     
     fileprivate func setVideoTimeLabel(_ totalSeconds:Double) {
-        // TODO: Better time format. Fractions of a second? Milliseconds? Display hours, minutes depending on context?
+        // TODO: Better time format. Fractions of a second? Milliseconds? Display hours, minutes depending on context? User setting?
         let hours = Int(floor(totalSeconds / 3600))
         let minutes = Int(floor(totalSeconds.truncatingRemainder(dividingBy: 3600) / 60))
         let seconds = Int(floor((totalSeconds.truncatingRemainder(dividingBy: 3600)).truncatingRemainder(dividingBy: 60)))
         videoDurationLabel.text = String(format:"%d:%02d:%02d", hours, minutes, seconds)
     }
     
-    fileprivate func setSlider(_ seconds: Double) {
-        frameSlider.setValue(Float(seconds), animated: true)
+    fileprivate func setSlider(frameIndex: Int) {
+        frameSlider.setValue(Float(frameIndex), animated: true)
+    }
+    
+    fileprivate func setStepper(frameIndex: Int) {
+        frameStepper.value = Double(frameIndex)
     }
     
     fileprivate func clearFrameSelection() {
