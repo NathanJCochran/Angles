@@ -313,7 +313,7 @@ class Video : NSObject, NSCoding{
             imageGenerator.maximumSize = size
             
             // Generate new frame image from video asset:
-            let time = CMTime(seconds:seconds, preferredTimescale: getDuration().timescale)
+            let time = CMTime(seconds:seconds, preferredTimescale: getDuration().timescale) // TODO: Use actual CMTime timestamp instead
             let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
             return UIImage(cgImage: cgImage)
         } catch {
