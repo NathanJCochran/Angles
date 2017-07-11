@@ -14,7 +14,7 @@ class Frame : NSObject, NSCoding{
     
     // MARK: Properties
     var index: Int
-    var seconds: Double
+    var seconds: Double // TODO: Store as CMTime instead of seconds for more accuracy (which matters, for sake of seeking to correct frame in video)
     var points: [CGPoint]
     
     // MARK: Cached items

@@ -362,7 +362,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         // TODO: Bisection search
         for (i, frame) in video.frames.enumerated() {
-            if frame.seconds > currentFrame.seconds {
+            if frame.index > currentFrame.index {
                 idx = i
                 break
             }
@@ -396,7 +396,8 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearPointsFromScreen()
         clearLinesFromScreen()
         clearAngleLabelsFromScreen()
-        let frameTimestamp = CMTime(seconds:frame.seconds, preferredTimescale: video.getDuration().timescale)
+        let frameTimestamp = frameTimestamps[frame.index]
+        print("setCurrentFrameTo: frameTimestamp=\(frameTimestamp)")
         player.seek(to: frameTimestamp, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
         setVideoTimeLabel(frame.seconds)
         setSlider(frameIndex: frame.index)
@@ -418,6 +419,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearAngleLabelsFromScreen()
         clearFrameSelection()
         let frameTimestamp = frameTimestamps[frameIndex]
+        print("setCurrentFrameTo: frameTimestamp=\(frameTimestamp)")
         player.seek(to: frameTimestamps[frameIndex], toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
         setVideoTimeLabel(frameTimestamp.seconds)
         currentFrame = Frame(index: frameIndex, seconds: frameTimestamp.seconds)

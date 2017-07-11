@@ -255,6 +255,7 @@ class Video : NSObject, NSCoding{
                     print("getFrameTimestamps: Invalid frame timestamp")
                     continue
                 }
+                print("getFrameTimestamps: frameTimestamp=\(frameTimestamp)")
                 frameTimestamps.append(frameTimestamp)
             }
             if reader.status != .completed {
