@@ -24,8 +24,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         print("videos loaded")
         
         // Add observers for when the app enters the background or terminates:
-        NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: .UIApplication.didEnterBackgroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(willTerminate), name: .UIApplication.willTerminateNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(willTerminate), name: UIApplication.willTerminateNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -38,13 +38,13 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         freeMemory()
     }
     
-    func didEnterBackground() {
+    @objc func didEnterBackground() {
         print("VideoTableViewController didEnterBackground")
         saveVideos(async: false)
         freeMemory()
     }
     
-    func willTerminate() {
+    @objc func willTerminate() {
         print("VideoTableViewController willTerminate")
         saveVideos(async:false)
     }

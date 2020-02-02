@@ -111,7 +111,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         // Add observer for when user returns after selecting home button.
         // Will check to see if settings have changed, and will update display of angles if so:
-        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -169,7 +169,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         })
     }
     
-    func willEnterForeground() {
+    @objc func willEnterForeground() {
         print("FramesViewController willEnterForeground")
         
         // Redraw angle labels (or don't), in case settings changed:
@@ -253,7 +253,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
-    func movePoint(_ sender:UIPanGestureRecognizer) {
+    @objc func movePoint(_ sender:UIPanGestureRecognizer) {
         // Figure out what the new point is:
         let translation = sender.translation(in: frameVideoView)
         let newPoint = CGPoint(x: CGFloat(sender.view!.center.x + translation.x), y: CGFloat(sender.view!.center.y + translation.y))
