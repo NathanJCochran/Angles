@@ -16,6 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         print("didFinishLaunchingWithOptions")
+        
+        // This needs to match Default Value in Settings.bundle Root.plist
+        UserDefaults.standard.register(defaults: ["display_angles_preference" : true])
+        
         return true
     }
 
