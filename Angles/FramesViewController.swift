@@ -111,7 +111,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         // Add observer for when user returns after selecting home button.
         // Will check to see if settings have changed, and will update display of angles if so:
-        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .UIApplication.willEnterForegroundNotification, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -398,7 +398,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearAngleLabelsFromScreen()
         let frameTimestamp = frameTimestamps[frame.index]
         print("setCurrentFrameTo: frameTimestamp=\(frameTimestamp)")
-        player.seek(to: frameTimestamp, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        player.seek(to: frameTimestamp, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         setVideoTimeLabel(frame.seconds)
         setSlider(frameIndex: frame.index)
         setStepper(frameIndex: frame.index)
@@ -420,7 +420,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         clearFrameSelection()
         let frameTimestamp = frameTimestamps[frameIndex]
         print("setCurrentFrameTo: frameTimestamp=\(frameTimestamp)")
-        player.seek(to: frameTimestamps[frameIndex], toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero)
+        player.seek(to: frameTimestamps[frameIndex], toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
         setVideoTimeLabel(frameTimestamp.seconds)
         currentFrame = Frame(index: frameIndex, seconds: frameTimestamp.seconds)
     }
@@ -637,7 +637,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         textLayer.font = UIFont(name: font, size: fontSize)
         textLayer.fontSize = fontSize
         textLayer.frame = CGRect(x: labelCenterPoint.x - (labelWidth/2), y: labelCenterPoint.y - (labelHeight/2), width: labelWidth, height: labelHeight)
-        textLayer.alignmentMode = kCAAlignmentCenter
+        textLayer.alignmentMode = CATextLayerAlignmentMode.center
         
         let angle = Math.getAcuteAngleInDegrees(point1, point2: point2, point3: point3)
         let roundedAngle = round(angle * 100) / 100
@@ -678,7 +678,7 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
     fileprivate func displayErrorAlert(_ message: String) {
         print(message)
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
 }

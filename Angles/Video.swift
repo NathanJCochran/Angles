@@ -233,7 +233,7 @@ class Video : NSObject, NSCoding{
     
     func getFrameTimestamps() throws -> [CMTime] {
         if cachedFrameTimestamps == nil {
-            let track = getVideoAsset().tracks(withMediaType: AVMediaTypeVideo).first!
+            let track = getVideoAsset().tracks(withMediaType: AVMediaType.video).first!
             let output = AVAssetReaderTrackOutput(track: track, outputSettings: nil) // nil gets original sample data without overhead for decompression
             let reader = try getVideoAssetReader()
             output.alwaysCopiesSampleData = false
@@ -300,8 +300,8 @@ class Video : NSObject, NSCoding{
             // Load video and image generator:
             cachedImageGenerator = AVAssetImageGenerator(asset: getVideoAsset())
             cachedImageGenerator!.appliesPreferredTrackTransform = true
-            cachedImageGenerator!.requestedTimeToleranceBefore = kCMTimeZero
-            cachedImageGenerator!.requestedTimeToleranceAfter = kCMTimeZero
+            cachedImageGenerator!.requestedTimeToleranceBefore = CMTime.zero
+            cachedImageGenerator!.requestedTimeToleranceAfter = CMTime.zero
         }
         return cachedImageGenerator!
     }
@@ -323,9 +323,9 @@ class Video : NSObject, NSCoding{
     }
     
     func getVideoSize() -> CGSize {
-        let track = getVideoAsset().tracks(withMediaType: AVMediaTypeVideo).first!
+        let track = getVideoAsset().tracks(withMediaType: AVMediaType.video).first!
         let size = track.naturalSize.applying(track.preferredTransform)
-        return CGSize(width: fabs(size.width), height: fabs(size.height))
+        return CGSize(width: abs(size.width), height: abs(size.height))
     }
     
     func getThumbnailImageGenerationSize(targetSize: CGSize) -> CGSize {
@@ -428,7 +428,7 @@ class Video : NSObject, NSCoding{
         for i in 0..<angleCount {
             fileData += String(format: "Angle %d,", i+1)
         }
-        fileData.remove(at: fileData.characters.index(before: fileData.endIndex))
+        fileData.remove(at: fileData.index(before: fileData.endIndex))
         fileData += "\n"
         
         // Create row for each frame:
@@ -438,7 +438,7 @@ class Video : NSObject, NSCoding{
             for angle in angles {
                 fileData += String(format: "%f,", angle)
             }
-            fileData.remove(at: fileData.characters.index(before: fileData.endIndex))
+            fileData.remove(at: fileData.index(before: fileData.endIndex))
             fileData += "\n"
         }
         

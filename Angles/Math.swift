@@ -33,6 +33,6 @@ class Math {
     }
     
     static func radiansToDegrees(_ radians: CGFloat) -> CGFloat {
-        return (radians * 180) / CGFloat(M_PI)
+        return (radians * 180) / .pi
     }
 }

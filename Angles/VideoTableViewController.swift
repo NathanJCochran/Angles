@@ -24,8 +24,8 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         print("videos loaded")
         
         // Add observers for when the app enters the background or terminates:
-        NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: .UIApplicationDidEnterBackground, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(willTerminate), name: .UIApplicationWillTerminate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: .UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(willTerminate), name: .UIApplication.willTerminateNotification, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -196,13 +196,13 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         dismiss(animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]){
         
         // Dismiss the image picker controller:
         dismiss(animated: true, completion: nil)
         
         // Get the URL of the video in the tmp directory:
-        let videoURL = info[UIImagePickerControllerMediaURL] as? URL
+        let videoURL = info[UIImagePickerController.InfoKey.mediaURL] as? URL
         if videoURL == nil {
             displayErrorAlert("Could not get video URL")
             return
@@ -210,7 +210,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         
         // Get the creation date of the video, or the default (now):
         var dateCreated = Date()
-        if let referenceURL = info[UIImagePickerControllerReferenceURL] as? URL {
+        if let referenceURL = info[UIImagePickerController.InfoKey.referenceURL] as? URL {
             if let libraryVideoAsset = PHAsset.fetchAssets(withALAssetURLs: [referenceURL], options: nil).firstObject as PHAsset? {
                 dateCreated = libraryVideoAsset.creationDate ?? Date()
             }
@@ -249,7 +249,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         present(menu, animated: true, completion: nil)
     }
     
-    fileprivate func presentImagePickerController(_ sourceType: UIImagePickerControllerSourceType) {
+    fileprivate func presentImagePickerController(_ sourceType: UIImagePickerController.SourceType) {
         let imagePickerController = UIImagePickerController()
         imagePickerController.sourceType = sourceType
         imagePickerController.mediaTypes = [kUTTypeMovie as String]
@@ -279,7 +279,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     func displayErrorAlert(_ message: String) {
         print(message)
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
     
