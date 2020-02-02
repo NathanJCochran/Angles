@@ -76,9 +76,10 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         cell.nameTextField.delegate = self
         
         // Set the image asynchronously, because it can take awhile to generate:
+        let size = cell.thumbnailImage.frame.size // Can't access from background thread
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                let image = try video.getThumbnailImage(size: cell.thumbnailImage.frame.size)
+                let image = try video.getThumbnailImage(size: size)
                 DispatchQueue.main.async {
                     cell.thumbnailImage.image = image
                 }
@@ -260,6 +261,9 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         }
         imagePickerController.allowsEditing = false
         imagePickerController.delegate = self
+        
+        // TODO: Present photo library in pop-over control, per docs
+        // https://developer.apple.com/documentation/uikit/uiimagepickercontroller
         present(imagePickerController, animated: true, completion: nil)
     }
     

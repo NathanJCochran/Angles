@@ -122,6 +122,7 @@ class Video : NSObject, NSCoding{
     }
     
     convenience init(tempVideoURL: URL, dateCreated: Date = Date()) throws {
+        print("tempVideoURL: \(tempVideoURL)")
         
         // Make sure the video files directory exists:
         let fileManager = FileManager.default
@@ -139,6 +140,7 @@ class Video : NSObject, NSCoding{
         formatter.dateFormat = Video.FileNameDateFormat
         let fileName = formatter.string(from: dateCreated)
         var newVideoURL = Video.VideoFilesDirectoryURL.appendingPathComponent(fileName).appendingPathExtension(fileExtension)
+        print("newVideoURL: \(newVideoURL)")
         
         // Check if video already exists at this URL, and update URL if so:
         var count = 1
