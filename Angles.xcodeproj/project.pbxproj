@@ -519,8 +519,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = GX7JH73HD4;
 				INFOPLIST_FILE = angles/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.angles;
 				PRODUCT_NAME = Angles;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -538,8 +539,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = GX7JH73HD4;
 				INFOPLIST_FILE = angles/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = info.nathancochran.angles;
 				PRODUCT_NAME = Angles;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
