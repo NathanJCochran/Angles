@@ -199,12 +199,11 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]){
         
-        // Dismiss the image picker controller:
-        dismiss(animated: true, completion: nil)
-        
         // Get the URL of the video in the tmp directory:
         let videoURL = info[UIImagePickerController.InfoKey.mediaURL] as? URL
         if videoURL == nil {
+            // Dismiss the image picker controller:
+            dismiss(animated: true, completion: nil)
             displayErrorAlert("Could not get video URL")
             return
         }
@@ -231,8 +230,14 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             tableView.scrollToRow(at: newIndexPath, at: .top, animated: true)
             editNameTextFieldAt(newIndexPath, highlightText: true)
         } catch {
+            // Dismiss the image picker controller:
+            dismiss(animated: true, completion: nil)
             displayErrorAlert(error.localizedDescription)
+            return
         }
+        
+        // Dismiss the image picker controller:
+        dismiss(animated: true, completion: nil)
     }
     
     
