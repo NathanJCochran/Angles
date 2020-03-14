@@ -332,9 +332,12 @@ class FramesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let frame = video.frames[(indexPath as NSIndexPath).item]
         
         // Set the image asynchronously, because it can take awhile to generate:
-        DispatchQueue.global(qos: .userInitiated).async {
+        let size = cell.frameImageView.frame.size
+        DispatchQueue.global(qos: .userInitiated).async(flags: .barrier) {
             do {
-                let image =  try frame.getThumbnailImage(video:self.video, size:cell.frameImageView.frame.size)
+                print("Generating thumbnail for: \(indexPath)")
+                let image =  try frame.getThumbnailImage(video: self.video, size: size)
+                print("Done: \(indexPath)")
                 DispatchQueue.main.async {
                     cell.frameImageView.image = image
                 }

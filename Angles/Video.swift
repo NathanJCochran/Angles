@@ -20,7 +20,7 @@ class Video : NSObject, NSCoding{
     
     // Private:
     private var cachedVideoAsset: AVAsset?
-    private var cachedImageGenerator: AVAssetImageGenerator?
+    //private var cachedImageGenerator: AVAssetImageGenerator?
     private var cachedThumbnailImage: UIImage?
     private var cachedFrameTimestamps: [CMTime]?
     
@@ -208,7 +208,7 @@ class Video : NSObject, NSCoding{
     
     func freeMemory() {
         cachedVideoAsset = nil
-        cachedImageGenerator = nil
+        //cachedImageGenerator = nil
         cachedThumbnailImage = nil
         cachedFrameTimestamps = nil
         for frame in frames {
@@ -298,14 +298,19 @@ class Video : NSObject, NSCoding{
     }
     
     func getImageGenerator() -> AVAssetImageGenerator {
-        if cachedImageGenerator == nil {
-            // Load video and image generator:
-            cachedImageGenerator = AVAssetImageGenerator(asset: getVideoAsset())
-            cachedImageGenerator!.appliesPreferredTrackTransform = true
-            cachedImageGenerator!.requestedTimeToleranceBefore = CMTime.zero
-            cachedImageGenerator!.requestedTimeToleranceAfter = CMTime.zero
-        }
-        return cachedImageGenerator!
+//        if cachedImageGenerator == nil {
+//            // Load video and image generator:
+//            cachedImageGenerator = AVAssetImageGenerator(asset: getVideoAsset())
+//            cachedImageGenerator!.appliesPreferredTrackTransform = true
+//            cachedImageGenerator!.requestedTimeToleranceBefore = CMTime.zero
+//            cachedImageGenerator!.requestedTimeToleranceAfter = CMTime.zero
+//        }
+//        return cachedImageGenerator!
+        let imageGenerator = AVAssetImageGenerator(asset: getVideoAsset())
+        imageGenerator.appliesPreferredTrackTransform = true
+        imageGenerator.requestedTimeToleranceBefore = CMTime.zero
+        imageGenerator.requestedTimeToleranceAfter = CMTime.zero
+        return imageGenerator
     }
     
     func getImageAt(seconds: Double, size: CGSize) throws -> UIImage {
@@ -315,6 +320,7 @@ class Video : NSObject, NSCoding{
             imageGenerator.maximumSize = size
             
             // Generate new frame image from video asset:
+            print("timescale: \(getDuration().timescale)")
             let time = CMTime(seconds:seconds, preferredTimescale: getDuration().timescale) // TODO: Use actual CMTime timestamp instead
             let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
             return UIImage(cgImage: cgImage)

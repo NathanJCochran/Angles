@@ -10,7 +10,11 @@ import MobileCoreServices
 import Photos
 
 class VideoTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate,  UITextFieldDelegate {
+    
     var videos = [Video]()
+    
+    // MARK: Outlets
+    @IBOutlet weak var addButton: UIBarButtonItem!
 
     override func viewDidLoad() {
         print("VideoTableViewController viewDidLoad")
@@ -245,7 +249,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     
     @IBAction func addVideo(_ sender: UIBarButtonItem) {
         let menu = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
-        if UIImagePickerController.isSourceTypeAvailable(.camera) && UIImagePickerController.isCameraDeviceAvailable(.rear) {
+        if UIImagePickerController.isSourceTypeAvailable(.camera) && UIImagePickerController.isCameraDeviceAvailable(.rear) && UIImagePickerController.availableMediaTypes(for: .camera)?.contains(kUTTypeMovie as String) ?? false {
             menu.addAction(UIAlertAction(title: "Camera", style: .default, handler: {_ in self.presentImagePickerController(.camera)}))
         }
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
@@ -267,9 +271,14 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         imagePickerController.allowsEditing = false
         imagePickerController.delegate = self
         
-        // TODO: Present photo library in pop-over control, per docs
-        // https://developer.apple.com/documentation/uikit/uiimagepickercontroller
-        present(imagePickerController, animated: true, completion: nil)
+        if sourceType == .photoLibrary &&
+            UIDevice.current.userInterfaceIdiom == .pad {
+            imagePickerController.modalPresentationStyle = .popover
+            imagePickerController.popoverPresentationController!.barButtonItem = self.addButton
+            present(imagePickerController, animated: true, completion: nil)
+        } else {
+            present(imagePickerController, animated: true, completion: nil)
+        }
     }
     
     // MARK: - Navigation
