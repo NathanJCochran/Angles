@@ -23,31 +23,46 @@
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="80"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Date Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DZV-r5-R8A">
-                                            <rect key="frame" x="87" y="51" width="505" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DZV-r5-R8A">
+                                            <rect key="frame" x="88" y="50" width="672" height="22"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Name Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ysr-Va-0bH">
-                                            <rect key="frame" x="87" y="8" width="505" height="35"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ysr-Va-0bH">
+                                            <rect key="frame" x="88" y="8" width="672" height="34"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DcQ-Z3-Yw6">
-                                            <rect key="frame" x="0.0" y="0.0" width="79" height="79"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DcQ-Z3-Yw6">
+                                            <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" secondItem="DcQ-Z3-Yw6" secondAttribute="height" multiplier="80:80" id="2d5-h6-TWP"/>
+                                            </constraints>
                                         </imageView>
-                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Name Text Field" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cWd-MF-OIL">
-                                            <rect key="frame" x="87" y="11" width="505" height="30"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Name Text Field" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cWd-MF-OIL">
+                                            <rect key="frame" x="88" y="8" width="672" height="34"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="words" returnKeyType="done"/>
                                         </textField>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="DZV-r5-R8A" firstAttribute="top" secondItem="cWd-MF-OIL" secondAttribute="bottom" constant="8" id="2VD-Ga-tix"/>
+                                        <constraint firstItem="cWd-MF-OIL" firstAttribute="top" secondItem="Bhp-LI-Slf" secondAttribute="top" constant="8" id="5oh-0n-xw4"/>
+                                        <constraint firstItem="ysr-Va-0bH" firstAttribute="leading" secondItem="DcQ-Z3-Yw6" secondAttribute="trailing" constant="8" id="DLJ-G9-RqD"/>
+                                        <constraint firstItem="ysr-Va-0bH" firstAttribute="top" secondItem="Bhp-LI-Slf" secondAttribute="top" constant="8" id="KeA-NC-UGp"/>
+                                        <constraint firstItem="cWd-MF-OIL" firstAttribute="leading" secondItem="DcQ-Z3-Yw6" secondAttribute="trailing" constant="8" id="Lvx-am-fXe"/>
+                                        <constraint firstAttribute="trailing" secondItem="cWd-MF-OIL" secondAttribute="trailing" constant="8" id="X8U-Fw-ziA"/>
+                                        <constraint firstItem="DZV-r5-R8A" firstAttribute="leading" secondItem="DcQ-Z3-Yw6" secondAttribute="trailing" constant="8" id="YHe-UX-RKK"/>
+                                        <constraint firstItem="DZV-r5-R8A" firstAttribute="top" secondItem="ysr-Va-0bH" secondAttribute="bottom" constant="8" id="ZHl-R3-l3h"/>
+                                        <constraint firstAttribute="trailing" secondItem="ysr-Va-0bH" secondAttribute="trailing" constant="8" id="a9f-if-RHY"/>
+                                        <constraint firstItem="DcQ-Z3-Yw6" firstAttribute="leading" secondItem="Bhp-LI-Slf" secondAttribute="leading" id="gJp-W2-X0Z"/>
+                                        <constraint firstAttribute="bottom" secondItem="DcQ-Z3-Yw6" secondAttribute="bottom" id="gKy-hc-tbm"/>
+                                        <constraint firstItem="DcQ-Z3-Yw6" firstAttribute="top" secondItem="Bhp-LI-Slf" secondAttribute="top" id="gaf-IK-DgG"/>
+                                        <constraint firstAttribute="trailing" secondItem="DZV-r5-R8A" secondAttribute="trailing" constant="8" id="h1p-2f-gle"/>
+                                        <constraint firstAttribute="bottom" secondItem="DZV-r5-R8A" secondAttribute="bottom" constant="8" id="iwD-98-NIz"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="dateLabel" destination="DZV-r5-R8A" id="9Zp-hU-xKu"/>
@@ -76,7 +91,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cXs-a9-sm1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="557" y="475"/>
+            <point key="canvasLocation" x="556.25" y="474.60937499999994"/>
         </scene>
         <!--Frames-->
         <scene sceneID="tne-QT-ifu">
