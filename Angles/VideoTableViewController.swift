@@ -214,6 +214,19 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
             return
         }
         
+        // Copy the vide to temp directory (must happen immediately - see:
+        // https://stackoverflow.com/questions/57798968/didfinishpickingmediawithinfo-returns-different-url-in-ios-13/
+        let tempDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+        let tempVideoURL = tempDirectoryURL.appendingPathComponent(videoURL!.lastPathComponent)
+        do {
+            try FileManager.default.copyItem(at: videoURL!, to: tempVideoURL)
+        } catch {
+            print(error)
+            dismiss(animated: true, completion: nil)
+            displayErrorAlert("Could not copy video from \(videoURL!) to\(tempVideoURL)")
+            return
+        }
+        
         // Get the creation date of the video, or the default (now):
         var dateCreated = Date()
         if let referenceURL = info[UIImagePickerController.InfoKey.referenceURL] as? URL {
@@ -225,7 +238,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         do {
             // Create a new video object. This initializer will move the video from the
             // temp directory to our application's video files directory:
-            let video = try Video(tempVideoURL: videoURL!, dateCreated: dateCreated)
+            let video = try Video(tempVideoURL: tempVideoURL, dateCreated: dateCreated)
             
             // Add new video to the list:
             videos.insert(video, at: 0)
