@@ -298,6 +298,7 @@ class Video : NSObject, NSCoding{
     }
     
     func getImageGenerator() -> AVAssetImageGenerator {
+// NOTE: Cached AVAssetImageGenerator was causing problems when used concurrently
 //        if cachedImageGenerator == nil {
 //            // Load video and image generator:
 //            cachedImageGenerator = AVAssetImageGenerator(asset: getVideoAsset())

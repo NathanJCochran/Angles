@@ -142,10 +142,12 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         textField?.tag = (indexPath as NSIndexPath).row
         textField?.text = cell.nameLabel.text
         textField?.isHidden = false
-        textField?.becomeFirstResponder()
-        if highlightText {
-            // Not sure why, but this has to be queued up to work:
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        
+        // This has to be queued up to work (seems like it has to wait for
+        // the animation of the row sliding back into position to finish):
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.9) {
+            textField?.becomeFirstResponder()
+            if highlightText {
                 textField?.selectedTextRange = textField?.textRange(from: (textField?.beginningOfDocument)!, to: (textField?.endOfDocument)!)
             }
         }
