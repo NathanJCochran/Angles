@@ -145,7 +145,7 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
         
         // This has to be queued up to work (seems like it has to wait for
         // the animation of the row sliding back into position to finish):
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.9) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
             textField?.becomeFirstResponder()
             if highlightText {
                 textField?.selectedTextRange = textField?.textRange(from: (textField?.beginningOfDocument)!, to: (textField?.endOfDocument)!)
@@ -206,20 +206,29 @@ class VideoTableViewController: UITableViewController, UIImagePickerControllerDe
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]){
         
         // Get the URL of the video in the tmp directory:
-        let videoURL = info[UIImagePickerController.InfoKey.mediaURL] as? URL
+        let videoURL = info[.mediaURL] as? URL
         if videoURL == nil {
             // Dismiss the image picker controller:
             dismiss(animated: true, completion: nil)
-            displayErrorAlert("Could not get video URL")
+            displayErrorAlert("Could not retrieve video URL")
             return
         }
         
-        // Copy the vide to temp directory (must happen immediately - see:
+        // Copy the video to the temp directory (must happen immediately - see:
         // https://stackoverflow.com/questions/57798968/didfinishpickingmediawithinfo-returns-different-url-in-ios-13/
         let tempDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-        let tempVideoURL = tempDirectoryURL.appendingPathComponent(videoURL!.lastPathComponent)
+        var tempVideoURL = tempDirectoryURL.appendingPathComponent(videoURL!.lastPathComponent).appendingPathExtension(videoURL!.pathExtension)
+        
+        // Check if video already exists at this URL, and update URL if so:
+        var count = 1
+        let fileManager = FileManager.default
+        while fileManager.fileExists(atPath: tempVideoURL.path) {
+            tempVideoURL = tempDirectoryURL.appendingPathComponent(videoURL!.lastPathComponent + "_" + String(count)).appendingPathExtension(videoURL!.pathExtension)
+            count += 1
+        }
+        
         do {
-            try FileManager.default.copyItem(at: videoURL!, to: tempVideoURL)
+            try fileManager.copyItem(at: videoURL!, to: tempVideoURL)
         } catch {
             print(error)
             dismiss(animated: true, completion: nil)
